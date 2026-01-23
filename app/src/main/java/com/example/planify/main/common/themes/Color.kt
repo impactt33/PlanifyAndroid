@@ -1,4 +1,4 @@
-package com.example.planify.ui.theme
+package com.example.planify.main.common.themes
 
 import androidx.compose.ui.graphics.Color
 

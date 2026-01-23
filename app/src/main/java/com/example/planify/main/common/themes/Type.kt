@@ -1,4 +1,4 @@
-package com.example.planify.ui.theme
+package com.example.planify.main.common.themes
 
 import androidx.compose.material3.Typography
 import androidx.compose.ui.text.TextStyle
