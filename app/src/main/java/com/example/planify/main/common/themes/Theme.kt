@@ -8,7 +8,19 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Composition
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.ui.platform.LocalContext
+import com.example.planify.main.common.themes.dimens.Dimens
+import com.example.planify.main.common.themes.dimens.LocalDimens
+import com.example.planify.main.common.themes.icons.LocalIcons
+import com.example.planify.main.common.themes.icons.defaultIcons
+import com.example.planify.main.common.themes.padding.LocalPadding
+import com.example.planify.main.common.themes.padding.Padding
+import com.example.planify.main.common.themes.shapes.LocalShapes
+import com.example.planify.main.common.themes.shapes.shapes
+import com.example.planify.main.common.themes.spacing.LocalSpacing
+import com.example.planify.main.common.themes.spacing.Spacing
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -24,24 +36,21 @@ private val LightColorScheme = lightColorScheme(
 
 @Composable
 fun PlanifyTheme(
-    darkTheme: Boolean = isSystemInDarkTheme(),
-    // Dynamic color is available on Android 12+
-    dynamicColor: Boolean = true,
+    dimens: Dimens = Dimens(),
+    padding: Padding = Padding(),
+    spacing: Spacing = Spacing(),
     content: @Composable () -> Unit
 ) {
-    val colorScheme = when {
-        dynamicColor && Build.VERSION.SDK_INT >= Build.VERSION_CODES.S -> {
-            val context = LocalContext.current
-            if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
-        }
+    val shapes = shapes(dimens = dimens)
+    val icons = defaultIcons(dimens = dimens)
 
-        darkTheme -> DarkColorScheme
-        else -> LightColorScheme
+    CompositionLocalProvider(
+        LocalDimens provides dimens,
+        LocalShapes provides shapes,
+        LocalIcons provides icons,
+        LocalPadding provides padding,
+        LocalSpacing provides spacing
+    ) {
+        content()
     }
-
-    MaterialTheme(
-        colorScheme = colorScheme,
-        typography = Typography,
-        content = content
-    )
 }

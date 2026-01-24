@@ -1,5 +1,6 @@
 package com.example.planify.main.navigation.screens.main_screen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
+import com.example.planify.main.navigation.screens.main_screen.components.BottomNavBar
 
 @Composable
 fun MainScreen() {
@@ -20,7 +22,9 @@ fun MainScreen() {
         startRoute = MainScreenRoute.Home
     )
 
+    @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
     Scaffold(
+        bottomBar = { BottomNavBar(pagerRouter = router) },
         containerColor = Color.Transparent
     ) { padding ->
         PagerRouterScreen(

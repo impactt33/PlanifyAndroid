@@ -36,7 +36,7 @@ class InitScreenViewModel(
     }
 
     suspend fun pingServer(): Boolean {
-        delay(4000)
+        delay(1000)
         return true
     }
 }
