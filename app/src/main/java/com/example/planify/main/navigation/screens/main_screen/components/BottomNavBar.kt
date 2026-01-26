@@ -17,6 +17,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -36,6 +41,7 @@ import com.example.planify.main.common.themes.spacing.LocalSpacing
 import com.example.planify.main.common.themes.spacing.Spacing
 import com.example.planify.main.common.ui.objectClickable
 import com.example.planify.main.common.ui.withShapeBackground
+import com.example.planify.main.features.create_meet_dialog.ui.CreateMeetDialogView
 import com.example.planify.main.navigation.screens.main_screen.MainScreenRoute
 
 @Composable
@@ -126,6 +132,8 @@ fun BottomNavBar(
     val shapes = LocalShapes.current
     val spacing = LocalSpacing.current
 
+    var showDialog by remember { mutableStateOf(false) }
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -185,7 +193,14 @@ fun BottomNavBar(
                 .offset(y = (-24).dp)
                 .align(Alignment.Center),
             icon = painterResource(R.drawable.plus),
-            onClick = {}
+            onClick = { showDialog = true }
+        )
+    }
+
+    if(showDialog) {
+        CreateMeetDialogView(
+            onDismiss = { showDialog = false },
+            onConfirm = { showDialog = false }
         )
     }
 }
