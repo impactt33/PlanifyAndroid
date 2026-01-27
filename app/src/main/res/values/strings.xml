@@ -1,3 +1,21 @@
 <resources>
-    <string name="app_name">Planify</string>
+    <string name="app_name" translatable="false">Planify</string>
+    <string name="btn_create">Создать</string>
+    <string name="btn_cancel">Отмена</string>
+    <string name="new_meet">Новая встреча</string>
+    <string name="create_new_meet">Создать новую встречу</string>
+    <string name="home">Главная</string>
+    <string name="chats">Чаты</string>
+    <string name="inbox">Почта</string>
+    <string name="profile">Профиль</string>
+    <string name="greeting">Привет, %s</string>
+    <string name="username">Пользователь</string>
+    <string name="mon">Пн</string>
+    <string name="tue">Вт</string>
+    <string name="wed">Ср</string>
+    <string name="thu">Чт</string>
+    <string name="fri">Пт</string>
+    <string name="sat">Сб</string>
+    <string name="sun">Вс</string>
+
 </resources>

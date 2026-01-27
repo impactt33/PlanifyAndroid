@@ -11,8 +11,8 @@ data class Icons(
 )
 
 fun defaultIcons(dimens: Dimens) = Icons(
-    small = dimens.iconSizeDp / 2,
-    medium = dimens.iconSizeDp,
-    mediumPlus = dimens.iconSizeDp * 1.2f,
-    large = dimens.iconSizeDp * 2
+    small = dimens.iconSize / 2,
+    medium = dimens.iconSize,
+    mediumPlus = dimens.iconSize * 1.2f,
+    large = dimens.iconSize * 1.5f
 )

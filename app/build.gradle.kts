@@ -42,6 +42,9 @@ android {
 }
 
 dependencies {
+    //noinspection UseTomlInstead
+    implementation(libs.androidx.compose.material3.window.size.class1)
+    implementation("androidx.compose.ui:ui-text-google-fonts:1.10.1")
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

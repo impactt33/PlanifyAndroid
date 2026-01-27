@@ -13,11 +13,11 @@ data class Shapes(
 
 fun shapes(dimens: Dimens) = Shapes(
     bottomNavBarShape = RoundedCornerShape(
-        topStart = dimens.cornerRadius.toFloat() * 2,
-        topEnd = dimens.cornerRadius.toFloat() * 2
+        topStart = dimens.cornerRadius * 2,
+        topEnd = dimens.cornerRadius * 2
     ),
     smallShape = RoundedCornerShape(dimens.cornerRadius / 2),
     mediumShape = RoundedCornerShape(dimens.cornerRadius),
-    largeShape = RoundedCornerShape(dimens.cornerRadius * 2)
+    largeShape = RoundedCornerShape(dimens.cornerRadius * 2.5f)
 )
 
