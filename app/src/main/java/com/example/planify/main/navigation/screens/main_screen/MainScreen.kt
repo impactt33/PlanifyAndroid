@@ -36,7 +36,9 @@ fun MainScreen() {
             state = router
         ) {
             screen(MainScreenRoute.Home) {
-                HomeView(scaffoldPadding = padding)
+                HomeView(
+                    scaffoldPadding = padding
+                )
             }
             screen(MainScreenRoute.Chat) {Screen()}
             screen(MainScreenRoute.Inbox) {Screen()}

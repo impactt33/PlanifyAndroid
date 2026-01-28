@@ -71,7 +71,7 @@ private fun BottomNavItem(
     val transition = updateTransition(targetState = selected, label = "navIndicator")
 
     val widthFraction by transition.animateFloat(label = "width") { isSelected ->
-        if (isSelected) 0.65f else 0f
+        if (isSelected) 0.55f else 0f
     }
 
     Column(
@@ -190,7 +190,7 @@ fun BottomNavBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(Locals.dimens.bottomBarHeight),
-        color = colors.primaryContainer
+        color = colors.surface
     ) {
        Row(
            modifier = Modifier

@@ -18,6 +18,7 @@ import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
+import kotlinx.serialization.Contextual
 
 @Composable
 fun TextOnSurface(text: String, modifier: Modifier = Modifier) {
@@ -35,12 +36,11 @@ fun TextOnSurface(text: String, modifier: Modifier = Modifier, selected: Boolean
     Text(
         modifier = modifier,
         text = text,
-        style = MaterialTheme.typography.bodySmall,
+        style = if (selected) MaterialTheme.typography.labelMedium.copy(
+            fontWeight = FontWeight.Bold
+        ) else MaterialTheme.typography.labelMedium,
         color = if (selected) MaterialTheme.colorScheme.primary
-            else MaterialTheme.colorScheme.onSurface,
-        fontSize = 12.sp,
-        fontWeight = if (selected) FontWeight.Bold
-            else FontWeight.Normal
+            else MaterialTheme.colorScheme.onSurface
     )
 }
 
@@ -49,7 +49,9 @@ fun PlaceholderText(text: String, modifier: Modifier = Modifier) {
     Text(
         modifier = modifier,
         text = text,
-        fontSize = 18.sp,
+        style = MaterialTheme.typography.titleMedium.copy(
+            fontWeight = FontWeight.Normal
+        ),
         color = Locals.extras.mutedForeground
     )
 }
@@ -59,7 +61,7 @@ fun TopBarTitleText(title: String, modifier: Modifier = Modifier) {
     Text(
         modifier = modifier,
         text = title,
-        style = MaterialTheme.typography.headlineLarge.copy(
+        style = MaterialTheme.typography.displayLarge.copy(
             brush = Locals.gradients.blue
         ),
     )
@@ -73,6 +75,19 @@ fun TopBarTitleTextSecondary(text: String, modifier: Modifier = Modifier) {
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
         fontSize = 20.sp
+    )
+}
+
+@Composable
+fun TopNavBarItemText(text: String, isSelected: Boolean,  modifier: Modifier = Modifier) {
+    val contentColor = if (isSelected) MaterialTheme.colorScheme.onSurface
+        else MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f)
+
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.titleSmall,
+        color = contentColor
     )
 }
 

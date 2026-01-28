@@ -20,5 +20,8 @@
     <string name="sun">Вс</string>
     <string name="n_waiting_answer">%s ожидает ответа</string>
     <string name="glass_search_placeholder">Найти коллегу...</string>
+    <string name="day_schedule">День</string>
+    <string name="week_schedule">Неделя</string>
+    <string name="month_schedule">Месяц</string>
 
 </resources>

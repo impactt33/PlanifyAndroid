@@ -5,8 +5,10 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
@@ -24,6 +26,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.planify.main.common.entities.getWeekDays
 import com.example.planify.main.common.themes.Locals
@@ -32,6 +35,7 @@ import kotlinx.coroutines.launch
 import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
+import kotlin.text.toLong
 
 
 @Composable
@@ -45,79 +49,36 @@ fun WeeklySchedule(
         pageCount = { 1000 }
     )
 
+    val monthName = LocalDate.now()
+        .plusWeeks((pagerState.currentPage - initialPage).toLong())
+        .month.getDisplayName(TextStyle.FULL, Locale.getDefault())
+        .replaceFirstChar { it.uppercase() }
+
     Column(
         modifier = Modifier
             .fillMaxWidth()
     ) {
-        val scope = rememberCoroutineScope()
-
-        val monthName = LocalDate.now()
-            .plusWeeks((pagerState.currentPage - initialPage).toLong())
-            .month.getDisplayName(TextStyle.FULL, Locale.getDefault())
-            .replaceFirstChar { it.uppercase() }
         Row(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Locals.spacing.m),
-            horizontalArrangement = Arrangement.Center
-        ) {
-            Text(
-                modifier = Modifier
-                    .padding(vertical = Locals.spacing.m),
-                text = monthName,
-                fontWeight = FontWeight.Bold,
-                fontSize = 36.sp
-            )
-            Spacer(modifier = Modifier.weight(1f))
-            IconButton(
-                onClick = {
-                    scope.launch { pagerState.animateScrollToPage(
-                        pagerState.currentPage - 1
-                    ) }
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowLeft,
-                    contentDescription = null
-                )
-            }
-
-            IconButton(
-                onClick = {
-                    scope.launch { pagerState.animateScrollToPage(
-                        pagerState.currentPage + 1
-                    ) }
-                }
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                    contentDescription = null
-                )
-            }
-        }
-
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(horizontal = Locals.spacing.m),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.Top
+                .fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(0.dp)
         ) {
             HorizontalPager(
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth(),
-                pageSpacing = Locals.spacing.s
             ) { page ->
                 val weekDays = remember(page) { getWeekDays(page - initialPage) }
 
                 Row(
                     modifier = Modifier
-                        .fillMaxSize(),
-                    horizontalArrangement = Arrangement.SpaceBetween
+                        .fillMaxWidth()
                 ) {
                     weekDays.forEach { day ->
                         DayCard(
+                            modifier = Modifier
+                                .weight(1f)
+                                .height(Locals.dimens.dayCardHeight),
                             day = day,
                             isSelected = day.date == selectedDate,
                             onClick = { onDateSelected(day.date) }

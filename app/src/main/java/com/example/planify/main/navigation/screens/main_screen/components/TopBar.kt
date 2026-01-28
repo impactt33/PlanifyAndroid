@@ -32,6 +32,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.PlatformTextStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.dp
@@ -130,10 +131,9 @@ fun SecondaryInfo(
     countUnread: Int
 ) {
     Row(
-        modifier = Modifier
-            .padding(horizontal = Locals.spacing.m),
+        modifier = Modifier,
         verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Start
+        horizontalArrangement = Arrangement.spacedBy(Locals.spacing.xxs)
     ) {
         TopBarTitleTextSecondary(
             modifier = Modifier,
@@ -170,7 +170,6 @@ fun GlassSearchBar(
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Start,
             modifier = Modifier.fillMaxSize()
         ) {
             Icon(
@@ -189,23 +188,30 @@ fun GlassSearchBar(
                 contentAlignment = Alignment.CenterStart
             ) {
                 BasicTextField(
+                    modifier = Modifier
+                        .fillMaxWidth(),
                     value = value,
                     onValueChange = onValueChange,
                     singleLine = true,
                     keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                     keyboardActions = KeyboardActions(onSearch = {}),
                     textStyle = TextStyle.Default.copy(
-                        fontSize = 18.sp
+                        fontSize = 18.sp,
+                        color = colors.onPrimaryContainer
                     ),
                     decorationBox = { innerTextField ->
                         Box(
+                            modifier = Modifier,
                             contentAlignment = Alignment.CenterStart
                         ) {
                             if (value.isEmpty()) {
-                                PlaceholderText(placeholder)
+                                PlaceholderText(
+                                    modifier = Modifier,
+                                    text = placeholder
+                                )
                             }
+                            innerTextField()
                         }
-                        innerTextField()
                     }
                 )
             }
@@ -228,7 +234,7 @@ fun TopBar(
         modifier = Modifier
             .fillMaxWidth()
             .height(Locals.dimens.topBarHeight),
-        color = colors.primaryContainer
+        color = colors.surface
     ) {
         Row(
             modifier = Modifier

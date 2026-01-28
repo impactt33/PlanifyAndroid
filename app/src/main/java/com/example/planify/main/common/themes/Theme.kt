@@ -8,7 +8,6 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
-import androidx.compose.runtime.ProvidableCompositionLocal
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
@@ -24,7 +23,6 @@ import com.example.planify.main.common.themes.shapes.Shapes
 import com.example.planify.main.common.themes.shapes.shapes
 import com.example.planify.main.common.themes.spacing.LocalSpacing
 import com.example.planify.main.common.themes.spacing.Spacing
-import com.example.ui.theme.AppTypography
 
 /* ---------------------------
    1) Raw colors (из theme.css)
