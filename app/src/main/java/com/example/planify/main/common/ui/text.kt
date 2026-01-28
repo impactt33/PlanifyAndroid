@@ -1,5 +1,6 @@
 package com.example.planify.main.common.ui
 
+import android.graphics.Color
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -8,6 +9,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.internal.illegalDecoyCallException
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -23,17 +25,54 @@ fun TextOnSurface(text: String, modifier: Modifier = Modifier) {
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.bodySmall,
-        color = MaterialTheme.colorScheme.onSurface
+        color = MaterialTheme.colorScheme.onSurface,
+        fontSize = 12.sp
     )
 }
 
 @Composable
-fun GreetingText(name: String, modifier: Modifier = Modifier) {
+fun TextOnSurface(text: String, modifier: Modifier = Modifier, selected: Boolean) {
     Text(
         modifier = modifier,
-        text = stringResource(R.string.greeting, name),
-        style = MaterialTheme.typography.headlineLarge,
-        color = MaterialTheme.colorScheme.onBackground,
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        color = if (selected) MaterialTheme.colorScheme.primary
+            else MaterialTheme.colorScheme.onSurface,
+        fontSize = 12.sp,
+        fontWeight = if (selected) FontWeight.Bold
+            else FontWeight.Normal
+    )
+}
+
+@Composable
+fun PlaceholderText(text: String, modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = text,
+        fontSize = 18.sp,
+        color = Locals.extras.mutedForeground
+    )
+}
+
+@Composable
+fun TopBarTitleText(title: String, modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = title,
+        style = MaterialTheme.typography.headlineLarge.copy(
+            brush = Locals.gradients.blue
+        ),
+    )
+}
+
+@Composable
+fun TopBarTitleTextSecondary(text: String, modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = text,
+        style = MaterialTheme.typography.bodySmall,
+        color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
+        fontSize = 20.sp
     )
 }
 

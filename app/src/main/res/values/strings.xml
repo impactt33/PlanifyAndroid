@@ -10,6 +10,7 @@
     <string name="profile">Профиль</string>
     <string name="greeting">Привет, %s</string>
     <string name="username">Пользователь</string>
+    <string name="schedule">Расписание</string>
     <string name="mon">Пн</string>
     <string name="tue">Вт</string>
     <string name="wed">Ср</string>
@@ -17,5 +18,7 @@
     <string name="fri">Пт</string>
     <string name="sat">Сб</string>
     <string name="sun">Вс</string>
+    <string name="n_waiting_answer">%s ожидает ответа</string>
+    <string name="glass_search_placeholder">Найти коллегу...</string>
 
 </resources>

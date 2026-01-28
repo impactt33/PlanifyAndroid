@@ -8,14 +8,22 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 
 @Composable
-
 fun Modifier.objectClickable(onClick: () -> Unit) =
     this.clickable(
         indication = ripple(),
+        interactionSource = remember { MutableInteractionSource() },
+        onClick = onClick
+    )
+
+@Composable
+fun Modifier.objectClickableNoAnimation(onClick: () -> Unit) =
+    this.clickable(
+        indication = null,
         interactionSource = remember { MutableInteractionSource() },
         onClick = onClick
     )
@@ -27,6 +35,17 @@ fun Modifier.withShapeBackground(
     this
         .background(
             color = color,
+            shape = shape
+        )
+        .clip(shape = shape)
+
+fun Modifier.withShapeBackground(
+    gradient: Brush,
+    shape: Shape
+) =
+    this
+        .background(
+            brush = gradient,
             shape = shape
         )
         .clip(shape = shape)

@@ -16,6 +16,7 @@ import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
 import com.example.planify.main.features.home.ui.home_view.HomeView
 import com.example.planify.main.navigation.screens.main_screen.components.BottomNavBar
+import com.example.planify.main.navigation.screens.main_screen.components.TopBar
 
 @Composable
 fun MainScreen() {
@@ -26,6 +27,7 @@ fun MainScreen() {
     val colors = MaterialTheme.colorScheme
 
     Scaffold(
+        topBar = { TopBar(pagerRouter = router) },
         bottomBar = { BottomNavBar(pagerRouter = router) },
         containerColor = colors.background
     ) { padding ->
