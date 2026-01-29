@@ -1,4 +1,4 @@
-package com.example.planify.main.features.home.ui.home_view
+package com.example.planify.main.navigation.screens.main_screen.views.home.ui.home_view
 
 import com.example.planify.core.ui.pager_router_screen.PagerRoute
 

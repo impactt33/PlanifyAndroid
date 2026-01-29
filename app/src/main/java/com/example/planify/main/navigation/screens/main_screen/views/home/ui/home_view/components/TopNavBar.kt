@@ -1,16 +1,13 @@
-package com.example.planify.main.features.home.ui.home_view.components
+package com.example.planify.main.navigation.screens.main_screen.views.home.ui.home_view.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -18,17 +15,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
 import com.example.planify.R
-import com.example.planify.core.ui.pager_router_screen.PagerRoute
 import com.example.planify.core.ui.pager_router_screen.PagerRouterNavigator
 import com.example.planify.main.common.themes.Locals
-import com.example.planify.main.common.themes.shapes.shapes
 import com.example.planify.main.common.ui.TopNavBarItemText
 import com.example.planify.main.common.ui.objectClickable
 import com.example.planify.main.common.ui.withShapeBackground
-import com.example.planify.main.features.home.ui.home_view.HomeViewRoute
+import com.example.planify.main.navigation.screens.main_screen.views.home.ui.home_view.HomeViewRoute
 
 @Composable
 fun TopNavBarItem(
@@ -81,7 +75,7 @@ fun TopNavBarItem(
 
 @Composable
 fun TopNavBar(
-    pagerRouter: PagerRouterNavigator,
+    pagerRouter: PagerRouterNavigator
 ) {
     Column(
         modifier = Modifier

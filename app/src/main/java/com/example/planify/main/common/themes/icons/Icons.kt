@@ -4,7 +4,7 @@ import androidx.compose.ui.unit.Dp
 import com.example.planify.main.common.themes.dimens.Dimens
 
 data class Icons(
-    val xsmall: Dp,
+    val extraSmall: Dp,
     val small: Dp,
     val smallPlus: Dp,
     val medium: Dp,
@@ -14,11 +14,11 @@ data class Icons(
 )
 
 fun defaultIcons(dimens: Dimens) = Icons(
-    xsmall = dimens.iconSize / 2.5f,
+    extraSmall = dimens.iconSize / 3,
     small = dimens.iconSize / 2,
-    smallPlus = dimens.iconSize / 1.6f,
-    medium = dimens.iconSize,
-    mediumPlus = dimens.iconSize * 1.2f,
-    large = dimens.iconSize * 1.5f,
-    largePlus = dimens.iconSize * 1.6f
+    smallPlus = dimens.iconSize,
+    medium = dimens.iconSize * 2,
+    mediumPlus = dimens.iconSize * 3,
+    large = dimens.iconSize * 4,
+    largePlus = dimens.iconSize * 5
 )

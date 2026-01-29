@@ -1,6 +1,5 @@
 package com.example.planify.main.navigation.screens.main_screen
 
-import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
@@ -8,13 +7,15 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
-import com.example.planify.main.features.home.ui.home_view.HomeView
+import com.example.planify.main.navigation.screens.main_screen.views.home.ui.home_view.HomeView
 import com.example.planify.main.navigation.screens.main_screen.components.BottomNavBar
 import com.example.planify.main.navigation.screens.main_screen.components.TopBar
 
@@ -26,8 +27,13 @@ fun MainScreen() {
     )
     val colors = MaterialTheme.colorScheme
 
+    var monthTitle by remember { mutableStateOf("") }
+
     Scaffold(
-        topBar = { TopBar(pagerRouter = router) },
+        topBar = { TopBar(
+            pagerRouter = router,
+            monthTitle = monthTitle
+            ) },
         bottomBar = { BottomNavBar(pagerRouter = router) },
         containerColor = colors.background
     ) { padding ->
@@ -37,7 +43,8 @@ fun MainScreen() {
         ) {
             screen(MainScreenRoute.Home) {
                 HomeView(
-                    scaffoldPadding = padding
+                    scaffoldPadding = padding,
+                    setMonthTitle = { monthTitle = it }
                 )
             }
             screen(MainScreenRoute.Chat) {Screen()}

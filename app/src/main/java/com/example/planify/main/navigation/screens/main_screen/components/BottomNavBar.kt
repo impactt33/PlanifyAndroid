@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -100,7 +102,7 @@ private fun BottomNavItem(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
-                    modifier = Modifier.size(Locals.icons.small),
+                    modifier = Modifier.size(Locals.icons.smallPlus),
                     imageVector = if (selected) iconSelected
                         else iconNormal,
                     contentDescription = null,
@@ -142,7 +144,7 @@ fun FloatingActionItem(
 ) {
     val colors = MaterialTheme.colorScheme
     val gradient = Locals.gradients
-    val shape = Locals.shapes.largeShape
+    val shape = CircleShape
 
     Box(
         modifier = modifier
@@ -165,11 +167,11 @@ fun FloatingActionItem(
                         gradient = gradient.blue,
                         shape = shape
                     )
-                    .size(Locals.icons.largePlus),
+                    .size(Locals.dimens.floatingActionButtonRadius),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
-                    modifier = Modifier.size(Locals.icons.smallPlus),
+                    modifier = Modifier.size(Locals.icons.medium),
                     imageVector = icon,
                     contentDescription = null,
                     tint = colors.onPrimary

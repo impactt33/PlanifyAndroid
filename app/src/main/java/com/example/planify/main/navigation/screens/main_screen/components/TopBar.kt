@@ -79,7 +79,7 @@ fun NotificationIcon(
         ) {
             Box(
                 modifier = Modifier
-                    .size(Locals.icons.mediumPlus)
+                    .size(Locals.icons.medium)
                     .objectClickable(
                         onClick = onClick
                     )
@@ -114,7 +114,7 @@ fun SecondaryInfo(
     ) {
         Icon(
             modifier = Modifier
-                .size(Locals.icons.xsmall),
+                .size(Locals.icons.smallPlus),
             imageVector = PhosphorIcons.Regular.CalendarDots,
             contentDescription = null,
             tint = colors.onPrimaryContainer
@@ -177,7 +177,7 @@ fun GlassSearchBar(
                 contentDescription = null,
                 tint = colors.onPrimaryContainer.copy(alpha = 0.65f),
                 modifier = Modifier
-                    .size(Locals.icons.small),
+                    .size(Locals.icons.smallPlus),
             )
 
             Spacer(modifier = Modifier.width(Locals.spacing.s))
@@ -221,11 +221,11 @@ fun GlassSearchBar(
 
 @Composable
 fun TopBar(
-    pagerRouter: PagerRouterNavigator
+    pagerRouter: PagerRouterNavigator,
+    monthTitle: String
 ) {
     val colors = MaterialTheme.colorScheme
 
-    val month = "Январь"
     val countUnread = 4
 
     var query by remember { mutableStateOf("") }
@@ -262,7 +262,7 @@ fun TopBar(
                 )
 
                 when(pagerRouter.currentRoute.key) {
-                    MainScreenRoute.Home.key -> SecondaryInfo(month)
+                    MainScreenRoute.Home.key -> SecondaryInfo(monthTitle)
                     MainScreenRoute.Inbox.key -> SecondaryInfo(countUnread)
                     MainScreenRoute.Chat.key -> GlassSearchBar(
                         value = query,

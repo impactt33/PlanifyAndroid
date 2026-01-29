@@ -1,4 +1,6 @@
-package com.example.planify.main.features.home.ui.home_view.components
+@file:Suppress("DEPRECATION")
+
+package com.example.planify.main.navigation.screens.main_screen.views.home.ui.home_view.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -21,6 +23,7 @@ import androidx.compose.ui.unit.sp
 import com.example.planify.main.common.entities.CalendarDay
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.objectClickable
+import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
 
@@ -33,7 +36,6 @@ fun DayCard(
 ) {
     val colors = MaterialTheme.colorScheme
     val extras = Locals.extras
-    val typo = MaterialTheme.typography
 
     val backgroundColor = if (isSelected)
         extras.secondary else colors.background
@@ -57,7 +59,7 @@ fun DayCard(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = day.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale.getDefault()),
+            text = day.date.dayOfWeek.getDisplayName(TextStyle.SHORT, Locale("ru")),
             style = MaterialTheme.typography.labelMedium,
             color = colors.onSurface
         )
