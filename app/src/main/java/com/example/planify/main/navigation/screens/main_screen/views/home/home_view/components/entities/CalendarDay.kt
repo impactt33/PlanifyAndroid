@@ -1,10 +1,8 @@
-package com.example.planify.main.common.entities
+package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities
 
 import java.time.LocalDate
 import java.time.DayOfWeek
-import java.time.format.TextStyle
 import java.time.temporal.TemporalAdjusters
-import java.util.Locale
 
 data class CalendarDay(
     val date: LocalDate,

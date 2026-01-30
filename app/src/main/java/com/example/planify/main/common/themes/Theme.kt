@@ -451,16 +451,16 @@ fun PlanifyTheme(
 
     val dimens = when (windowSize) {
         WindowWidthSizeClass.Compact -> Dimens(
-            iconSize = 24.dp,
+            iconSize = 12.dp,
             bottomBarHeight = 88.dp
         )
 
         WindowWidthSizeClass.Medium -> Dimens(
-            iconSize = 48.dp,
+            iconSize = 24.dp,
             bottomBarHeight = 96.dp
         )
         else -> Dimens(
-            iconSize = 64.dp,
+            iconSize = 36.dp,
             bottomBarHeight = 112.dp
         )
     }

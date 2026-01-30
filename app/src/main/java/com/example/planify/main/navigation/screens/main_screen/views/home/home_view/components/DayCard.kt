@@ -1,29 +1,24 @@
 @file:Suppress("DEPRECATION")
 
-package com.example.planify.main.navigation.screens.main_screen.views.home.ui.home_view.components
+package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.planify.main.common.entities.CalendarDay
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.CalendarDay
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.objectClickable
-import java.time.LocalDate
 import java.time.format.TextStyle
 import java.util.Locale
 

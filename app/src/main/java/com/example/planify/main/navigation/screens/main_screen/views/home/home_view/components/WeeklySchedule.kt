@@ -1,4 +1,4 @@
-package com.example.planify.main.navigation.screens.main_screen.views.home.ui.home_view.components
+package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -12,11 +12,9 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import com.example.planify.main.common.entities.getWeekDays
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.getWeekDays
 import com.example.planify.main.common.themes.Locals
 import java.time.LocalDate
-import java.time.format.TextStyle
-import java.util.Locale
 
 
 @Composable

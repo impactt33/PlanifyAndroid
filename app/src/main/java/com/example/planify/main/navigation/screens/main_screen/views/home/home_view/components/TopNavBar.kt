@@ -1,4 +1,4 @@
-package com.example.planify.main.navigation.screens.main_screen.views.home.ui.home_view.components
+package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -22,7 +22,7 @@ import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.TopNavBarItemText
 import com.example.planify.main.common.ui.objectClickable
 import com.example.planify.main.common.ui.withShapeBackground
-import com.example.planify.main.navigation.screens.main_screen.views.home.ui.home_view.HomeViewRoute
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewRoute
 
 @Composable
 fun TopNavBarItem(
@@ -39,7 +39,7 @@ fun TopNavBarItem(
         else Color.Transparent
 
     val backgroundColor = if (isSelected)
-        extras.secondary else colors.surface
+        extras.secondary else colors.onPrimary
 
     Column(
         modifier = modifier

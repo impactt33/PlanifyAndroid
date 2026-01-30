@@ -15,7 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
-import com.example.planify.main.navigation.screens.main_screen.views.home.ui.home_view.HomeView
+import com.example.planify.main.features.meeting.domain.services.MeetingService
+import com.example.planify.main.features.meeting.domain.services_impl.MeetingServiceImplST
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.HomeView
 import com.example.planify.main.navigation.screens.main_screen.components.BottomNavBar
 import com.example.planify.main.navigation.screens.main_screen.components.TopBar
 
@@ -44,7 +46,8 @@ fun MainScreen() {
             screen(MainScreenRoute.Home) {
                 HomeView(
                     scaffoldPadding = padding,
-                    setMonthTitle = { monthTitle = it }
+                    setMonthTitle = { monthTitle = it },
+                    meetingService = MeetingServiceImplST.get()
                 )
             }
             screen(MainScreenRoute.Chat) {Screen()}
