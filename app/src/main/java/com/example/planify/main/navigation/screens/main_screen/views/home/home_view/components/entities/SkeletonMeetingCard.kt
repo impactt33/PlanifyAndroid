@@ -25,39 +25,28 @@ fun SkeletonMeetingCard(
     val base = Locals.extras.foreground.copy(alpha = 0.04f)
     val highlight = Locals.extras.foreground.copy(alpha = 0.10f)
 
-    LazyColumn(
-        modifier = modifier
-            .fillMaxSize()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(Locals.dimens.meetingCardHeight)
             .padding(
-                top = Locals.spacing.xs
-            ),
-        verticalArrangement = Arrangement.spacedBy(Locals.spacing.xs)
+                horizontal = Locals.spacing.m
+            )
+            .clip(shape)
+            .shimmer(
+                shape = shape,
+                baseColor = base,
+                highlightColor = highlight
+            )
     ) {
-        items(3) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(Locals.dimens.meetingCardHeight)
-                    .padding(
-                        horizontal = Locals.spacing.m
-                    )
-                    .clip(shape)
-                    .shimmer(
-                        shape = shape,
-                        baseColor = base,
-                        highlightColor = highlight
-                    )
-            ) {
-                Box(
-                    modifier = modifier
-                        .fillMaxSize()
-                        .shimmer(
-                            shape = shape,
-                            baseColor = base,
-                            highlightColor = highlight
-                        )
+        Box(
+            modifier = modifier
+                .fillMaxSize()
+                .shimmer(
+                    shape = shape,
+                    baseColor = base,
+                    highlightColor = highlight
                 )
-            }
-        }
+        )
     }
 }

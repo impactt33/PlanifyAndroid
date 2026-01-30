@@ -6,31 +6,37 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.pager.HorizontalPager
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.getWeekDays
 import com.example.planify.main.common.themes.Locals
+import kotlinx.coroutines.flow.distinctUntilChanged
 import java.time.LocalDate
 
 
 @Composable
 fun WeeklySchedule(
     selectedDate: LocalDate,
+    pagerState: PagerState,
+    initialPage: Int,
     onDateSelected: (LocalDate) -> Unit,
     onWeekSynced: (Int) -> Unit
 ) {
-    val initialPage = 500
-    val pagerState = rememberPagerState(
-        initialPage = initialPage,
-        pageCount = { 1000 }
-    )
+    val scope = rememberCoroutineScope()
 
-    LaunchedEffect(pagerState.currentPage) {
-        onWeekSynced(pagerState.currentPage - initialPage)
+    LaunchedEffect(pagerState) {
+        snapshotFlow { pagerState.currentPage }
+            .distinctUntilChanged()
+            .collect { page ->
+                onWeekSynced(page - initialPage)
+            }
     }
 
     Column(

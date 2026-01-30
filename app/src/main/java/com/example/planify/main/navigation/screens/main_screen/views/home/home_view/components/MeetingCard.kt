@@ -86,7 +86,7 @@ fun MeetingCard(
                 Text(
                     text = meeting.description,
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        fontSize = 14.sp,
+                        fontSize = 10.sp,
                         color = Locals.extras.mutedForeground
                     )
                 )

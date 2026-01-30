@@ -21,5 +21,6 @@ data class Dimens(
     val blur: Dp = 18.dp,
     val topNavBarHeight: Dp = 48.dp,
     val floatingActionButtonRadius: Dp = 72.dp,
-    val meetingCardHeight: Dp = 188.dp
+    val meetingCardHeight: Dp = 188.dp,
+    val dateScrollBarHeight: Dp = 60.dp
 )
