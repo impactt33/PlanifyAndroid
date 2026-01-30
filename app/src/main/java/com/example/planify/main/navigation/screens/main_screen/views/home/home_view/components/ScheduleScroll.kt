@@ -11,6 +11,7 @@ import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
 import kotlinx.coroutines.flow.distinctUntilChanged
 import java.time.LocalDate
+import kotlin.math.abs
 
 @Composable
 fun ScheduleScroll(

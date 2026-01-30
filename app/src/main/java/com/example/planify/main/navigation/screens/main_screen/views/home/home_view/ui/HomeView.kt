@@ -35,15 +35,6 @@ private fun HomeView(
 
     val uiState by viewModel.uiState.collectAsState()
 
-    val currentWeekOffset by viewModel.currentWeekOffset.collectAsState()
-
-    LaunchedEffect(currentWeekOffset) {
-        val currentMonthTitle = viewModel.getMonthTitle(
-            currentWeekOffset
-        )
-        setMonthTitle(currentMonthTitle)
-    }
-
     val selectedDate by viewModel.selectedDate.collectAsState()
 
     Scaffold(
@@ -68,9 +59,9 @@ private fun HomeView(
                 selectedDate = selectedDate,
                 uiState = uiState,
                 onDateSelected = { viewModel.onDateSelected(it) },
-                onWeekSynced = { viewModel.onWeekChanged(it) },
                 getMeetingsInfo = { viewModel.getMeetingsInfo() },
-                getMeetingsInfoByDate = { viewModel.getMeetingsInfoByDate(it) }
+                getMeetingsInfoByDate = { viewModel.getMeetingsInfoByDate(it) },
+                setMonthTitle = { setMonthTitle(it) }
             ) }
             screen(HomeViewRoute.Month) { Screen() }
         }

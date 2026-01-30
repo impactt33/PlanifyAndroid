@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -13,13 +15,42 @@ import androidx.compose.runtime.internal.illegalDecoyCallException
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.sp
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.BeerStein
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import kotlinx.serialization.Contextual
 
+
+@Composable
+fun TextEmptyMeetings() {
+    Column(
+        modifier = Modifier
+            .fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(Locals.spacing.s),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = stringResource(R.string.no_meetings_today),
+            style = MaterialTheme.typography.titleLarge.copy(
+                fontWeight = FontWeight.Normal
+            ),
+            color = Locals.extras.mutedForeground.copy(alpha = 0.75f),
+        )
+        Icon(
+            modifier = Modifier
+                .size(Locals.icons.mediumPlus),
+            imageVector = PhosphorIcons.Regular.BeerStein,
+            contentDescription = null,
+            tint = Locals.extras.mutedForeground.copy(alpha = 0.75f)
+        )
+    }
+}
 @Composable
 fun TextOnSurface(text: String, modifier: Modifier = Modifier) {
     Text(

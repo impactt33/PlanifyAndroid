@@ -26,8 +26,8 @@ fun WeeklySchedule(
     selectedDate: LocalDate,
     pagerState: PagerState,
     initialPage: Int,
+    setMonthTitle: (Int) -> Unit,
     onDateSelected: (LocalDate) -> Unit,
-    onWeekSynced: (Int) -> Unit
 ) {
     val scope = rememberCoroutineScope()
 
@@ -35,7 +35,7 @@ fun WeeklySchedule(
         snapshotFlow { pagerState.currentPage }
             .distinctUntilChanged()
             .collect { page ->
-                onWeekSynced(page - initialPage)
+                setMonthTitle(page - initialPage)
             }
     }
 

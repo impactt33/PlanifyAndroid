@@ -28,8 +28,6 @@ class HomeViewModel(
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate.asStateFlow()
 
-    private val _currentWeekOffset = MutableStateFlow(0)
-    val currentWeekOffset: StateFlow<Int> = _currentWeekOffset.asStateFlow()
     private val monthFormatter = DateTimeFormatter.ofPattern(
         "LLLL yyyy", Locale("ru")
     )
@@ -54,10 +52,6 @@ class HomeViewModel(
         } else {
             emptyList()
         }
-    }
-
-    fun onWeekChanged(offset: Int) {
-        _currentWeekOffset.value = offset
     }
 
     fun onDateSelected(date: LocalDate) {
