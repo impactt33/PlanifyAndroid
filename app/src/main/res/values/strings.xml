@@ -24,5 +24,7 @@
     <string name="week_schedule">Неделя</string>
     <string name="month_schedule">Месяц</string>
     <string name="no_meetings_today">На сегодня у вас не назначено встреч</string>
+    <string name="free">Свободно</string>
+
 
 </resources>

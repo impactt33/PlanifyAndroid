@@ -50,7 +50,7 @@ fun MeetingCard(
     val meeting = meetingInfo.meeting
 
     Box(
-        modifier = Modifier
+        modifier = modifier
             .fillMaxWidth()
             .height(Locals.dimens.meetingCardHeight)
             .padding(horizontal = Locals.spacing.m)
@@ -62,7 +62,7 @@ fun MeetingCard(
                 .fillMaxSize()
         ) {
             Column(
-                modifier = modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .withShapeBackground(
                         color = glass.bgStrong,

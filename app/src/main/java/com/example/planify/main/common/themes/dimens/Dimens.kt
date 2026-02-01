@@ -1,5 +1,6 @@
 package com.example.planify.main.common.themes.dimens
 
+import android.icu.util.Calendar
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
@@ -22,5 +23,7 @@ data class Dimens(
     val topNavBarHeight: Dp = 48.dp,
     val floatingActionButtonRadius: Dp = 72.dp,
     val meetingCardHeight: Dp = 188.dp,
-    val dateScrollBarHeight: Dp = 60.dp
+    val dateScrollBarHeight: Dp = 60.dp,
+    val emptyTimeSlot: Dp = 60.dp,
+    val calendarCellSize: Dp = 56.dp
 )

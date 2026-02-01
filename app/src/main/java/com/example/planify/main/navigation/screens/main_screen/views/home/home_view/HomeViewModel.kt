@@ -57,13 +57,4 @@ class HomeViewModel(
     fun onDateSelected(date: LocalDate) {
         _selectedDate.value = date
     }
-
-    fun getMonthTitle(offset: Int): String {
-        val monthTitle = LocalDate.now()
-            .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
-            .plusWeeks(offset.toLong())
-
-        return monthTitle.format(monthFormatter)
-            .replaceFirstChar { it.uppercase() }
-    }
 }

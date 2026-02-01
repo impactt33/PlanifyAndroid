@@ -6,20 +6,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberUpdatedState
-import androidx.compose.runtime.setValue
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -31,11 +26,10 @@ import com.example.planify.main.navigation.screens.main_screen.views.home.home_v
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.MeetingCard
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.WeeklySchedule
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.SkeletonMeetingCard
-import kotlinx.coroutines.flow.distinctUntilChanged
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
-import java.time.format.TextStyle
+import java.time.format.DateTimeFormatter.ofPattern
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
@@ -44,8 +38,9 @@ import java.util.Locale
 fun HomeWeekView(
     selectedDate: LocalDate,
     uiState: UIState,
+    scrollPagerState: PagerState,
+    initialPageBottom: Int,
     onDateSelected: (LocalDate) -> Unit,
-    getMeetingsInfo: () -> Unit,
     setMonthTitle: (String) -> Unit,
     getMeetingsInfoByDate: (LocalDate) -> List<MeetingInfo>
 ) {
@@ -57,24 +52,13 @@ fun HomeWeekView(
         pageCount = { 1000 }
     )
 
-    val initialPageBottom = 5000
-    val pagerStateBottom = rememberPagerState(
-        initialPage = initialPageBottom,
-        pageCount = { 10000 }
-    )
-
-    fun dateForPage(page: Int): LocalDate = LocalDate.now().plusDays(
-        (page - initialPageBottom).toLong()
-    )
-    fun pageForDate(date: LocalDate): Int =
-        ChronoUnit.DAYS.between(LocalDate.now(), date)
-            .toInt() + initialPageBottom
-
     fun pageForWeek(date: LocalDate): Int =
         ChronoUnit.WEEKS.between(LocalDate.now().
             with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)),
             date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
             .toInt()
+
+    val meetings = getMeetingsInfoByDate(selectedDate)
 
     LaunchedEffect(selectedDate) {
         snapshotFlow { selectedDate }
@@ -84,15 +68,11 @@ fun HomeWeekView(
             }
     }
 
-    LaunchedEffect(Unit) {
-        getMeetingsInfo()
-    }
-
     @Suppress("DEPRECATION")
     fun getMonthTitle(offset: Int) = LocalDate.now()
             .with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY))
             .plusWeeks(offset.toLong())
-            .format(DateTimeFormatter.ofPattern("LLLL yyyy", Locale("ru")))
+            .format(ofPattern("LLLL yyyy", Locale("ru")))
             .replaceFirstChar { it.uppercase() }
 
     Column(
@@ -113,17 +93,23 @@ fun HomeWeekView(
             }
         )
 
+        fun dateForPage(page: Int): LocalDate = LocalDate.now().plusDays(
+            (page - initialPageBottom).toLong()
+        )
+
         ScheduleScroll(
             modifier = Modifier
                 .weight(1f),
             onDateSelected = onDateSelected,
             selectedDate = selectedDate,
-            pagerState = pagerStateBottom,
-            dateForPage = { dateForPage(it) },
-            pageForDate = { pageForDate(it) }
+            pagerState = scrollPagerState,
+            initialPage = initialPageBottom
         ) { page ->
-            val date = dateForPage(page)
-            val meetings = getMeetingsInfoByDate(date)
+
+//            val meetings = remember(selectedDate, uiState) {
+//                if (uiState is UIState.ContentData) getMeetingsInfoByDate(dateForPage(page))
+//                    else emptyList()
+//            }
 
             LazyColumn(
                 modifier = Modifier

@@ -100,7 +100,7 @@ object HardcodedWeekData {
                     title = "Планирование недели",
                     description = "Совещание по планированию задач на неделю",
                     timeStart = LocalDateTime.of(monday, LocalTime.of(10, 0)),
-                    duration = Duration.ofMinutes(60),
+                    duration = Duration.ofHours(2),
                     location = "Конференц-зал A"
                 ),
                 invites = listOf(
@@ -115,8 +115,8 @@ object HardcodedWeekData {
                 meeting = Meeting(
                     title = "Дизайн-ревью",
                     description = "Обсуждение новых макетов интерфейса",
-                    timeStart = LocalDateTime.of(monday, LocalTime.of(15, 30)),
-                    duration = Duration.ofMinutes(45),
+                    timeStart = LocalDateTime.of(monday, LocalTime.of(15, 0)),
+                    duration = Duration.ofHours(2),
                     location = "Переговорная B"
                 ),
                 invites = listOf(
@@ -135,8 +135,8 @@ object HardcodedWeekData {
                 meeting = Meeting(
                     title = "Ежедневный стендап",
                     description = "Короткое обсуждение текущих задач",
-                    timeStart = LocalDateTime.of(tuesday, LocalTime.of(9, 30)),
-                    duration = Duration.ofMinutes(30),
+                    timeStart = LocalDateTime.of(tuesday, LocalTime.of(9, 0)),
+                    duration = Duration.ofHours(1),
                     location = "Zoom"
                 ),
                 invites = listOf(
@@ -156,8 +156,8 @@ object HardcodedWeekData {
                 meeting = Meeting(
                     title = "Ежедневный стендап",
                     description = "Короткое обсуждение текущих задач",
-                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(9, 30)),
-                    duration = Duration.ofMinutes(30),
+                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(9, 0)),
+                    duration = Duration.ofHours(2),
                     location = "Zoom"
                 ),
                 invites = listOf(
@@ -172,8 +172,8 @@ object HardcodedWeekData {
                 meeting = Meeting(
                     title = "Дизайн-ревью",
                     description = "Обсуждение новых макетов интерфейса",
-                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(15, 30)),
-                    duration = Duration.ofMinutes(45),
+                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(15, 0)),
+                    duration = Duration.ofHours(2),
                     location = "Переговорная B"
                 ),
                 invites = listOf(
@@ -187,8 +187,8 @@ object HardcodedWeekData {
                 meeting = Meeting(
                     title = "Демо продукта",
                     description = "Демонстрация новых функций для команды",
-                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(14, 0)),
-                    duration = Duration.ofMinutes(60),
+                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(18, 0)),
+                    duration = Duration.ofHours(1),
                     location = "Главный зал"
                 ),
                 invites = listOf(
@@ -205,8 +205,8 @@ object HardcodedWeekData {
                 meeting = Meeting(
                     title = "Код-ревью",
                     description = "Совместный разбор новой функциональности",
-                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(16, 30)),
-                    duration = Duration.ofMinutes(45),
+                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(20, 0)),
+                    duration = Duration.ofHours(2),
                     location = "Переговорная A"
                 ),
                 invites = listOf(
@@ -226,7 +226,7 @@ object HardcodedWeekData {
                     title = "Встреча с клиентом",
                     description = "Обсуждение требований и обратной связи",
                     timeStart = LocalDateTime.of(thursday, LocalTime.of(11, 0)),
-                    duration = Duration.ofMinutes(90),
+                    duration = Duration.ofHours(2),
                     location = "Google Meet"
                 ),
                 invites = listOf(
@@ -246,7 +246,7 @@ object HardcodedWeekData {
                     title = "Ретроспектива спринта",
                     description = "Подведение итогов спринта и обсуждение улучшений",
                     timeStart = LocalDateTime.of(friday, LocalTime.of(15, 0)),
-                    duration = Duration.ofMinutes(60),
+                    duration = Duration.ofHours(3),
                     location = "Конференц-зал A"
                 ),
                 invites = listOf(
@@ -270,7 +270,7 @@ object HardcodedWeekData {
                     title = "Мозговой штурм",
                     description = "Генерация идей для нового проекта",
                     timeStart = LocalDateTime.of(saturday, LocalTime.of(12, 0)),
-                    duration = Duration.ofMinutes(120),
+                    duration = Duration.ofHours(2),
                     location = "Креативное пространство"
                 ),
                 invites = listOf(
