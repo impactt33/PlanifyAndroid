@@ -90,7 +90,9 @@ private fun HomeView(
             screen(HomeViewRoute.Month) {
                 HomeMonthView(
                     selectedDate = selectedDate,
-                    pagerState = calendarPagerState
+                    pagerState = calendarPagerState,
+                    initialPage = initialCalendarPage,
+                    onDateSelected = { viewModel.onDateSelected(it) }
                 )
             }
         }

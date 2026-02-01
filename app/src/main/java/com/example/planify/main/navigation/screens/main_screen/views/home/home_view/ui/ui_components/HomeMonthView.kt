@@ -12,11 +12,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -24,8 +26,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.planify.main.common.themes.Locals
+import com.example.planify.main.common.ui.objectClickable
 import com.example.planify.main.common.ui.withShapeBackground
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.ScheduleScroll
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.CalendarDay
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.MonthScroll
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.ScrollableDateRow
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.getMonthDays
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ofPattern
@@ -34,8 +41,11 @@ import java.util.Locale
 
 @Composable
 fun HomeMonthView(
+    onDateSelected: (LocalDate) -> Unit,
     selectedDate: LocalDate,
-    pagerState: PagerState
+    pagerState: PagerState,
+    initialPage: Int,
+
 ) {
     val scope = rememberCoroutineScope()
 
@@ -68,26 +78,35 @@ fun HomeMonthView(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 WeekDaysRow()
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(7)
-                ) {
-                    items(30) {
-                        CalendarCell(
-                            date = LocalDate.now(),
-                            isSelected = false
-                        )
+                MonthScroll(
+                    onDateSelected = { onDateSelected(it) },
+                    selectedDate = selectedDate,
+                    initialPage = initialPage,
+                    pagerState = pagerState
+                ) { page ->
+                    val monthDays = remember(page) { getMonthDays(page - initialPage) }
+
+                    LazyVerticalGrid(
+                        columns = GridCells.Fixed(7)
+                    ) {
+                        items(monthDays) { day ->
+                            CalendarCell(
+                                date = day,
+                                onClick = { onDateSelected(day.date) }
+                            )
+                        }
                     }
+                    Spacer(modifier = Modifier.height(Locals.spacing.xxl))
+                    Box(
+                        modifier = Modifier
+                            .withShapeBackground(
+                                color = Locals.extras.border,
+                                shape = Locals.shapes.smallShape
+                            )
+                            .fillMaxWidth()
+                            .height(1.dp)
+                    )
                 }
-                Spacer(modifier = Modifier.height(Locals.spacing.xxl))
-                Box(
-                    modifier = Modifier
-                        .withShapeBackground(
-                            color = Locals.extras.border,
-                            shape = Locals.shapes.smallShape
-                        )
-                        .fillMaxWidth()
-                        .height(1.dp)
-                )
             }
         }
     }
@@ -130,8 +149,9 @@ fun WeekDaysRow() {
 
 @Composable
 fun CalendarCell(
-    date: LocalDate,
-    isSelected: Boolean
+    date: CalendarDay,
+    isSelected: Boolean = false,
+    onClick: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
 
@@ -147,11 +167,14 @@ fun CalendarCell(
                 shape = Locals.shapes.mediumShape,
                 color = Locals.extras.border,
                 width = 1.dp
+            )
+            .objectClickable(
+                onClick = onClick
             ),
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = date.dayOfMonth.toString(),
+            text = date.date.dayOfMonth.toString(),
             style = MaterialTheme.typography.bodyMedium,
             color = if (isSelected) colors.onPrimary
                 else Color.Black
