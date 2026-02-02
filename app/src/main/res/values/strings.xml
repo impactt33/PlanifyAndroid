@@ -25,6 +25,11 @@
     <string name="month_schedule">Месяц</string>
     <string name="no_meetings_today">На сегодня у вас не назначено встреч</string>
     <string name="free">Свободно</string>
+    <string name="contacts">Контактная информация</string>
+    <string name="email">Почта</string>
+    <string name="position">Должность</string>
+    <string name="department">Отдел</string>
+    <string name="log_out">Выйти из аккаунта</string>
 
 
 </resources>

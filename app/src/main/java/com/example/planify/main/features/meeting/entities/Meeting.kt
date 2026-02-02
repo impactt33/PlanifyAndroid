@@ -4,6 +4,8 @@ import java.time.LocalDateTime
 import java.time.Duration
 
 data class Meeting(
+    val id: Long,
+    val ownerId: Long,
     val title: String,
     val description: String,
     val timeStart: LocalDateTime,

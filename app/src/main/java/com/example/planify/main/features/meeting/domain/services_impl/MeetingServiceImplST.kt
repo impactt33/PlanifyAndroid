@@ -9,8 +9,8 @@ import java.time.LocalDate
 class MeetingServiceImplST private constructor(
     val meetingRepository: MeetingRepository
 ): MeetingService {
-    override suspend fun getMeetingsInfo(): Map<LocalDate, List<MeetingInfo>> {
-        return meetingRepository.getMeetingsInfo()
+    override suspend fun fetchMeetingsInfo(): Map<LocalDate, List<MeetingInfo>> {
+        return meetingRepository.fetchMeetingsInfo()
     }
 
     companion object : SingletonHolder<MeetingServiceImplST, MeetingRepository>(::MeetingServiceImplST)

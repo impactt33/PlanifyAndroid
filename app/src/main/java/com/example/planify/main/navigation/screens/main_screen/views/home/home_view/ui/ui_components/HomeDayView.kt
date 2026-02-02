@@ -1,64 +1,43 @@
 package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.pager.PagerState
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
-import androidx.compose.material3.VerticalDivider
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.compositionLocalOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.AlignmentLine
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.adamglin.PhosphorIcons
-import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.CaretLeft
-import com.adamglin.phosphoricons.regular.CaretRight
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
-import com.example.planify.main.common.ui.TextEmptyMeetings
 import com.example.planify.main.common.ui.withShapeBackground
+import com.example.planify.main.common.utils.dateForPage
 import com.example.planify.main.features.meeting.entities.MeetingInfo
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.UIState
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.MeetingCard
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.ScheduleScroll
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.ScrollableDateRow
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.SkeletonMeetingCard
-import kotlinx.coroutines.launch
-import java.text.DateFormat
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime
-import java.time.format.DateTimeFormatter
 import java.time.format.DateTimeFormatter.ofPattern
-import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 @Composable
@@ -75,12 +54,6 @@ fun HomeDayView(
 
     val scope = rememberCoroutineScope()
 
-    val timeSlots = remember(selectedDate) {
-        (7..23).map { hour ->
-            LocalDateTime.of(selectedDate, LocalTime.of(hour, 0))
-        }
-    }
-
     Column(
         modifier = Modifier
             .fillMaxSize(),
@@ -93,22 +66,26 @@ fun HomeDayView(
             textFormat = textFormat
         )
 
-        fun dateForPage(page: Int): LocalDate = LocalDate.now().plusDays(
-            (page - initialPage).toLong()
-        )
-
         ScheduleScroll(
             selectedDate = selectedDate,
             onDateSelected = onDateSelected,
             pagerState = scrollPagerState,
             initialPage = initialPage
         ) { page ->
-            val meetings = remember(selectedDate, uiState) {
-                if (uiState is UIState.ContentData) getMeetingsInfoByDate(dateForPage(page))
+            val pageDate = remember(page) { page.dateForPage(initialPage) }
+
+            val timeSlots = remember(pageDate) {
+                (7..23).map { hour ->
+                    LocalDateTime.of(pageDate, LocalTime.of(hour, 0))
+                }
+            }
+
+            val meetings = remember(pageDate, uiState) {
+                if (uiState is UIState.ContentData) getMeetingsInfoByDate(pageDate)
                     else emptyList()
             }
 
-            val meetingsByStart: Map<LocalDateTime, MeetingInfo> = remember(selectedDate) {
+            val meetingsByStart = remember(pageDate) {
                 meetings.associateBy { it.meeting.timeStart }
             }
 

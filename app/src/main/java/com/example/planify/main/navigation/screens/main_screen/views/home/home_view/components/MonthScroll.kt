@@ -1,56 +1,54 @@
 package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components
 
-import android.util.Log
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerScope
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Modifier
-import com.example.planify.main.common.utils.dateForPage
-import com.example.planify.main.common.utils.pageForDate
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.flow.distinctUntilChanged
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
 @Composable
-fun ScheduleScroll(
-    onDateSelected: (LocalDate) -> Unit,
-    selectedDate: LocalDate,
+fun MonthScroll(
     modifier: Modifier = Modifier,
+    selectedDate: LocalDate,
     pagerState: PagerState,
     initialPage: Int,
     pageContent: @Composable (PagerScope.(Int) -> Unit)
 ) {
-    val latestSelectedDate = rememberUpdatedState(selectedDate)
-    val latestOnDateSelected = rememberUpdatedState(onDateSelected)
+    val scope = rememberCoroutineScope()
 
     LaunchedEffect(pagerState) {
         snapshotFlow { pagerState.currentPage }
             .distinctUntilChanged()
-            .collect { page ->
-                val newDate = page.dateForPage(initialPage)
-                if (newDate != latestSelectedDate.value) {
-                    latestOnDateSelected.value(newDate)
-                }
+            .collect {
             }
     }
 
     LaunchedEffect(selectedDate) {
-        val target = selectedDate.pageForDate(initialPage)
-        Log.d("App", target.toString())
-        Log.d("App", pagerState.currentPage.toString())
-        if (target != pagerState.currentPage) {
-            pagerState.scrollToPage(target)
-        }
+        snapshotFlow { selectedDate }
+            .collect {
+                val target = initialPage + ChronoUnit.MONTHS
+                    .between(LocalDate.now().withDayOfMonth(1),
+                        selectedDate.withDayOfMonth(1))
+                    .toInt()
+
+                if (pagerState.currentPage != target) {
+                    pagerState.animateScrollToPage(target)
+                }
+            }
     }
 
     HorizontalPager(
         state = pagerState,
         modifier = modifier,
         beyondViewportPageCount = 1
-        ) { page ->
+    ) { page ->
         pageContent(page)
     }
 }

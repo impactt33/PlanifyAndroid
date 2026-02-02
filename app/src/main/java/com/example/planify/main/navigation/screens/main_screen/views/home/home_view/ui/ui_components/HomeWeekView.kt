@@ -20,6 +20,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.TextEmptyMeetings
+import com.example.planify.main.common.utils.dateForPage
 import com.example.planify.main.features.meeting.entities.MeetingInfo
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.UIState
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.ScheduleScroll
@@ -58,8 +59,6 @@ fun HomeWeekView(
             date.with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)))
             .toInt()
 
-    val meetings = getMeetingsInfoByDate(selectedDate)
-
     LaunchedEffect(selectedDate) {
         snapshotFlow { selectedDate }
             .collect {
@@ -93,10 +92,6 @@ fun HomeWeekView(
             }
         )
 
-        fun dateForPage(page: Int): LocalDate = LocalDate.now().plusDays(
-            (page - initialPageBottom).toLong()
-        )
-
         ScheduleScroll(
             modifier = Modifier
                 .weight(1f),
@@ -106,10 +101,10 @@ fun HomeWeekView(
             initialPage = initialPageBottom
         ) { page ->
 
-//            val meetings = remember(selectedDate, uiState) {
-//                if (uiState is UIState.ContentData) getMeetingsInfoByDate(dateForPage(page))
-//                    else emptyList()
-//            }
+            val meetings = remember(selectedDate, uiState) {
+                if (uiState is UIState.ContentData) getMeetingsInfoByDate(page.dateForPage(initialPageBottom))
+                    else emptyList()
+            }
 
             LazyColumn(
                 modifier = Modifier

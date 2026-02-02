@@ -52,6 +52,7 @@ fun WeeklySchedule(
                 state = pagerState,
                 modifier = Modifier
                     .fillMaxWidth(),
+                beyondViewportPageCount = 1
             ) { page ->
                 val weekDays = remember(page) { getWeekDays(page - initialPage) }
 

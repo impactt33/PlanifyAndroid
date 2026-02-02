@@ -1,7 +1,6 @@
-package com.example.planify.main.features.profile
+package com.example.planify.main.features.profile.entities
 
 data class Profile(
-    val userId: Long,
     val firstName: String,
     val lastName: String,
     val position: String,

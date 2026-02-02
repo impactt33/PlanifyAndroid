@@ -4,7 +4,7 @@ import android.provider.Contacts
 import com.example.planify.main.features.meeting.entities.Invite
 import com.example.planify.main.features.meeting.entities.Meeting
 import com.example.planify.main.features.meeting.entities.MeetingInfo
-import com.example.planify.main.features.profile.Profile
+import com.example.planify.main.features.profile.entities.Profile
 import java.time.LocalDate
 
 sealed interface UIState {

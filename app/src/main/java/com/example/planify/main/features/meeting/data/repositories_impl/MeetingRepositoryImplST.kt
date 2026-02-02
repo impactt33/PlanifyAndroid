@@ -4,393 +4,313 @@ import com.example.planify.main.features.meeting.domain.repositories.MeetingRepo
 import com.example.planify.main.features.meeting.entities.Invite
 import com.example.planify.main.features.meeting.entities.Meeting
 import com.example.planify.main.features.meeting.entities.MeetingInfo
-import com.example.planify.main.features.profile.Profile
+import com.example.planify.main.features.meeting.entities.MeetingInviteStatus
+import com.example.planify.main.features.profile.entities.Profile
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime
 import java.time.Duration
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.UUID
 
 object HardcodedWeekData {
 
-    // Предопределенные пользователи
+    // Предопределенные пользователи (без userId)
     private val alex = Profile(
-        userId = 1L,
         firstName = "Александр",
         lastName = "Иванов",
         position = "Team Lead",
         department = "Разработка",
-        profileImageUrl = "https://example.com/avatars/1.jpg"
+        profileImageUrl = "https://example.com/avatars/alex.jpg"
     )
 
     private val maria = Profile(
-        userId = 2L,
         firstName = "Мария",
         lastName = "Петрова",
         position = "Frontend Developer",
         department = "Разработка",
-        profileImageUrl = "https://example.com/avatars/2.jpg"
+        profileImageUrl = "https://example.com/avatars/maria.jpg"
     )
 
     private val ivan = Profile(
-        userId = 3L,
         firstName = "Иван",
         lastName = "Сидоров",
         position = "Backend Developer",
         department = "Разработка",
-        profileImageUrl = "https://example.com/avatars/3.jpg"
+        profileImageUrl = "https://example.com/avatars/ivan.jpg"
     )
 
     private val anna = Profile(
-        userId = 4L,
         firstName = "Анна",
         lastName = "Смирнова",
         position = "Product Manager",
         department = "Менеджмент",
-        profileImageUrl = "https://example.com/avatars/4.jpg"
+        profileImageUrl = "https://example.com/avatars/anna.jpg"
     )
 
     private val dmitry = Profile(
-        userId = 5L,
         firstName = "Дмитрий",
         lastName = "Кузнецов",
         position = "UI/UX Designer",
         department = "Дизайн",
-        profileImageUrl = "https://example.com/avatars/5.jpg"
+        profileImageUrl = "https://example.com/avatars/dmitry.jpg"
     )
 
     private val sofia = Profile(
-        userId = 6L,
         firstName = "София",
         lastName = "Попова",
         position = "QA Engineer",
         department = "Тестирование",
-        profileImageUrl = "https://example.com/avatars/6.jpg"
+        profileImageUrl = "https://example.com/avatars/sofia.jpg"
     )
 
-    private val mikhail = Profile(
-        userId = 7L,
-        firstName = "Михаил",
-        lastName = "Васильев",
-        position = "DevOps Engineer",
-        department = "Инфраструктура",
-        profileImageUrl = "https://example.com/avatars/7.jpg"
+    // Маппинг профилей к их ID (для ownerId и senderId)
+    private val profileToId = mapOf(
+        alex to 101L,
+        maria to 102L,
+        ivan to 103L,
+        anna to 104L,
+        dmitry to 105L,
+        sofia to 106L
     )
 
-    private val ekaterina = Profile(
-        userId = 8L,
-        firstName = "Екатерина",
-        lastName = "Павлова",
-        position = "Data Analyst",
-        department = "Аналитика",
-        profileImageUrl = "https://example.com/avatars/8.jpg"
-    )
+    // Получить ID профиля
+    private fun getProfileId(profile: Profile): Long {
+        return profileToId[profile] ?: 0L
+    }
 
-    // Генерация данных на неделю (с сегодняшнего дня)
+    // Получить профиль по ID
+    private fun getProfileById(id: Long): Profile? {
+        return profileToId.entries.find { it.value == id }?.key
+    }
+
+    // ID встреч
+    private val meetingIds = listOf(1001L, 1002L, 1003L, 1004L, 1005L, 1006L)
+
+    // Генератор инвайтов
+    private fun createInvite(
+        meetingId: Long,
+        sender: Profile,
+        status: MeetingInviteStatus,
+        createdAt: LocalDateTime,
+        updatedAtOffsetHours: Long = 0
+    ): Invite {
+        return Invite(
+            uuid = UUID.randomUUID().toString(),
+            meetingId = meetingId,
+            senderId = getProfileId(sender),
+            status = status,
+            createdAt = createdAt,
+            updatedAt = createdAt.plusHours(updatedAtOffsetHours)
+        )
+    }
+
+    // Простое расписание на неделю (1-2 встречи в день)
     fun getWeekMeetings(): HashMap<LocalDate, List<MeetingInfo>> {
         val meetingsMap = HashMap<LocalDate, List<MeetingInfo>>()
 
         val today = LocalDate.now()
-
-        // Понедельник
+        val now = LocalDateTime.now()
         val monday = today.with(java.time.DayOfWeek.MONDAY)
+
+        // ПОНЕДЕЛЬНИК - 1 встреча
         meetingsMap[monday] = listOf(
             MeetingInfo(
                 meeting = Meeting(
+                    id = meetingIds[0],
+                    ownerId = getProfileId(anna),  // Анна - владелец
                     title = "Планирование недели",
-                    description = "Совещание по планированию задач на неделю",
+                    description = "Обсуждение задач и целей на неделю",
                     timeStart = LocalDateTime.of(monday, LocalTime.of(10, 0)),
-                    duration = Duration.ofHours(2),
+                    duration = Duration.ofMinutes(60),
                     location = "Конференц-зал A"
                 ),
                 invites = listOf(
-                    Invite(alex.userId, true),
-                    Invite(maria.userId, true),
-                    Invite(ivan.userId, true),
-                    Invite(anna.userId, true)
+                    createInvite(
+                        meetingIds[0],
+                        anna,
+                        MeetingInviteStatus.ACCEPTED,
+                        now.minusDays(2)
+                    ),
+                    createInvite(
+                        meetingIds[0],
+                        anna,
+                        MeetingInviteStatus.ACCEPTED,
+                        now.minusDays(2)
+                    ),
+                    createInvite(meetingIds[0], anna, MeetingInviteStatus.PENDING, now.minusDays(2))
                 ),
-                participants = listOf(alex, maria, ivan, anna)
-            ),
-            MeetingInfo(
-                meeting = Meeting(
-                    title = "Дизайн-ревью",
-                    description = "Обсуждение новых макетов интерфейса",
-                    timeStart = LocalDateTime.of(monday, LocalTime.of(15, 0)),
-                    duration = Duration.ofHours(2),
-                    location = "Переговорная B"
-                ),
-                invites = listOf(
-                    Invite(anna.userId, true),
-                    Invite(dmitry.userId, true),
-                    Invite(alex.userId, false)
-                ),
-                participants = listOf(anna, dmitry)
+                participants = listOf(anna, alex, maria)
             )
         )
 
-        // Вторник
+        // ВТОРНИК - 1 встреча
         val tuesday = monday.plusDays(1)
         meetingsMap[tuesday] = listOf(
             MeetingInfo(
                 meeting = Meeting(
-                    title = "Ежедневный стендап",
-                    description = "Короткое обсуждение текущих задач",
-                    timeStart = LocalDateTime.of(tuesday, LocalTime.of(9, 0)),
-                    duration = Duration.ofHours(1),
+                    id = meetingIds[1],
+                    ownerId = getProfileId(alex),  // Александр - владелец
+                    title = "Технический стендап",
+                    description = "Ежедневное обсуждение технических вопросов",
+                    timeStart = LocalDateTime.of(tuesday, LocalTime.of(9, 30)),
+                    duration = Duration.ofMinutes(30),
                     location = "Zoom"
                 ),
                 invites = listOf(
-                    Invite(alex.userId, true),
-                    Invite(maria.userId, true),
-                    Invite(ivan.userId, true),
-                    Invite(sofia.userId, true)
+                    createInvite(
+                        meetingIds[1],
+                        alex,
+                        MeetingInviteStatus.ACCEPTED,
+                        now.minusDays(1)
+                    ),
+                    createInvite(
+                        meetingIds[1],
+                        alex,
+                        MeetingInviteStatus.ACCEPTED,
+                        now.minusDays(1)
+                    ),
+                    createInvite(
+                        meetingIds[1],
+                        alex,
+                        MeetingInviteStatus.REJECTED,
+                        now.minusDays(1),
+                        2
+                    )
                 ),
-                participants = listOf(alex, maria, ivan, sofia)
+                participants = listOf(alex, ivan, sofia)
             )
         )
 
-        // Среда
+        // СРЕДА - 2 встречи
         val wednesday = monday.plusDays(2)
         meetingsMap[wednesday] = listOf(
             MeetingInfo(
                 meeting = Meeting(
-                    title = "Ежедневный стендап",
-                    description = "Короткое обсуждение текущих задач",
-                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(9, 0)),
-                    duration = Duration.ofHours(2),
-                    location = "Zoom"
-                ),
-                invites = listOf(
-                    Invite(alex.userId, true),
-                    Invite(maria.userId, true),
-                    Invite(ivan.userId, true),
-                    Invite(sofia.userId, true)
-                ),
-                participants = listOf(alex, maria, ivan, sofia)
-            ),
-            MeetingInfo(
-                meeting = Meeting(
+                    id = meetingIds[2],
+                    ownerId = getProfileId(dmitry),  // Дмитрий - владелец
                     title = "Дизайн-ревью",
                     description = "Обсуждение новых макетов интерфейса",
-                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(15, 0)),
-                    duration = Duration.ofHours(2),
+                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(11, 0)),
+                    duration = Duration.ofMinutes(45),
                     location = "Переговорная B"
                 ),
                 invites = listOf(
-                    Invite(anna.userId, true),
-                    Invite(dmitry.userId, true),
-                    Invite(alex.userId, false)
+                    createInvite(
+                        meetingIds[2],
+                        dmitry,
+                        MeetingInviteStatus.ACCEPTED,
+                        now.minusDays(3)
+                    ),
+                    createInvite(
+                        meetingIds[2],
+                        dmitry,
+                        MeetingInviteStatus.PENDING,
+                        now.minusDays(3)
+                    )
                 ),
-                participants = listOf(anna, dmitry)
+                participants = listOf(dmitry, anna)
             ),
             MeetingInfo(
                 meeting = Meeting(
-                    title = "Демо продукта",
-                    description = "Демонстрация новых функций для команды",
-                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(18, 0)),
-                    duration = Duration.ofHours(1),
+                    id = meetingIds[3],
+                    ownerId = getProfileId(anna),  // Анна - владелец
+                    title = "Демонстрация продукта",
+                    description = "Показ новых функций заказчику",
+                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(14, 30)),
+                    duration = Duration.ofMinutes(90),
                     location = "Главный зал"
                 ),
                 invites = listOf(
-                    Invite(alex.userId, true),
-                    Invite(maria.userId, true),
-                    Invite(ivan.userId, true),
-                    Invite(anna.userId, true),
-                    Invite(dmitry.userId, true),
-                    Invite(sofia.userId, true)
+                    createInvite(
+                        meetingIds[3],
+                        anna,
+                        MeetingInviteStatus.ACCEPTED,
+                        now.minusDays(3)
+                    ),
+                    createInvite(
+                        meetingIds[3],
+                        anna,
+                        MeetingInviteStatus.ACCEPTED,
+                        now.minusDays(3)
+                    ),
+                    createInvite(
+                        meetingIds[3],
+                        anna,
+                        MeetingInviteStatus.RESCHEDULE_REQUESTED,
+                        now.minusDays(3),
+                        5
+                    )
                 ),
-                participants = listOf(alex, maria, ivan, anna, dmitry, sofia)
-            ),
-            MeetingInfo(
-                meeting = Meeting(
-                    title = "Код-ревью",
-                    description = "Совместный разбор новой функциональности",
-                    timeStart = LocalDateTime.of(wednesday, LocalTime.of(20, 0)),
-                    duration = Duration.ofHours(2),
-                    location = "Переговорная A"
-                ),
-                invites = listOf(
-                    Invite(alex.userId, true),
-                    Invite(maria.userId, false),
-                    Invite(ivan.userId, true)
-                ),
-                participants = listOf(alex, ivan)
+                participants = listOf(anna, alex, dmitry)
             )
         )
 
-        // Четверг
+        // ЧЕТВЕРГ - 1 встреча
         val thursday = monday.plusDays(3)
         meetingsMap[thursday] = listOf(
             MeetingInfo(
                 meeting = Meeting(
-                    title = "Встреча с клиентом",
-                    description = "Обсуждение требований и обратной связи",
-                    timeStart = LocalDateTime.of(thursday, LocalTime.of(11, 0)),
-                    duration = Duration.ofHours(2),
+                    id = meetingIds[4],
+                    ownerId = getProfileId(maria),  // Мария - владелец
+                    title = "Код-ревью",
+                    description = "Разбор новой функциональности фронтенда",
+                    timeStart = LocalDateTime.of(thursday, LocalTime.of(16, 0)),
+                    duration = Duration.ofMinutes(60),
                     location = "Google Meet"
                 ),
                 invites = listOf(
-                    Invite(anna.userId, true),
-                    Invite(dmitry.userId, true),
-                    Invite(ekaterina.userId, true)
+                    createInvite(
+                        meetingIds[4],
+                        maria,
+                        MeetingInviteStatus.ACCEPTED,
+                        now.minusDays(4)
+                    ),
+                    createInvite(
+                        meetingIds[4],
+                        maria,
+                        MeetingInviteStatus.PENDING,
+                        now.minusDays(4)
+                    )
                 ),
-                participants = listOf(anna, dmitry, ekaterina)
+                participants = listOf(maria, alex, ivan)
             )
         )
 
-        // Пятница
+        // ПЯТНИЦА - 1 встреча
         val friday = monday.plusDays(4)
         meetingsMap[friday] = listOf(
             MeetingInfo(
                 meeting = Meeting(
-                    title = "Ретроспектива спринта",
-                    description = "Подведение итогов спринта и обсуждение улучшений",
-                    timeStart = LocalDateTime.of(friday, LocalTime.of(15, 0)),
-                    duration = Duration.ofHours(3),
+                    id = meetingIds[5],
+                    ownerId = getProfileId(alex),  // Александр - владелец
+                    title = "Ретроспектива недели",
+                    description = "Подведение итогов недели и планирование следующей",
+                    timeStart = LocalDateTime.of(friday, LocalTime.of(17, 0)),
+                    duration = Duration.ofMinutes(60),
                     location = "Конференц-зал A"
                 ),
                 invites = listOf(
-                    Invite(alex.userId, true),
-                    Invite(maria.userId, true),
-                    Invite(ivan.userId, true),
-                    Invite(anna.userId, true),
-                    Invite(dmitry.userId, true),
-                    Invite(sofia.userId, true),
-                    Invite(mikhail.userId, false)
+                    createInvite(
+                        meetingIds[5],
+                        alex,
+                        MeetingInviteStatus.ACCEPTED,
+                        now.minusDays(5)
+                    ),
+                    createInvite(
+                        meetingIds[5],
+                        alex,
+                        MeetingInviteStatus.ACCEPTED,
+                        now.minusDays(5)
+                    ),
+                    createInvite(
+                        meetingIds[5],
+                        alex,
+                        MeetingInviteStatus.ACCEPTED,
+                        now.minusDays(5)
+                    )
                 ),
                 participants = listOf(alex, maria, ivan, anna, dmitry, sofia)
-            )
-        )
-
-        // Суббота
-        val saturday = monday.plusDays(5)
-        meetingsMap[saturday] = listOf(
-            MeetingInfo(
-                meeting = Meeting(
-                    title = "Мозговой штурм",
-                    description = "Генерация идей для нового проекта",
-                    timeStart = LocalDateTime.of(saturday, LocalTime.of(12, 0)),
-                    duration = Duration.ofHours(2),
-                    location = "Креативное пространство"
-                ),
-                invites = listOf(
-                    Invite(dmitry.userId, true),
-                    Invite(maria.userId, true),
-                    Invite(ekaterina.userId, false)
-                ),
-                participants = listOf(dmitry, maria)
-            )
-        )
-
-        // Воскресенье
-        val sunday = monday.plusDays(6)
-        // Воскресенье без встреч - оставляем пустой список
-
-        return meetingsMap
-    }
-
-    // Альтернатива: статическая неделя с конкретными датами
-    fun getStaticWeekMeetings(): HashMap<LocalDate, List<MeetingInfo>> {
-        val meetingsMap = HashMap<LocalDate, List<MeetingInfo>>()
-
-        // Пример: неделя с 27 марта 2024
-        val monday = LocalDate.of(2024, 3, 25)
-
-        // Понедельник, 25 марта
-        meetingsMap[monday] = listOf(
-            MeetingInfo(
-                meeting = Meeting(
-                    title = "Старт нового проекта",
-                    description = "Обсуждение целей и планов нового проекта",
-                    timeStart = LocalDateTime.of(monday, LocalTime.of(11, 0)),
-                    duration = Duration.ofMinutes(90),
-                    location = "Конференц-зал"
-                ),
-                invites = listOf(
-                    Invite(alex.userId, true),
-                    Invite(anna.userId, true),
-                    Invite(dmitry.userId, true)
-                ),
-                participants = listOf(alex, anna, dmitry)
-            )
-        )
-
-        // Вторник, 26 марта
-        val tuesday = monday.plusDays(1)
-        meetingsMap[tuesday] = listOf(
-            MeetingInfo(
-                meeting = Meeting(
-                    title = "Обучение команды",
-                    description = "Обучение новой технологии",
-                    timeStart = LocalDateTime.of(tuesday, LocalTime.of(14, 30)),
-                    duration = Duration.ofMinutes(120),
-                    location = "Онлайн"
-                ),
-                invites = listOf(
-                    Invite(maria.userId, true),
-                    Invite(ivan.userId, true),
-                    Invite(sofia.userId, true)
-                ),
-                participants = listOf(maria, ivan, sofia)
-            )
-        )
-
-        // Среда, 27 марта
-        val wednesday = monday.plusDays(2)
-        // Нет встреч в среду
-
-        // Четверг, 28 марта
-        val thursday = monday.plusDays(3)
-        meetingsMap[thursday] = listOf(
-            MeetingInfo(
-                meeting = Meeting(
-                    title = "Презентация отчета",
-                    description = "Презентация квартального отдела",
-                    timeStart = LocalDateTime.of(thursday, LocalTime.of(10, 0)),
-                    duration = Duration.ofMinutes(60),
-                    location = "Зал заседаний"
-                ),
-                invites = listOf(
-                    Invite(alex.userId, true),
-                    Invite(anna.userId, true),
-                    Invite(ekaterina.userId, true),
-                    Invite(mikhail.userId, true)
-                ),
-                participants = listOf(alex, anna, ekaterina, mikhail)
-            ),
-            MeetingInfo(
-                meeting = Meeting(
-                    title = "Индивидуальная встреча",
-                    description = "Обсуждение карьерного роста",
-                    timeStart = LocalDateTime.of(thursday, LocalTime.of(16, 0)),
-                    duration = Duration.ofMinutes(45),
-                    location = "Кабинет 305"
-                ),
-                invites = listOf(
-                    Invite(maria.userId, true),
-                    Invite(alex.userId, true)
-                ),
-                participants = listOf(maria, alex)
-            )
-        )
-
-        // Пятница, 29 марта
-        val friday = monday.plusDays(4)
-        meetingsMap[friday] = listOf(
-            MeetingInfo(
-                meeting = Meeting(
-                    title = "Завершение спринта",
-                    description = "Подведение итогов недели",
-                    timeStart = LocalDateTime.of(friday, LocalTime.of(17, 0)),
-                    duration = Duration.ofMinutes(60),
-                    location = "Переговорная"
-                ),
-                invites = listOf(
-                    Invite(alex.userId, true),
-                    Invite(maria.userId, true),
-                    Invite(ivan.userId, true)
-                ),
-                participants = listOf(alex, maria, ivan)
             )
         )
 
@@ -398,11 +318,9 @@ object HardcodedWeekData {
     }
 }
 
-val fakeData = HardcodedWeekData.getWeekMeetings()
-
 object MeetingRepositoryImplST: MeetingRepository {
-    override suspend fun getMeetingsInfo(): Map<LocalDate, List<MeetingInfo>> {
+    override suspend fun fetchMeetingsInfo(): Map<LocalDate, List<MeetingInfo>> {
         delay(2000)
-        return fakeData
+        return HardcodedWeekData.getWeekMeetings()
     }
 }

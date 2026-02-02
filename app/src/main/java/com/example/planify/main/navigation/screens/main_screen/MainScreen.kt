@@ -15,11 +15,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
-import com.example.planify.main.features.meeting.domain.services.MeetingService
+import com.example.planify.main.features.auth.domain.services_impl.UsersServiceImplST
 import com.example.planify.main.features.meeting.domain.services_impl.MeetingServiceImplST
+import com.example.planify.main.features.profile.domain.services_impl.ProfilesServiceImplST
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.HomeView
 import com.example.planify.main.navigation.screens.main_screen.components.BottomNavBar
 import com.example.planify.main.navigation.screens.main_screen.components.TopBar
+import com.example.planify.main.navigation.screens.main_screen.views.profile.ProfileView
 
 @Composable
 fun MainScreen() {
@@ -52,7 +54,13 @@ fun MainScreen() {
             }
             screen(MainScreenRoute.Chat) {Screen()}
             screen(MainScreenRoute.Inbox) {Screen()}
-            screen(MainScreenRoute.Profile) {Screen()}
+            screen(MainScreenRoute.Profile) {
+                ProfileView(
+                    scaffoldPadding = padding,
+                    profileService = ProfilesServiceImplST.get(),
+                    usersService = UsersServiceImplST.get()
+                )
+            }
         }
     }
 }

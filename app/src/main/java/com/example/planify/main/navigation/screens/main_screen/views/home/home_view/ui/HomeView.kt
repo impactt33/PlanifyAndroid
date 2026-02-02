@@ -14,8 +14,8 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
+import com.example.planify.main.common.utils.pageForDate
 import com.example.planify.main.features.meeting.domain.services.MeetingService
-import com.example.planify.main.navigation.screens.main_screen.Screen
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewModel
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewModelFactory
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewRoute
@@ -23,7 +23,6 @@ import com.example.planify.main.navigation.screens.main_screen.views.home.home_v
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.HomeDayView
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.HomeMonthView
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.HomeWeekView
-import kotlinx.coroutines.flow.merge
 
 @Composable
 private fun HomeView(
@@ -35,6 +34,24 @@ private fun HomeView(
         routes = HomeViewRoute.routes,
         startRoute = HomeViewRoute.Week
     )
+
+//    val dayInitialPage = 5000
+//    val dayPagerState = rememberPagerState(
+//        initialPage = dayInitialPage,
+//        pageCount = { 10000 }
+//    )
+//
+//    val weekInitialPage = 500
+//    val weekPagerState = rememberPagerState(
+//        initialPage = weekInitialPage,
+//        pageCount = { 1000 }
+//    )
+//
+//    val monthInitialPage = 500
+//    val monthPagerState = rememberPagerState(
+//        initialPage = monthInitialPage,
+//        pageCount = { 1000 }
+//    )
 
     val initialScrollPage = 5000
     val scrollPagerState = rememberPagerState(
@@ -51,6 +68,16 @@ private fun HomeView(
     val uiState by viewModel.uiState.collectAsState()
 
     val selectedDate by viewModel.selectedDate.collectAsState()
+
+    // Sync calendarPager and ScrollPager(Day + BottomWeek scroll)
+
+    LaunchedEffect(selectedDate) {
+        val target = selectedDate.pageForDate(initialPage = initialScrollPage)
+
+        if(!scrollPagerState.isScrollInProgress && scrollPagerState.currentPage != target) {
+            scrollPagerState.scrollToPage(target)
+        }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.getMeetingsInfo()
@@ -92,7 +119,10 @@ private fun HomeView(
                     selectedDate = selectedDate,
                     pagerState = calendarPagerState,
                     initialPage = initialCalendarPage,
-                    onDateSelected = { viewModel.onDateSelected(it) }
+                    onDateSelected = { viewModel.onDateSelected(it) },
+                    getMeetingsInfoByDate = { viewModel.getMeetingsInfoByDate(it) },
+                    uiState = uiState,
+                    scaffoldPadding = scaffoldPadding
                 )
             }
         }
