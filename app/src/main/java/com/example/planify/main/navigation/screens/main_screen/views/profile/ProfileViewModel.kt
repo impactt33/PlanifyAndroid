@@ -3,7 +3,7 @@ package com.example.planify.main.navigation.screens.main_screen.views.profile
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.main.features.auth.domain.services.UsersService
-import com.example.planify.main.features.auth.entities.User
+import com.example.planify.main.features.auth.domain.entities.UserPrivate
 import com.example.planify.main.features.profile.domain.services.ProfilesService
 import com.example.planify.main.features.profile.entities.Profile
 import kotlinx.coroutines.async
@@ -25,7 +25,7 @@ class ProfileViewModel(
         viewModelScope.launch {
             _uiState.emit(UIState.Loading)
 
-            var userInfo: User? = null
+            var userInfo: UserPrivate? = null
             var profileInfo: Profile? = null
 
             try {

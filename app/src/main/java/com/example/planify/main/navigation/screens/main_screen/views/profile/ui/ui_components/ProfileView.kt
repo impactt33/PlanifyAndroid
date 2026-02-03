@@ -47,7 +47,7 @@ import com.adamglin.phosphoricons.regular.SignOut
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.features.auth.domain.services.UsersService
-import com.example.planify.main.features.auth.entities.User
+import com.example.planify.main.features.auth.domain.entities.UserPrivate
 import com.example.planify.main.features.profile.domain.services.ProfilesService
 import com.example.planify.main.features.profile.entities.Profile
 import com.example.planify.main.navigation.screens.init_screen.components.LoadingView
@@ -116,7 +116,7 @@ private fun ProfileView(
 @Composable
 fun InfoView(
     profile: Profile,
-    user: User
+    user: UserPrivate
 ) {
     val colors = MaterialTheme.colorScheme
     val shape = Locals.shapes.mediumShape

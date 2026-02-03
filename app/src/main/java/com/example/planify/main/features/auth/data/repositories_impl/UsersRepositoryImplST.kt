@@ -1,11 +1,9 @@
 package com.example.planify.main.features.auth.data.repositories_impl
 
 import com.example.planify.main.features.Network
-import com.example.planify.main.features.auth.data.dto.UserDTO
 import com.example.planify.main.features.auth.domain.repositories.UsersRepository
-import com.example.planify.main.features.auth.entities.User
+import com.example.planify.main.features.auth.domain.entities.UserPrivate
 import com.example.planify.main.navigation.TempGetAccessToken
-import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.headers
 import io.ktor.client.statement.bodyAsText
@@ -14,17 +12,17 @@ import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-val user = User(
+val user = UserPrivate(
     id = 123L,
     email = "123@ochko.com",
     username = "nezukoo"
 )
 object UsersRepositoryImplST : UsersRepository {
-    override fun getMe(): User {
+    override fun getMe(): UserPrivate {
         return user
     }
 
-    override suspend fun fetchMe(): Result<User> = withContext(Dispatchers.IO) {
+    override suspend fun fetchMe(): Result<UserPrivate> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
             val response = Network.client.get("${Network.HOST}/api/v1/users/me") {
                 headers {
@@ -42,11 +40,11 @@ object UsersRepositoryImplST : UsersRepository {
         }
     }
 
-    override suspend fun fetchUsers(userIds: List<Long>): List<User> {
+    override suspend fun fetchUsers(userIds: List<Long>): List<UserPrivate> {
         return listOf(user)
     }
 
-    override suspend fun fetchUser(userId: Long): User {
+    override suspend fun fetchUser(userId: Long): UserPrivate {
         return user
     }
 }

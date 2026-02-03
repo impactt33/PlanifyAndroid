@@ -32,7 +32,7 @@ class InitScreenViewModel(
     }
 
     fun isAuthorized(): Boolean {
-        return authService.isAuthorized()
+        return authService.isAuthenticated()
     }
 
     suspend fun pingServer(): Boolean {

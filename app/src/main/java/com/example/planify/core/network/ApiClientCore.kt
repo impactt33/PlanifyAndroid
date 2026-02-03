@@ -1,6 +1,5 @@
 package com.example.planify.core.network
 
-import com.example.planify.core.network.middleware.ApiClientMiddleware
 import com.example.planify.core.network.middleware.ApiClientMiddlewareChain
 import com.example.planify.core.network.middleware.RequestCall
 import io.ktor.client.HttpClient
@@ -26,8 +25,8 @@ open class ApiClientCore(
     open suspend fun <T> request(
         builder: HttpRequestBuilder,
         context: ApiRequestContext? = null
-    ) {
-        processRequest<T>(
+    ): T {
+        return processRequest(
             chain = ApiClientMiddlewareChain.Builder.empty(),
             context = context ?: ApiRequestContext()
         ) {
