@@ -18,9 +18,9 @@ import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreen
 import com.example.planify.main.features.auth.domain.services_impl.UsersServiceImplST
 import com.example.planify.main.features.meeting.domain.services_impl.MeetingServiceImplST
 import com.example.planify.main.features.profile.domain.services_impl.ProfilesServiceImplST
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.HomeView
 import com.example.planify.main.navigation.screens.main_screen.components.BottomNavBar
 import com.example.planify.main.navigation.screens.main_screen.components.TopBar
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.HomeView
 import com.example.planify.main.navigation.screens.main_screen.views.profile.ProfileView
 
 @Composable

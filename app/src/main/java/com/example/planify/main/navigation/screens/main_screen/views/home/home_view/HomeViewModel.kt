@@ -3,7 +3,7 @@ package com.example.planify.main.navigation.screens.main_screen.views.home.home_
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.main.features.meeting.domain.services.MeetingService
-import com.example.planify.main.features.meeting.entities.MeetingInfo
+import com.example.planify.main.features.meeting.domain.entities.MeetingInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -19,12 +19,12 @@ class HomeViewModel(
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate.asStateFlow()
 
-    fun getMeetingsInfo() {
+    fun getMeetingsInfo(): Unit {
         viewModelScope.launch {
-            _uiState.value = UIState.Loading
+            _uiState.emit(UIState.Loading)
             runCatching { meetingService.fetchMeetingsInfo() }
                 .onSuccess { map ->
-                    _uiState.value = UIState.ContentData(map)
+                    _uiState.emit(UIState.ContentData(map))
                 }
                 .onFailure { error ->
                     _uiState.value = UIState.Error(error.message ?: "Runtime error")
@@ -41,7 +41,9 @@ class HomeViewModel(
         }
     }
 
-    fun onDateSelected(date: LocalDate) {
+    fun onDateSelected(date: LocalDate): Unit {
         _selectedDate.value = date
     }
 }
+
+// все возвращаемые значения функций: Unit

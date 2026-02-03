@@ -1,6 +1,6 @@
 package com.example.planify.main.features.meeting.domain.repositories
 
-import com.example.planify.main.features.meeting.entities.MeetingInfo
+import com.example.planify.main.features.meeting.domain.entities.MeetingInfo
 import java.time.LocalDate
 
 interface MeetingRepository {

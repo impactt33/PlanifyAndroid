@@ -47,6 +47,7 @@ import com.adamglin.phosphoricons.regular.SignOut
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.features.auth.domain.services.UsersService
+import com.example.planify.main.features.auth.entities.User
 import com.example.planify.main.features.profile.domain.services.ProfilesService
 import com.example.planify.main.features.profile.entities.Profile
 import com.example.planify.main.navigation.screens.init_screen.components.LoadingView
@@ -100,18 +101,22 @@ private fun ProfileView(
                 }
 
                 is UIState.ContentData -> {
-                    ProfileInfoView((uiState as UIState.ContentData).profile)
+                    InfoView(
+                        (uiState as UIState.ContentData).profile,
+                        (uiState as UIState.ContentData).user
+                    )
                 }
 
-                is UIState.Error -> { Text("123") }
+                is UIState.Error -> { Text((uiState as UIState.Error).message) }
             }
         }
     }
 }
 
 @Composable
-fun ProfileInfoView(
-    profile: Profile
+fun InfoView(
+    profile: Profile,
+    user: User
 ) {
     val colors = MaterialTheme.colorScheme
     val shape = Locals.shapes.mediumShape
@@ -196,7 +201,7 @@ fun ProfileInfoView(
         ProfileInfoRow(
             icon = PhosphorIcons.Regular.EnvelopeSimple,
             title = stringResource(R.string.email),
-            subtitle = "pidoras123@gmail.com"
+            subtitle = user.email
         )
         Divider(color = Locals.extras.border)
         ProfileInfoRow(

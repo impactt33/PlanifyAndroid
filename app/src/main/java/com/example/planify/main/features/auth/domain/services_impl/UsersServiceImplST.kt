@@ -12,7 +12,7 @@ class UsersServiceImplST private constructor(
         return usersRepository.getMe()
     }
 
-    override suspend fun fetchMe(): User {
+    override suspend fun fetchMe(): Result<User> {
         return usersRepository.fetchMe()
     }
 

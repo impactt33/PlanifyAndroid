@@ -1,10 +1,10 @@
 package com.example.planify.main.features.meeting.data.repositories_impl
 
 import com.example.planify.main.features.meeting.domain.repositories.MeetingRepository
-import com.example.planify.main.features.meeting.entities.Invite
-import com.example.planify.main.features.meeting.entities.Meeting
-import com.example.planify.main.features.meeting.entities.MeetingInfo
-import com.example.planify.main.features.meeting.entities.MeetingInviteStatus
+import com.example.planify.main.features.meeting.domain.entities.Invite
+import com.example.planify.main.features.meeting.domain.entities.Meeting
+import com.example.planify.main.features.meeting.domain.entities.MeetingInfo
+import com.example.planify.main.features.meeting.domain.entities.MeetingInviteStatus
 import com.example.planify.main.features.profile.entities.Profile
 import kotlinx.coroutines.delay
 import java.time.LocalDateTime

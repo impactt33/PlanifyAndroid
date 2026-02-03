@@ -5,7 +5,7 @@ import com.example.planify.main.features.auth.entities.User
 interface UsersService {
     fun getMe(): User
 
-    suspend fun fetchMe(): User
+    suspend fun fetchMe(): Result<User>
 
     suspend fun fetchUsers(userIds: List<Long>): List<User>
 

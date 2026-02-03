@@ -1,14 +1,13 @@
-package com.example.planify.main.navigation.screens.main_screen.views.profile
+package com.example.planify.main.navigation.screens.settings_screen
 
-import com.example.planify.main.features.auth.entities.User
 import com.example.planify.main.features.profile.entities.Profile
+import com.example.planify.main.features.settings.entities.Settings
 
 sealed interface UIState {
     object Loading: UIState
 
     data class ContentData(
-        val profile: Profile,
-        val user: User
+        val settings: List<Settings>
     ): UIState
 
     data class Error(val message: String): UIState

@@ -1,4 +1,4 @@
-package com.example.planify.main.features.meeting.entities
+package com.example.planify.main.features.meeting.domain.entities
 
 import java.time.LocalDateTime
 

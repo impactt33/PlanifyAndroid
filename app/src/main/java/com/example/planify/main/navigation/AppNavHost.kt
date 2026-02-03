@@ -10,6 +10,11 @@ import com.example.planify.main.features.auth.domain.services_impl.AuthServiceIm
 import com.example.planify.main.navigation.screens.init_screen.ui.InitScreen
 import com.example.planify.main.navigation.screens.login_screen.LoginScreen
 import com.example.planify.main.navigation.screens.main_screen.MainScreen
+import com.example.planify.main.navigation.screens.settings_screen.ui.SettingsScreen
+
+object TempGetAccessToken {
+    val accessToken = "eyJhbGciOiJIUzM4NCJ9.eyJzdWIiOiIxIiwianRpIjoiODhhOTkxOWMtNTA3Zi00ZGEyLWIzM2EtNDA2NDIyZjY1ODg2IiwiaWF0IjoxNzcwMDc0ODI3LCJleHAiOjE3NzAwNzg0MjcsInR5cGUiOjEsInVzZXJJZCI6MSwic2Vzc2lvblV1aWQiOiIxNTlhOGNmNy0wNGRhLTRjZTItOTQzNi04ZTU3MzlmZjY5M2UifQ.aiSVMwK-vbUiXEEkSLiNOVbYpajJIEMEcI2zecSi7v-mgYMniBZz7z0S6zEvmP5g"
+}
 
 @Composable
 fun AppNavHost() {
@@ -26,5 +31,6 @@ fun AppNavHost() {
             ) }
         composable(AppRoute.Main.route) { MainScreen() }
         composable(AppRoute.Login.route) { LoginScreen() }
+        composable(AppRoute.Settings.route) { SettingsScreen() }
     }
 }

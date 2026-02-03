@@ -1,10 +1,16 @@
 package com.example.planify.main.features.profile.data.repositories_impl
 
+import com.example.planify.main.features.Network
 import com.example.planify.main.features.profile.domain.repositories.ProfilesRepository
 import com.example.planify.main.features.profile.entities.Profile
+import com.example.planify.main.navigation.TempGetAccessToken
+import io.ktor.client.request.get
+import io.ktor.client.request.headers
+import io.ktor.client.statement.bodyAsText
+import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-
 val timosha = Profile(
     firstName = "Тимофей",
     lastName = "Голицын",
@@ -12,23 +18,24 @@ val timosha = Profile(
     department = "IT",
     profileImageUrl = "iyueqrbfjkhdsarfbvjhdfsabv123"
 )
-enum class client {
-    SUCCESS,
-    ERROR
-}
 
 object ProfilesRepositoryImplST : ProfilesRepository {
     override suspend fun fetchMyProfile(): Result<Profile> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
-            val response = client.SUCCESS
-            when(response) {
-                client.SUCCESS -> {
-                    timosha
-                }
-                client.ERROR -> {
-                    throw RuntimeException("123")
+            val response = Network.client.get("${Network.HOST}/api/v1/profiles/my") {
+                headers {
+                    append(
+                        HttpHeaders.Authorization,
+                        "Bearer ${TempGetAccessToken.accessToken}"
+                    )
                 }
             }
+            if (response.status != HttpStatusCode.OK) {
+                error("Status: ${response.status}, ${response.bodyAsText()}")
+            }
+            //val profileDto = response.body<ProfileDTO>()
+            //profileDto.toEntity()
+            timosha
         }
     }
 

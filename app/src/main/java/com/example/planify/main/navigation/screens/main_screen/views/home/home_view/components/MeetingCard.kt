@@ -33,9 +33,8 @@ import com.adamglin.phosphoricons.regular.MapPin
 import com.adamglin.phosphoricons.regular.Users
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
-import com.example.planify.main.features.meeting.entities.MeetingInfo
+import com.example.planify.main.features.meeting.domain.entities.MeetingInfo
 import java.time.format.DateTimeFormatter
-import kotlin.time.Duration.Companion.minutes
 
 @Composable
 fun MeetingCard(
