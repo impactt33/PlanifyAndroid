@@ -1,9 +1,14 @@
 package com.example.planify.core.network.middleware
 
-import com.example.planify.core.network.RequestContext
-import com.example.planify.core.network.ResponseContext
+import com.example.planify.core.network.ApiRequestContext
 
-interface ApiClientMiddleware {
-    suspend fun onRequest(context: RequestContext)
-    suspend fun onResponse(context: ResponseContext)
+typealias RequestCall<In> = suspend () -> In
+typealias NextMiddlewareCall<In, Out> = suspend (suspend () -> In) -> Out
+
+interface ApiClientMiddleware<In, Out> {
+    suspend fun proceed(
+        context: ApiRequestContext,
+        request: RequestCall<In>,
+        next: NextMiddlewareCall<In, Out>
+    ): Out
 }

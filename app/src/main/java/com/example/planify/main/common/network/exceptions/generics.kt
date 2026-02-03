@@ -2,20 +2,21 @@ package com.example.planify.main.common.network.exceptions
 
 import io.ktor.http.HttpStatusCode
 
-open class AlreadyExistsHttpException(
+
+open class InternalServerErrorHttpException(
     message: String?,
-    appCode: Int = 2001,
+    appCode: Int = 2000,
 ) : ApplicationHttpException(
     httpStatus = HttpStatusCode.Conflict,
     appCode = appCode,
     message = message
 )
 
-open class BadRequestHttpException(
+open class AlreadyExistsHttpException(
     message: String?,
-    appCode: Int = 2005
+    appCode: Int = 2001,
 ) : ApplicationHttpException(
-    httpStatus = HttpStatusCode.BadRequest,
+    httpStatus = HttpStatusCode.Conflict,
     appCode = appCode,
     message = message
 )
@@ -29,20 +30,11 @@ open class NotFoundHttpException(
     message = message
 )
 
-open class UnauthorizedHttpException(
+open class BadRequestHttpException(
     message: String?,
     appCode: Int = 2005
 ) : ApplicationHttpException(
-    httpStatus = HttpStatusCode.Unauthorized,
-    appCode = appCode,
-    message = message
-)
-
-open class UnexpectedErrorHttpException(
-    message: String?,
-    appCode: Int = 2000
-) : ApplicationHttpException(
-    httpStatus = HttpStatusCode.InternalServerError,
+    httpStatus = HttpStatusCode.BadRequest,
     appCode = appCode,
     message = message
 )
@@ -50,6 +42,15 @@ open class UnexpectedErrorHttpException(
 open class ForbiddenHttpException(
     message: String?,
     appCode: Int = 2006
+) : ApplicationHttpException(
+    httpStatus = HttpStatusCode.Forbidden,
+    appCode = appCode,
+    message = message
+)
+
+open class UnknownHttpException(
+    message: String?,
+    appCode: Int = -1
 ) : ApplicationHttpException(
     httpStatus = HttpStatusCode.Forbidden,
     appCode = appCode,
