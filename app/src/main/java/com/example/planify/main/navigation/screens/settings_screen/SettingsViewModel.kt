@@ -1,8 +1,12 @@
 package com.example.planify.main.navigation.screens.settings_screen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.planify.main.common.entities.ThemeId
 import com.example.planify.main.features.settings.domain.services.SettingsService
+import com.example.planify.main.features.settings.entities.LocalSettings
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -16,22 +20,28 @@ class SettingsViewModel(
 
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
 
-    fun getLocalSettings() {
+    init {
         viewModelScope.launch {
             _uiState.emit(UIState.Loading)
 
-            settingsService.getLocalSettings().fold(
-                onSuccess = { data ->
+            settingsService.settingsFlow.collect { data ->
+                Log.d("Changing Settings", data.toString())
                     _uiState.emit(
-                        UIState.ContentData(
-                            settings = data
-                        )
+                        UIState.ContentData(settings = data)
                     )
-                },
-                onFailure = { error ->
-                    _uiState.emit(UIState.Error(error.message.orEmpty()))
-                }
-            )
+            }
+        }
+    }
+
+    fun setTheme(theme: ThemeId) {
+        viewModelScope.launch {
+            settingsService.setTheme(theme)
+        }
+    }
+
+    fun setNotificationsEnable(enabled: Boolean) {
+        viewModelScope.launch {
+            settingsService.setNotificationsEnabled(enabled)
         }
     }
 

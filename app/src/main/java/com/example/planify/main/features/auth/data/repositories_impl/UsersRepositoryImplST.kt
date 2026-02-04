@@ -32,7 +32,7 @@ object UsersRepositoryImplST : UsersRepository {
                 }
             }
             if(response.status != HttpStatusCode.OK) {
-                error("Status: ${response.status}, ${response.bodyAsText()}")
+                error(response.status)
             }
 //            val userDto = response.body<UserDTO>()
 //            userDto.toEntity()

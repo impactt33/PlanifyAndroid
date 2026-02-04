@@ -16,7 +16,7 @@ val timosha = Profile(
     lastName = "Голицын",
     position = "Минетчица",
     department = "IT",
-    profileImageUrl = "iyueqrbfjkhdsarfbvjhdfsabv123"
+    profileImageUrl = "https://tsx.x5static.net/i/800x800-fit/xdelivery/files/06/65/cd01b821bea03c58564fxde5dcxd.jpg"
 )
 
 object ProfilesRepositoryImplST : ProfilesRepository {
@@ -31,7 +31,7 @@ object ProfilesRepositoryImplST : ProfilesRepository {
                 }
             }
             if (response.status != HttpStatusCode.OK) {
-                error("Status: ${response.status}, ${response.bodyAsText()}")
+                error(response.status)
             }
             //val profileDto = response.body<ProfileDTO>()
             //profileDto.toEntity()

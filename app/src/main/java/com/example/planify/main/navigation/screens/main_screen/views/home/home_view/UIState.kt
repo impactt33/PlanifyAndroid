@@ -1,6 +1,6 @@
 package com.example.planify.main.navigation.screens.main_screen.views.home.home_view
 
-import com.example.planify.main.features.meeting.domain.entities.MeetingInfo
+import com.example.planify.main.features.meetings.meeting.domain.entities.MeetingInfo
 import java.time.LocalDate
 
 sealed interface UIState {

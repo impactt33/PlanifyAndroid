@@ -30,6 +30,8 @@
     <string name="position">Должность</string>
     <string name="department">Отдел</string>
     <string name="log_out">Выйти из аккаунта</string>
-
+    <string name="notifications">Выйти из аккаунта</string>
+    <string name="app_theme">Тема приложения</string>
+    <string name="error">Что-то пошло не так...</string>
 
 </resources>

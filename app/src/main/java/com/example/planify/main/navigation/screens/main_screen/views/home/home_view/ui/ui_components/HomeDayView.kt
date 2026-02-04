@@ -28,12 +28,12 @@ import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
 import com.example.planify.main.common.utils.dateForPage
-import com.example.planify.main.features.meeting.domain.entities.MeetingInfo
+import com.example.planify.main.features.meetings.meeting.domain.entities.MeetingInfo
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.UIState
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.MeetingCard
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.ScheduleScroll
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.ScrollableDateRow
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.SkeletonMeetingCard
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.SkeletonMeetingCard
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime

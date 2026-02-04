@@ -1,5 +1,6 @@
 package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components
 
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -24,6 +25,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.adamglin.PhosphorIcons
@@ -33,7 +35,7 @@ import com.adamglin.phosphoricons.regular.MapPin
 import com.adamglin.phosphoricons.regular.Users
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
-import com.example.planify.main.features.meeting.domain.entities.MeetingInfo
+import com.example.planify.main.features.meetings.meeting.domain.entities.MeetingInfo
 import java.time.format.DateTimeFormatter
 
 @Composable
@@ -85,9 +87,11 @@ fun MeetingCard(
                 Text(
                     text = meeting.description,
                     style = MaterialTheme.typography.bodyMedium.copy(
-                        fontSize = 10.sp,
+                        fontSize = 14.sp,
                         color = Locals.extras.mutedForeground
-                    )
+                    ),
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
                 )
                 Spacer(modifier = Modifier.height(Locals.spacing.xxxs))
                 Column(
@@ -157,8 +161,13 @@ private fun InfoRow(
             Box(
                 modifier = Modifier
                     .withShapeBackground(
-                        color = colors.onPrimary,
+                        color = colors.surface,
                         shape = shape
+                    )
+                    .border(
+                        color = Locals.extras.border,
+                        shape = shape,
+                        width = 1.dp
                     )
                     .fillMaxSize()
             ) {
@@ -177,7 +186,8 @@ private fun InfoRow(
             text = text,
             style = MaterialTheme.typography.bodyMedium.copy(
                 fontWeight = FontWeight.Normal,
-                color = Locals.extras.foreground
+                color = Locals.extras.foreground,
+                fontSize = 14.sp
             )
         )
     }

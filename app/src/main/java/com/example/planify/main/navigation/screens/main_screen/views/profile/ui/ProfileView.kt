@@ -16,6 +16,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -32,12 +33,14 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import coil3.compose.AsyncImage
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Briefcase
@@ -50,13 +53,16 @@ import com.example.planify.main.features.auth.domain.services.UsersService
 import com.example.planify.main.features.auth.domain.entities.UserPrivate
 import com.example.planify.main.features.profile.domain.services.ProfilesService
 import com.example.planify.main.features.profile.entities.Profile
+import com.example.planify.main.navigation.screens.fixed_screens.ErrorScreen
 import com.example.planify.main.navigation.screens.init_screen.components.LoadingView
+import com.example.planify.main.navigation.screens.main_screen.views.profile.components.SkeletonProfile
 
 @Composable
 fun ProfileView(
     scaffoldPadding: PaddingValues,
     profileService: ProfilesService,
-    usersService: UsersService
+    usersService: UsersService,
+    onSettings: () -> Unit
 ) {
     val factory = remember { ProfileViewModelFactory(
         profileService = profileService,
@@ -65,14 +71,16 @@ fun ProfileView(
 
     ProfileView(
         viewModel = viewModel(factory = factory),
-        scaffoldPadding = scaffoldPadding
+        scaffoldPadding = scaffoldPadding,
+        onSettings = onSettings
     )
 }
 
 @Composable
 private fun ProfileView(
     viewModel: ProfileViewModel,
-    scaffoldPadding: PaddingValues
+    scaffoldPadding: PaddingValues,
+    onSettings: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
 
@@ -97,7 +105,7 @@ private fun ProfileView(
         ) {
             when(uiState) {
                 is UIState.Loading -> {
-                    LoadingView()
+                    SkeletonProfile()
                 }
 
                 is UIState.ContentData -> {
@@ -105,9 +113,14 @@ private fun ProfileView(
                         (uiState as UIState.ContentData).profile,
                         (uiState as UIState.ContentData).user
                     )
+                    Button(
+                        onClick = onSettings
+                    ) {
+                        Text("Settings")
+                    }
                 }
 
-                is UIState.Error -> { Text((uiState as UIState.Error).message) }
+                is UIState.Error -> { ErrorScreen((uiState as UIState.Error).message) }
             }
         }
     }
@@ -128,7 +141,8 @@ fun InfoView(
                 shape = shape,
                 color = Locals.extras.border,
                 width = 1.dp
-            ),
+            )
+            .height(Locals.dimens.profileCardHeight1),
         shape = shape,
         colors = CardDefaults.cardColors(
             containerColor = colors.surface
@@ -138,16 +152,20 @@ fun InfoView(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(vertical = Locals.spacing.l),
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
         ) {
             Box(
                 modifier = Modifier
-                    .size(Locals.icons.largeLower)
-                    .clip(CircleShape)
-                    .background(colors.primary),
+                    .size(Locals.icons.largeLower),
                 contentAlignment = Alignment.Center
             ) {
-
+                AsyncImage(
+                    modifier = Modifier
+                        .clip(CircleShape),
+                    model = profile.profileImageUrl,
+                    contentDescription = null
+                )
             }
 
             Spacer(Modifier.height(Locals.spacing.s))
@@ -185,7 +203,7 @@ fun InfoView(
         color = colors.onSurfaceVariant
     )
 
-    Spacer(Modifier.height(8.dp))
+    Spacer(Modifier.height(Locals.spacing.xs))
 
     Card(
         modifier = Modifier
@@ -194,7 +212,8 @@ fun InfoView(
                 color = Locals.extras.border,
                 shape = shape,
                 width = 1.dp
-            ),
+            )
+            .height(Locals.dimens.profileCardHeight2),
         shape = shape,
         colors = CardDefaults.cardColors(containerColor = colors.surface)
     ) {

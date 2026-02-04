@@ -49,6 +49,7 @@ import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.themes.shapes.shapes
 import com.example.planify.main.common.ui.PlaceholderText
 import com.example.planify.main.common.ui.TopBarTitleText
+import com.example.planify.main.common.ui.TopBarTitleTextLarge
 import com.example.planify.main.common.ui.TopBarTitleTextSecondary
 import com.example.planify.main.common.ui.objectClickable
 import com.example.planify.main.common.ui.withShapeBackground
@@ -102,7 +103,7 @@ fun NotificationIcon(
 }
 
 @Composable
-fun SecondaryInfo(
+fun SecondaryHomeInfo(
     month: String
 ) {
     val colors = MaterialTheme.colorScheme
@@ -127,7 +128,7 @@ fun SecondaryInfo(
 }
 
 @Composable
-fun SecondaryInfo(
+fun SecondaryInboxInfo(
     countUnread: Int
 ) {
     Row(
@@ -220,6 +221,113 @@ fun GlassSearchBar(
 }
 
 @Composable
+fun HomeTopBar(
+    title: String,
+    description: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .statusBarsPadding(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight(),
+            horizontalAlignment = Alignment.Start
+        ) {
+            TopBarTitleText(title = title)
+            SecondaryHomeInfo(description)
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        NotificationIcon(
+            onClick = onClick
+        )
+    }
+}
+
+@Composable
+fun ChatTopBar(
+    title: String
+) {
+
+    var query by remember { mutableStateOf("") }
+
+    Row(
+        modifier = Modifier
+            .statusBarsPadding(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight(),
+            horizontalAlignment = Alignment.Start
+        ) {
+            TopBarTitleText(title = title)
+            GlassSearchBar(
+                value = query,
+                onValueChange = { query = it },
+                modifier = Modifier,
+                placeholder = stringResource(R.string.glass_search_placeholder)
+            )
+        }
+    }
+}
+
+@Composable
+fun InboxTopBar(
+    title: String,
+    description: Int,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .statusBarsPadding(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight(),
+            horizontalAlignment = Alignment.Start
+        ) {
+            TopBarTitleText(title = title)
+            SecondaryInboxInfo(description)
+        }
+
+        Spacer(modifier = Modifier.weight(1f))
+
+        NotificationIcon(
+            onClick = onClick
+        )
+    }
+}
+
+@Composable
+fun ProfileTopBar(
+    title: String
+) {
+    Row(
+        modifier = Modifier
+            .statusBarsPadding(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Column(
+            modifier = Modifier
+                .fillMaxHeight(),
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
+        ) {
+            TopBarTitleTextLarge(title = title)
+        }
+    }
+}
+@Composable
 fun TopBar(
     pagerRouter: PagerRouterNavigator,
     monthTitle: String
@@ -227,8 +335,6 @@ fun TopBar(
     val colors = MaterialTheme.colorScheme
 
     val countUnread = 4
-
-    var query by remember { mutableStateOf("") }
 
     Surface(
         modifier = Modifier
@@ -243,32 +349,25 @@ fun TopBar(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.Center
         ) {
-            val title = when(pagerRouter.currentRoute.key) {
-                MainScreenRoute.Home.key -> stringResource(R.string.schedule)
-                MainScreenRoute.Chat.key -> stringResource(R.string.chats)
-                MainScreenRoute.Inbox.key -> stringResource(R.string.inbox)
-                MainScreenRoute.Profile.key -> stringResource(R.string.profile)
-                else -> throw IllegalArgumentException()
-            }
-
             Column(
                 modifier = Modifier
                     .fillMaxHeight(),
                 horizontalAlignment = Alignment.Start
             ) {
-                TopBarTitleText(
-                    modifier = Modifier,
-                    title = title
-                )
-
                 when(pagerRouter.currentRoute.key) {
-                    MainScreenRoute.Home.key -> SecondaryInfo(monthTitle)
-                    MainScreenRoute.Inbox.key -> SecondaryInfo(countUnread)
-                    MainScreenRoute.Chat.key -> GlassSearchBar(
-                        value = query,
-                        onValueChange = { query = it },
-                        modifier = Modifier,
-                        placeholder = stringResource(R.string.glass_search_placeholder)
+                    MainScreenRoute.Home.key -> HomeTopBar(
+                        title = stringResource(R.string.schedule),
+                        description = monthTitle
+                    ) { }
+                    MainScreenRoute.Inbox.key -> InboxTopBar(
+                        title = stringResource(R.string.inbox),
+                        description = countUnread
+                    ) { }
+                    MainScreenRoute.Chat.key -> ChatTopBar(
+                        title = stringResource(R.string.chats)
+                    )
+                    MainScreenRoute.Profile.key -> ProfileTopBar(
+                        title = stringResource(R.string.profile)
                     )
                 }
             }

@@ -1,12 +1,13 @@
-package com.example.planify.main.features.meeting.data.repositories_impl
+package com.example.planify.main.features.meetings.meeting.data.repositories_impl
 
-import com.example.planify.main.features.meeting.domain.repositories.MeetingRepository
-import com.example.planify.main.features.meeting.domain.entities.Invite
-import com.example.planify.main.features.meeting.domain.entities.Meeting
-import com.example.planify.main.features.meeting.domain.entities.MeetingInfo
-import com.example.planify.main.features.meeting.domain.entities.MeetingInviteStatus
+import com.example.planify.main.features.meetings.meeting.domain.repositories.MeetingRepository
+import com.example.planify.main.features.meetings.meeting.domain.entities.Invite
+import com.example.planify.main.features.meetings.meeting.domain.entities.Meeting
+import com.example.planify.main.features.meetings.meeting.domain.entities.MeetingInfo
+import com.example.planify.main.features.meetings.meeting.domain.entities.MeetingInviteStatus
 import com.example.planify.main.features.profile.entities.Profile
 import kotlinx.coroutines.delay
+import java.time.DayOfWeek
 import java.time.LocalDateTime
 import java.time.Duration
 import java.time.LocalDate
@@ -111,7 +112,7 @@ object HardcodedWeekData {
 
         val today = LocalDate.now()
         val now = LocalDateTime.now()
-        val monday = today.with(java.time.DayOfWeek.MONDAY)
+        val monday = today.with(DayOfWeek.MONDAY)
 
         // ПОНЕДЕЛЬНИК - 1 встреча
         meetingsMap[monday] = listOf(

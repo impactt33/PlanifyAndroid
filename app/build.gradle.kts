@@ -48,6 +48,9 @@ dependencies {
     implementation("io.coil-kt.coil3:coil-compose:3.3.0")
     implementation("io.coil-kt.coil3:coil-network-ktor3:3.3.0")
 
+    implementation(libs.androidx.datastore)
+    implementation(libs.androidx.datastore.preferences)
+
     implementation(libs.androidx.compose.material3.window.size.class1)
     implementation(libs.phosphor.icon)
     implementation("androidx.compose.ui:ui-text-google-fonts:1.10.1")

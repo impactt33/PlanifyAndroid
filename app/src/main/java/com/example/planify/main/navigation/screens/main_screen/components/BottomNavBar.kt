@@ -17,7 +17,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -53,7 +52,7 @@ import com.example.planify.main.common.ui.TextOnSurface
 import com.example.planify.main.common.ui.objectClickable
 import com.example.planify.main.common.ui.objectClickableNoAnimation
 import com.example.planify.main.common.ui.withShapeBackground
-import com.example.planify.main.features.create_meet_dialog.ui.CreateMeetDialogView
+import com.example.planify.main.features.meetings.meeting.create_meeting.CreateMeetingDialog
 import com.example.planify.main.navigation.screens.main_screen.MainScreenRoute
 
 @Composable
@@ -183,9 +182,9 @@ fun FloatingActionItem(
 
 @Composable
 fun BottomNavBar(
-    pagerRouter: PagerRouterNavigator
+    pagerRouter: PagerRouterNavigator,
+    onOpenCreateDialog: () -> Unit
 ) {
-    var showDialog by remember { mutableStateOf(false) }
     val colors = MaterialTheme.colorScheme
 
     Surface(
@@ -254,14 +253,7 @@ fun BottomNavBar(
                 .offset(y = (-20).dp)
                 .align(Alignment.Center),
             icon = PhosphorIcons.Bold.Plus,
-            onClick = { showDialog = true }
-        )
-    }
-
-    if(showDialog) {
-        CreateMeetDialogView(
-            onDismiss = { showDialog = false },
-            onConfirm = { showDialog = false }
+            onClick = onOpenCreateDialog
         )
     }
 }

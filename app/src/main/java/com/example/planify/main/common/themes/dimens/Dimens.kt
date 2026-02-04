@@ -7,6 +7,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.example.planify.main.features.meetings.meeting.domain.entities.Meeting
 
 data class Dimens(
     val bottomBarHeight: Dp = 88.dp,
@@ -26,5 +27,8 @@ data class Dimens(
     val dateScrollBarHeight: Dp = 60.dp,
     val emptyTimeSlot: Dp = 60.dp,
     val calendarCellSize: Dp = 56.dp,
-    val logOutButtonHeight: Dp = 56.dp
+    val logOutButtonHeight: Dp = 56.dp,
+    val profileCardHeight1: Dp = 208.dp,
+    val profileCardHeight2: Dp = 244.dp,
+    val typeOfMeetingCardHeight: Dp = 80.dp
 )

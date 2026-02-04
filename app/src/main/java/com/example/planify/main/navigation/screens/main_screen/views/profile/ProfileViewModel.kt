@@ -19,9 +19,8 @@ class ProfileViewModel(
 ): ViewModel() {
     private val _uiState: MutableStateFlow<UIState> = MutableStateFlow(UIState.Loading)
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
-    suspend fun getOrFetchUserInfo() {
-        delay(1000)
-
+    fun getOrFetchUserInfo() {
+        //delay(2000)
         viewModelScope.launch {
             _uiState.emit(UIState.Loading)
 

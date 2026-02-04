@@ -1,4 +1,4 @@
-package com.example.planify.main.features.meeting.domain.entities
+package com.example.planify.main.features.meetings.meeting.domain.entities
 
 enum class MeetingInviteStatus {
     PENDING,

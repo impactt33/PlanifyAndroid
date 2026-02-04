@@ -21,12 +21,12 @@ import androidx.compose.ui.Modifier
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.TextEmptyMeetings
 import com.example.planify.main.common.utils.dateForPage
-import com.example.planify.main.features.meeting.domain.entities.MeetingInfo
+import com.example.planify.main.features.meetings.meeting.domain.entities.MeetingInfo
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.UIState
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.ScheduleScroll
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.MeetingCard
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.WeeklySchedule
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.SkeletonMeetingCard
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.SkeletonMeetingCard
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ofPattern

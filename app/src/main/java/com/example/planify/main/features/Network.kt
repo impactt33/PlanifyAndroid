@@ -14,7 +14,7 @@ import kotlinx.serialization.json.Json
 
 object Network {
 
-    const val HOST = "IDI NAHUI"
+    const val HOST = "http://r2.server.universallplus.ru:8855"
 
     val client by lazy {
         HttpClient(CIO) {

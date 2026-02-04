@@ -1,7 +1,6 @@
 package com.example.planify.main.features.profile.domain.services_impl
 
 import com.example.planify.core.SingletonHolder
-import com.example.planify.main.features.meeting.domain.repositories.MeetingRepository
 import com.example.planify.main.features.profile.domain.repositories.ProfilesRepository
 import com.example.planify.main.features.profile.domain.services.ProfilesService
 import com.example.planify.main.features.profile.entities.Profile

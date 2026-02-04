@@ -1,5 +1,6 @@
 package com.example.planify.main.common.themes
 
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.ColorScheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.darkColorScheme
@@ -8,11 +9,16 @@ import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.Immutable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.planify.main.common.entities.ThemeId
 import com.example.planify.main.common.themes.dimens.Dimens
 import com.example.planify.main.common.themes.dimens.LocalDimens
 import com.example.planify.main.common.themes.icons.Icons
@@ -23,6 +29,8 @@ import com.example.planify.main.common.themes.shapes.Shapes
 import com.example.planify.main.common.themes.shapes.shapes
 import com.example.planify.main.common.themes.spacing.LocalSpacing
 import com.example.planify.main.common.themes.spacing.Spacing
+import com.example.planify.main.features.settings.domain.services_impl.SettingsServiceImplST
+import com.example.planify.main.features.settings.entities.LocalSettings
 
 /* ---------------------------
    1) Raw colors (из theme.css)
@@ -385,8 +393,8 @@ data class Gradients(
     val orange: Brush,
     val blue: Brush,
     val blueDeep: Brush,
-    val radialOrange: (sizePx: androidx.compose.ui.geometry.Size) -> Brush,
-    val radialBlue: (sizePx: androidx.compose.ui.geometry.Size) -> Brush,
+    val radialOrange: (sizePx: Size) -> Brush,
+    val radialBlue: (sizePx: Size) -> Brush,
 )
 
 private val GradientsObj = Gradients(
@@ -435,10 +443,25 @@ private val LocalGradients = staticCompositionLocalOf<Gradients> {
 
 @Composable
 fun PlanifyTheme(
-    darkTheme: Boolean = false,
     windowSize: WindowWidthSizeClass = WindowWidthSizeClass.Compact,
     content: @Composable () -> Unit
 ) {
+
+    val service = remember { SettingsServiceImplST.get() }
+
+    val settings by service.settingsFlow.collectAsState(
+        initial = LocalSettings(
+            theme = ThemeId.SYSTEM,
+            notifications = true
+        )
+    )
+
+    val darkTheme = when(settings.theme as ThemeId) {
+        ThemeId.SYSTEM -> isSystemInDarkTheme()
+        ThemeId.DARK -> true
+        ThemeId.LIGHT -> false
+    }
+
     val colorScheme = when {
         darkTheme -> darkScheme
         else -> lightScheme

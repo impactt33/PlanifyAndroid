@@ -1,5 +1,6 @@
 package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components
 
+import android.util.Log
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.PagerScope
 import androidx.compose.foundation.pager.PagerState
@@ -24,14 +25,12 @@ fun MonthScroll(
     val scope = rememberCoroutineScope()
 
     LaunchedEffect(pagerState) {
-        snapshotFlow { pagerState.currentPage }
-            .distinctUntilChanged()
-            .collect {
-            }
+
     }
 
     LaunchedEffect(selectedDate) {
         snapshotFlow { selectedDate }
+            .distinctUntilChanged()
             .collect {
                 val target = initialPage + ChronoUnit.MONTHS
                     .between(LocalDate.now().withDayOfMonth(1),
@@ -41,6 +40,11 @@ fun MonthScroll(
                 if (pagerState.currentPage != target) {
                     pagerState.animateScrollToPage(target)
                 }
+
+                Log.d(
+                    "MONTH SCROLL", "target: $target, current page: ${pagerState.currentPage}, selected date: $selectedDate"
+                )
+
             }
     }
 

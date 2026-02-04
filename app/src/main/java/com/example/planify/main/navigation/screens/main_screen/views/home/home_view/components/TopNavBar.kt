@@ -1,5 +1,6 @@
 package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -39,7 +40,7 @@ fun TopNavBarItem(
         else Color.Transparent
 
     val backgroundColor = if (isSelected)
-        extras.secondary else colors.onPrimary
+        extras.secondary else colors.surface
 
     Column(
         modifier = modifier

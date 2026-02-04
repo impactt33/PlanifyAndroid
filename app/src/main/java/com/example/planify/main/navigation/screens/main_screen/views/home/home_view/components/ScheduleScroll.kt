@@ -39,8 +39,8 @@ fun ScheduleScroll(
 
     LaunchedEffect(selectedDate) {
         val target = selectedDate.pageForDate(initialPage)
-        Log.d("App", target.toString())
-        Log.d("App", pagerState.currentPage.toString())
+        Log.d(
+            "SCHEDULE SCROLL", "target: $target, current page: ${pagerState.currentPage}, selected date: $selectedDate")
         if (target != pagerState.currentPage) {
             pagerState.scrollToPage(target)
         }

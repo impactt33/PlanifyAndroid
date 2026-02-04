@@ -99,13 +99,25 @@ fun TopBarTitleText(title: String, modifier: Modifier = Modifier) {
 }
 
 @Composable
+fun TopBarTitleTextLarge(title: String, modifier: Modifier = Modifier) {
+    Text(
+        modifier = modifier,
+        text = title,
+        style = MaterialTheme.typography.displayLarge.copy(
+            brush = Locals.gradients.blue,
+            fontSize = 40.sp
+        ),
+    )
+}
+
+@Composable
 fun TopBarTitleTextSecondary(text: String, modifier: Modifier = Modifier) {
     Text(
         modifier = modifier,
         text = text,
         style = MaterialTheme.typography.bodySmall,
         color = MaterialTheme.colorScheme.onPrimaryContainer.copy(alpha = 0.7f),
-        fontSize = 20.sp
+        fontSize = 14.sp
     )
 }
 

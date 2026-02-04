@@ -14,8 +14,11 @@ navigationCompose = "2.9.6"
 lifecycleViewmodelCompose = "2.10.0"
 phosphorIcon = "1.0.0"
 uiGeometry = "1.10.1"
+datastore = "1.2.0"
 
 [libraries]
+androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
+androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ktor-client = { group = "io.ktor", name="ktor-client", version.ref = "ktorClient" }
 ktor-client-cio = { group = "io.ktor", name="ktor-client-cio", version.ref = "ktorClient" }
