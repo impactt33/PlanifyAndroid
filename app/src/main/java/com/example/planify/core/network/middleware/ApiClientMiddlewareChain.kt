@@ -12,13 +12,10 @@ class ApiClientMiddlewareChain(
         context: ApiRequestContext,
         request: RequestCall<In>
     ): Out {
-        return if (middlewareIndex >= middlewares.size) {
-            request() as Out
-        } else {
-            val middleware = middlewares[middlewareIndex] as ApiClientMiddleware<In, Out>
-            middleware.proceed(context, request) { nextRequest ->
-                executeChain(middlewareIndex + 1, context, nextRequest)
-            }
+        val middleware = middlewares[middlewareIndex] as ApiClientMiddleware<In, Out>
+
+        return middleware.proceed(context, request) { nextRequest ->
+            executeChain(middlewareIndex + 1, context, nextRequest)
         }
     }
 
@@ -34,15 +31,24 @@ class ApiClientMiddlewareChain(
     }
 
     class Builder private constructor(
-        private val steps: List<ApiClientMiddleware<*, *>>
+        private val steps: MutableList<ApiClientMiddleware<*, *>> = ArrayList()
     ) {
         companion object {
-            fun start(): Builder = Builder(emptyList())
-            fun empty(): ApiClientMiddlewareChain = Builder(emptyList()).build()
+            fun start(): Builder = Builder()
+            fun empty(): ApiClientMiddlewareChain = Builder().build()
         }
 
-        fun <In, Out> then(middleware: ApiClientMiddleware<In, Out>): Builder =
-            Builder(steps + middleware)
+        fun <In, Out, T> insertBefore(middleware: ApiClientMiddleware<In, Out>, beforeClazz: Class<T>): Builder {
+            val index = steps.indexOfFirst { it::class.java == beforeClazz }
+            if (index == -1) throw IllegalArgumentException("Cannot insert ${middleware::class.simpleName} before ${beforeClazz.simpleName}: Not found")
+            steps.add(index, middleware)
+            return this
+        }
+
+        fun <In, Out> then(middleware: ApiClientMiddleware<In, Out>): Builder {
+            steps.add(middleware)
+            return this
+        }
 
         fun build(): ApiClientMiddlewareChain = ApiClientMiddlewareChain(steps)
     }

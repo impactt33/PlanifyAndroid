@@ -5,6 +5,7 @@ import com.example.planify.core.network.ApiRequestContext
 import com.example.planify.core.network.middleware.ApiClientMiddlewareChain
 import com.example.planify.main.common.network.middlewares.ApiResponseParseMiddleware
 import com.example.planify.main.common.network.middlewares.AppCodeValidatorMiddleware
+import com.example.planify.main.common.network.middlewares.KtorExecuteMiddleware
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
 
@@ -15,6 +16,7 @@ open class ApiClient(
     httpClient
 ) {
     private val appCodeValidatorMiddleware = AppCodeValidatorMiddleware(appCodeProcessingPolicy)
+    private val ktorExecuteMiddleware = KtorExecuteMiddleware(this.httpClient)
 
     protected open fun <T> setupMiddlewareChain(): ApiClientMiddlewareChain.Builder {
         val apiResponseParserMiddleware = ApiResponseParseMiddleware<T>()  // Have to create it here to specify T
@@ -22,18 +24,17 @@ open class ApiClient(
         return ApiClientMiddlewareChain.Builder.start()
             .then(apiResponseParserMiddleware)
             .then(appCodeValidatorMiddleware)
+            .then(ktorExecuteMiddleware)
     }
 
     open suspend fun <T> request(
-        builder: HttpRequestBuilder
+        context: ApiRequestContext? = null,
+        build: HttpRequestBuilder.() -> Unit
     ): T {
-        val chain = setupMiddlewareChain<T>()
-
-        return processRequest(
-            chain = chain.build(),
-            context = ApiRequestContext()
-        ) {
-            performRequest(builder)
-        }
+        return super.request(
+            context = context,
+            chain = setupMiddlewareChain<T>().build(),
+            build = build
+        )
     }
 }

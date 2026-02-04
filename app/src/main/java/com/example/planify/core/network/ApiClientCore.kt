@@ -4,8 +4,6 @@ import com.example.planify.core.network.middleware.ApiClientMiddlewareChain
 import com.example.planify.core.network.middleware.RequestCall
 import io.ktor.client.HttpClient
 import io.ktor.client.request.HttpRequestBuilder
-import io.ktor.client.request.request
-import io.ktor.client.statement.HttpResponse
 
 open class ApiClientCore(
     protected val httpClient: HttpClient
@@ -13,24 +11,22 @@ open class ApiClientCore(
     protected suspend fun <T> processRequest(
         chain: ApiClientMiddlewareChain,
         context: ApiRequestContext,
-        request: RequestCall<HttpResponse>
+        request: RequestCall<HttpRequestBuilder>
     ): T {
         return chain.execute(request, context)
     }
 
-    protected open suspend fun performRequest(builder: HttpRequestBuilder): HttpResponse {
-        return httpClient.request(builder)
-    }
-
     open suspend fun <T> request(
-        builder: HttpRequestBuilder,
-        context: ApiRequestContext? = null
+        context: ApiRequestContext? = null,
+        chain: ApiClientMiddlewareChain? = null,
+        build: HttpRequestBuilder.() -> Unit,
     ): T {
         return processRequest(
-            chain = ApiClientMiddlewareChain.Builder.empty(),
+            chain = chain ?: ApiClientMiddlewareChain.Builder.empty(),
             context = context ?: ApiRequestContext()
         ) {
-            performRequest(builder)
+            val builder = HttpRequestBuilder()
+            builder.apply(build)
         }
     }
 }
