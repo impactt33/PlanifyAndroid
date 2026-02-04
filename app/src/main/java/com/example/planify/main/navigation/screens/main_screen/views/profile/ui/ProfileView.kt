@@ -1,4 +1,4 @@
-package com.example.planify.main.navigation.screens.main_screen.views.profile
+package com.example.planify.main.navigation.screens.main_screen.views.profile.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -17,9 +17,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -31,18 +29,16 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import coil3.compose.AsyncImage
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
@@ -53,28 +49,20 @@ import com.adamglin.phosphoricons.regular.Pen
 import com.adamglin.phosphoricons.regular.SignOut
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
-import com.example.planify.main.features.auth.domain.services.UsersService
 import com.example.planify.main.features.auth.domain.entities.UserPrivate
-import com.example.planify.main.features.profile.domain.services.ProfilesService
-import com.example.planify.main.features.profile.entities.Profile
+import com.example.planify.main.features.profile.domain.entities.Profile
 import com.example.planify.main.navigation.screens.fixed_screens.ErrorScreen
-import com.example.planify.main.navigation.screens.init_screen.components.LoadingView
+import com.example.planify.main.navigation.screens.main_screen.views.profile.ProfileViewModel
+import com.example.planify.main.navigation.screens.main_screen.views.profile.UIState
 import com.example.planify.main.navigation.screens.main_screen.views.profile.components.SkeletonProfile
 
 @Composable
 fun ProfileView(
     scaffoldPadding: PaddingValues,
-    profileService: ProfilesService,
-    usersService: UsersService,
     onEditClick: () -> Unit
 ) {
-    val factory = remember { ProfileViewModelFactory(
-        profileService = profileService,
-        usersService = usersService
-    ) }
-
     ProfileView(
-        viewModel = viewModel(factory = factory),
+        viewModel = hiltViewModel(),
         scaffoldPadding = scaffoldPadding,
         onEditClick = onEditClick
     )

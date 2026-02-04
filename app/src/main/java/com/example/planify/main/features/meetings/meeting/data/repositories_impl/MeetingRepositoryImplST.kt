@@ -5,7 +5,7 @@ import com.example.planify.main.features.meetings.meeting.domain.entities.Invite
 import com.example.planify.main.features.meetings.meeting.domain.entities.Meeting
 import com.example.planify.main.features.meetings.meeting.domain.entities.MeetingInfo
 import com.example.planify.main.features.meetings.meeting.domain.entities.MeetingInviteStatus
-import com.example.planify.main.features.profile.entities.Profile
+import com.example.planify.main.features.profile.domain.entities.Profile
 import kotlinx.coroutines.delay
 import java.time.DayOfWeek
 import java.time.LocalDateTime

@@ -18,6 +18,7 @@ import javax.inject.Inject
 class InitScreenViewModel @Inject constructor(
     val authService: AuthService
 ) : ViewModel() {
+
     private val _uiState = MutableStateFlow(UIState.LOADING)
     val uiState = _uiState.asStateFlow()
 
@@ -25,11 +26,18 @@ class InitScreenViewModel @Inject constructor(
     val navigation = _navigation.asSharedFlow()
 
     init {
+        viewModelScope.launch {
+            authService.login(
+                email = "admin@example.com",
+                password = "adminpass"
+            )
+        }
         checkAuth()
     }
 
     fun checkAuth() {
         viewModelScope.launch {
+            delay(5000)
             if (!pingServer()) return@launch
             if (isAuthenticated()) _navigation.emit(AppRoute.Main)
             else _navigation.emit(AppRoute.Auth)

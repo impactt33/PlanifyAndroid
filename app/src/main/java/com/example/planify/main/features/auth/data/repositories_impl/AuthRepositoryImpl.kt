@@ -20,7 +20,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
 @Singleton
-class AuthRepositoryImplST @Inject constructor(
+class AuthRepositoryImpl @Inject constructor(
     private val apiClient: ApiClient
 ) : AuthRepository {
     private val authFeaturePath = "/auth"

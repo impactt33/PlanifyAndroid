@@ -21,7 +21,7 @@ fun AppNavHost() {
     NavHost(
         modifier = Modifier.fillMaxSize(),
         navController = navController,
-        startDestination = AppRoute.Main.route
+        startDestination = AppRoute.Init.route
     ) {
         composable(AppRoute.Init.route) {
             InitScreen(

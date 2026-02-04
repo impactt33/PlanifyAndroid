@@ -3,6 +3,7 @@ package com.example.planify.main.features.auth.di
 import com.example.planify.main.common.network.policies.app_code.AppCodeProcessingPolicy
 import com.example.planify.main.features.auth.domain.AuthTokenManager
 import com.example.planify.main.features.auth.domain.utils.network.AuthenticatedApiClient
+import dagger.Binds
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

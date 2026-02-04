@@ -1,12 +1,16 @@
 package com.example.planify.main.features.auth.di
 
-import com.example.planify.main.features.auth.data.repositories_impl.AuthRepositoryImplST
+import com.example.planify.main.features.auth.data.repositories_impl.AuthRepositoryImpl
 import com.example.planify.main.features.auth.data.repositories_impl.SessionsRepositoryImpl
+import com.example.planify.main.features.auth.data.repositories_impl.UsersRepositoryImpl
 import com.example.planify.main.features.auth.domain.AuthTokenManager
 import com.example.planify.main.features.auth.domain.repositories.AuthRepository
 import com.example.planify.main.features.auth.domain.repositories.SessionsRepository
+import com.example.planify.main.features.auth.domain.repositories.UsersRepository
 import com.example.planify.main.features.auth.domain.services.AuthService
+import com.example.planify.main.features.auth.domain.services.UsersService
 import com.example.planify.main.features.auth.domain.services_impl.AuthServiceImpl
+import com.example.planify.main.features.auth.domain.services_impl.UsersServiceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -18,7 +22,7 @@ import javax.inject.Singleton
 abstract class AuthFeatureBindingModule {
     @Binds
     @Singleton
-    abstract fun bindAuthRepository(impl: AuthRepositoryImplST): AuthRepository
+    abstract fun bindAuthRepository(impl: AuthRepositoryImpl): AuthRepository
 
     @Binds
     @Singleton
@@ -31,4 +35,12 @@ abstract class AuthFeatureBindingModule {
     @Binds
     @Singleton
     abstract fun bindTokenManager(authService: AuthServiceImpl): AuthTokenManager
+
+    @Binds
+    @Singleton
+    abstract fun bindUsersRepository(impl: UsersRepositoryImpl): UsersRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindUsersService(impl: UsersServiceImpl): UsersService
 }

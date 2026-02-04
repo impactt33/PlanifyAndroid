@@ -21,11 +21,12 @@ class SettingsViewModel(
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
 
     init {
+        Log.d("VIEWMODEL", "I AM ALIVE!!!")
         viewModelScope.launch {
             _uiState.emit(UIState.Loading)
 
             settingsService.settingsFlow.collect { data ->
-                Log.d("Changing Settings", data.toString())
+                Log.d("VIEWMODEL", "SETTINGS CHANGED!!!")
                     _uiState.emit(
                         UIState.ContentData(settings = data)
                     )

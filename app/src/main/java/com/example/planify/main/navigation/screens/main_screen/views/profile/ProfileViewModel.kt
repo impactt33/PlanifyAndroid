@@ -5,22 +5,23 @@ import androidx.lifecycle.viewModelScope
 import com.example.planify.main.features.auth.domain.services.UsersService
 import com.example.planify.main.features.auth.domain.entities.UserPrivate
 import com.example.planify.main.features.profile.domain.services.ProfilesService
-import com.example.planify.main.features.profile.entities.Profile
+import com.example.planify.main.features.profile.domain.entities.Profile
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class ProfileViewModel(
+@HiltViewModel
+class ProfileViewModel @Inject constructor(
     val profilesService: ProfilesService,
     val usersService: UsersService
 ): ViewModel() {
     private val _uiState: MutableStateFlow<UIState> = MutableStateFlow(UIState.Loading)
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
     fun getOrFetchUserInfo() {
-        //delay(2000)
         viewModelScope.launch {
             _uiState.emit(UIState.Loading)
 

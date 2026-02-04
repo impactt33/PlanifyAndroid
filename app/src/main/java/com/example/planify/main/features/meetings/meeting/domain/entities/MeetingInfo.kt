@@ -1,6 +1,6 @@
 package com.example.planify.main.features.meetings.meeting.domain.entities
 
-import com.example.planify.main.features.profile.entities.Profile
+import com.example.planify.main.features.profile.domain.entities.Profile
 
 data class MeetingInfo(
     val meeting: Meeting,

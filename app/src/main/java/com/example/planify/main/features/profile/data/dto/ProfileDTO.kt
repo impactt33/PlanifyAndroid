@@ -1,11 +1,13 @@
 package com.example.planify.main.features.profile.data.dto
 
-import com.example.planify.main.features.profile.entities.Profile
+import com.example.planify.main.features.profile.domain.entities.Profile
 import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
 data class ProfileDTO(
+    @SerialName("userId")
+    val userId: Long,
     @SerialName("firstName")
     val firstName: String,
     @SerialName("lastName")
@@ -18,6 +20,7 @@ data class ProfileDTO(
     val profileImageUrl: String
 ) {
     fun toEntity(): Profile = Profile(
+        userId = userId,
         firstName = firstName,
         lastName = lastName,
         position = position,
