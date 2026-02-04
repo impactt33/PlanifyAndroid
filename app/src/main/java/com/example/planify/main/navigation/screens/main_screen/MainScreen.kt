@@ -1,12 +1,9 @@
 package com.example.planify.main.navigation.screens.main_screen
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
-import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideInVertically
-import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -17,7 +14,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -29,15 +25,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import androidx.navigation.compose.rememberNavController
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
-import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.features.auth.domain.services_impl.UsersServiceImplST
-import com.example.planify.main.features.meetings.meeting.create_meeting.CreateMeetingDialog
+import com.example.planify.main.features.meetings.create_meeting.CreateMeetingDialog
 import com.example.planify.main.features.meetings.meeting.domain.services_impl.MeetingServiceImplST
 import com.example.planify.main.features.profile.domain.services_impl.ProfilesServiceImplST
 import com.example.planify.main.navigation.screens.main_screen.components.BottomNavBar
@@ -46,8 +39,9 @@ import com.example.planify.main.navigation.screens.main_screen.views.home.home_v
 import com.example.planify.main.navigation.screens.main_screen.views.profile.ProfileView
 
 @Composable
-fun MainScreen(
-    onSettings: () -> Unit
+fun MainScreenBox(
+    onSettings: () -> Unit,
+    onCreateClick: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
 
@@ -95,7 +89,8 @@ fun MainScreen(
                 color = colors.background
             ) {
                 CreateMeetingDialog(
-                    onClose = { opened = false }
+                    onClose = { opened = false },
+                    onCreateClick = onCreateClick
                 )
             }
         }
@@ -118,7 +113,8 @@ private fun MainScreen(
     Scaffold(
         topBar = { TopBar(
             pagerRouter = router,
-            monthTitle = monthTitle
+            monthTitle = monthTitle,
+            onSettings = onSettings
             ) },
         bottomBar = { BottomNavBar(
             pagerRouter = router,
@@ -144,7 +140,7 @@ private fun MainScreen(
                     scaffoldPadding = padding,
                     profileService = ProfilesServiceImplST.get(),
                     usersService = UsersServiceImplST.get(),
-                    onSettings = onSettings
+                    onEditClick = {}
                 )
             }
         }

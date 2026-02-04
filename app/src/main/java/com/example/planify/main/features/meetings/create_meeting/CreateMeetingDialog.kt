@@ -1,6 +1,5 @@
-package com.example.planify.main.features.meetings.meeting.create_meeting
+package com.example.planify.main.features.meetings.create_meeting
 
-import android.webkit.WebView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -15,17 +14,12 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonColors
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -34,21 +28,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Calendar
 import com.adamglin.phosphoricons.regular.Clock
-import com.adamglin.phosphoricons.regular.Cross
 import com.adamglin.phosphoricons.regular.Lightning
 import com.adamglin.phosphoricons.regular.X
+import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
 
 @Composable
 fun CreateMeetingDialog(
-    onClose: () -> Unit
+    onClose: () -> Unit,
+    onCreateClick: () -> Unit
 ) {
 
     val colors = MaterialTheme.colorScheme
@@ -86,14 +81,14 @@ fun CreateMeetingDialog(
                                     top = Locals.spacing.xxs
                                 )
                             ),
-                        text = "Создать встречу",
+                        text = stringResource(R.string.create_meeting_title),
                         style = MaterialTheme.typography.titleLarge
                     )
 
                     Spacer(modifier = Modifier.height(Locals.spacing.xxs))
 
                     Text(
-                        text = "Выберите тип встречи для создания",
+                        text = stringResource(R.string.create_meeting_title_desc),
                         style = MaterialTheme.typography.bodySmall
                     )
                 }
@@ -111,22 +106,22 @@ fun CreateMeetingDialog(
             TypeOfMeeting(
                 icon = PhosphorIcons.Regular.Calendar,
                 iconColor = Color.Blue,
-                title = "Create meeting",
-                description = "Full info",
-                onClick = {}
+                title = stringResource(R.string.create_meeting),
+                description = stringResource(R.string.create_meeting_desc),
+                onClick = onCreateClick
             )
             TypeOfMeeting(
                 icon = PhosphorIcons.Regular.Lightning,
                 iconColor = colors.tertiary,
-                title = "Fast meeting",
-                description = "Few info",
+                title = stringResource(R.string.fast_meeting),
+                description = stringResource(R.string.fast_meeting_desc),
                 onClick = {}
             )
             TypeOfMeeting(
                 icon = PhosphorIcons.Regular.Clock,
                 iconColor = Color.Green,
-                title = "Book slot",
-                description = "Book any slot",
+                title = stringResource(R.string.book_slot),
+                description = stringResource(R.string.book_slot_desc),
                 onClick = {}
             )
         }

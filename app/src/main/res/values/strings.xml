@@ -34,4 +34,42 @@
     <string name="app_theme">Тема приложения</string>
     <string name="error">Что-то пошло не так...</string>
 
+    <string name="edit_profile">Редактировать профиль</string>
+
+    <string name="create_meeting_title">Создать</string>
+    <string name="create_meeting_title_desc">Выберите тип встречи для создания</string>
+    <string name="create_meeting">Создать встречу</string>
+    <string name="create_meeting_desc">Полная форма создания встречи</string>
+    <string name="fast_meeting">Быстрое приглашение</string>
+    <string name="fast_meeting_desc">Встреча с минимальной информацией</string>
+    <string name="book_slot">Забранировать слот</string>
+    <string name="book_slot_desc">Забронировать время без создания встречи</string>
+
+    <string name="title_info">Информация</string>
+    <string name="title_time">Время</string>
+    <string name="title_participants">Участники</string>
+    <string name="step1_of3">Шаг 1 из 3</string>
+    <string name="step2_of3">Шаг 2 из 3</string>
+    <string name="step3_of3">Шаг 3 из 3</string>
+
+    <string name="step1_main_info">Основная информация</string>
+    <string name="step1_name_of_meeting">Название встречи</string>
+    <string name="step1_name_of_meeting_placeholder">Например: Daily Sync</string>
+    <string name="step1_desc">Описание</string>
+    <string name="step1_desc_placeholder">Опишите цель встречи...</string>
+    <string name="step1_place">Место / Ссылка</string>
+    <string name="step1_place_placeholder">Конференц-зал или Zoom ссылка</string>
+    <string name="step1_date">Дата встречи</string>
+
+    <string name="step2_title">Выбор времени</string>
+    <string name="step2_desc">Встречи доступны только по часам. Выберите время начала встречи.</string>
+    <string name="is_busy">Занято</string>
+
+    <string name="step3_inviting">Приглашение участников</string>
+    <string name="step3_chosen">Выбрано:</string>
+    <string name="step3_search_placeholder">Поиск коллег по имени или отделу...</string>
+
+    <string name="meeting_detail">Детали встречи</string>
+
+
 </resources>

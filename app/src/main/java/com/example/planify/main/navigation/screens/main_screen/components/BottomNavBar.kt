@@ -22,9 +22,6 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,7 +49,6 @@ import com.example.planify.main.common.ui.TextOnSurface
 import com.example.planify.main.common.ui.objectClickable
 import com.example.planify.main.common.ui.objectClickableNoAnimation
 import com.example.planify.main.common.ui.withShapeBackground
-import com.example.planify.main.features.meetings.meeting.create_meeting.CreateMeetingDialog
 import com.example.planify.main.navigation.screens.main_screen.MainScreenRoute
 
 @Composable

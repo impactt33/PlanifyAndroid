@@ -8,6 +8,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 
 @Composable
@@ -20,7 +21,8 @@ private fun PagerHost(
     HorizontalPager(
         modifier = modifier,
         userScrollEnabled = userScrollEnabled,
-        state = state.pagerState
+        state = state.pagerState,
+        verticalAlignment = Alignment.Top
     ) { page ->
         content(state.routes[page])
     }

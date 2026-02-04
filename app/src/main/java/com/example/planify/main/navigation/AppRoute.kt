@@ -5,4 +5,7 @@ sealed class AppRoute(val route: String) {
     object Auth : AppRoute("auth")
     object Init : AppRoute("init")
     object Settings : AppRoute("settings")
+    object CreateMeetingMenu : AppRoute("create_meeting")
+
+    object MeetingInfoMenu : AppRoute("meeting_info")
 }

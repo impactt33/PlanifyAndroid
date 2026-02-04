@@ -28,7 +28,7 @@ val bodyFontFamily = FontFamily(
 val displayFontFamily = FontFamily(
     Font(
         resId = R.font.arial_regular,
-        weight = FontWeight.Bold,
+        weight = FontWeight.Normal,
         style = FontStyle.Normal
     ),
     Font(

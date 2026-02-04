@@ -2,6 +2,7 @@ package com.example.planify.main.navigation.screens.main_screen.views.profile
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,6 +19,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
+import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -33,6 +35,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -46,6 +49,7 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Briefcase
 import com.adamglin.phosphoricons.regular.Buildings
 import com.adamglin.phosphoricons.regular.EnvelopeSimple
+import com.adamglin.phosphoricons.regular.Pen
 import com.adamglin.phosphoricons.regular.SignOut
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
@@ -62,7 +66,7 @@ fun ProfileView(
     scaffoldPadding: PaddingValues,
     profileService: ProfilesService,
     usersService: UsersService,
-    onSettings: () -> Unit
+    onEditClick: () -> Unit
 ) {
     val factory = remember { ProfileViewModelFactory(
         profileService = profileService,
@@ -72,7 +76,7 @@ fun ProfileView(
     ProfileView(
         viewModel = viewModel(factory = factory),
         scaffoldPadding = scaffoldPadding,
-        onSettings = onSettings
+        onEditClick = onEditClick
     )
 }
 
@@ -80,14 +84,14 @@ fun ProfileView(
 private fun ProfileView(
     viewModel: ProfileViewModel,
     scaffoldPadding: PaddingValues,
-    onSettings: () -> Unit
+    onEditClick: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
 
     val uiState by viewModel.uiState.collectAsState()
 
     LaunchedEffect(Unit) {
-        viewModel.getOrFetchUserInfo()
+        viewModel.getOrFetchUserInfo() // можно засунуть в init
     }
 
     Surface(
@@ -111,13 +115,9 @@ private fun ProfileView(
                 is UIState.ContentData -> {
                     InfoView(
                         (uiState as UIState.ContentData).profile,
-                        (uiState as UIState.ContentData).user
+                        (uiState as UIState.ContentData).user,
+                        onEditClick = onEditClick
                     )
-                    Button(
-                        onClick = onSettings
-                    ) {
-                        Text("Settings")
-                    }
                 }
 
                 is UIState.Error -> { ErrorScreen((uiState as UIState.Error).message) }
@@ -129,7 +129,8 @@ private fun ProfileView(
 @Composable
 fun InfoView(
     profile: Profile,
-    user: UserPrivate
+    user: UserPrivate,
+    onEditClick: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
     val shape = Locals.shapes.mediumShape
@@ -192,6 +193,57 @@ fun InfoView(
                 style = MaterialTheme.typography.bodyMedium,
                 color = colors.onSurfaceVariant
             )
+
+            Spacer(Modifier.height(Locals.spacing.m))
+
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth(0.8f)
+                    .height(Locals.dimens.profileEditButtonHeight)
+                    .border(
+                        color = Locals.extras.border,
+                        shape = shape,
+                        width = 1.dp
+                    )
+                    .shadow(
+                        elevation = 1.dp,
+                        shape = shape,
+                        ambientColor = Locals.extras.mutedForeground.copy(alpha = 0.6f),
+                        spotColor = Locals.extras.mutedForeground.copy(alpha = 0.6f)
+                    ),
+                colors = CardDefaults.cardColors(containerColor = colors.surface),
+                shape = shape
+            ) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .clickable(
+                        onClick = onEditClick
+                    )
+                ) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxSize(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+                        Icon(
+                            modifier = Modifier
+                                .size(Locals.icons.smallPlus),
+                            imageVector = PhosphorIcons.Regular.Pen,
+                            contentDescription = null
+                        )
+
+                        Spacer(modifier = Modifier.width(Locals.spacing.xs))
+
+                        Text(
+                            text = stringResource(R.string.edit_profile),
+                            style = MaterialTheme.typography.bodyMedium
+                        )
+                    }
+                }
+
+            }
         }
     }
 

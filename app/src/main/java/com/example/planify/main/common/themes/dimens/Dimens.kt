@@ -11,7 +11,7 @@ import com.example.planify.main.features.meetings.meeting.domain.entities.Meetin
 
 data class Dimens(
     val bottomBarHeight: Dp = 88.dp,
-    val topBarHeight: Dp = 136.dp,
+    val topBarHeight: Dp = 132.dp,
     val iconSize: Dp = 36.dp,
     val cornerRadius: Dp = 16.dp,
     val upcomingEventBannerHeight: Dp = 128.dp,
@@ -28,7 +28,16 @@ data class Dimens(
     val emptyTimeSlot: Dp = 60.dp,
     val calendarCellSize: Dp = 56.dp,
     val logOutButtonHeight: Dp = 56.dp,
-    val profileCardHeight1: Dp = 208.dp,
-    val profileCardHeight2: Dp = 244.dp,
-    val typeOfMeetingCardHeight: Dp = 80.dp
+    val profileCardHeight1: Dp = 256.dp,
+    val profileCardHeight2: Dp = 248.dp,
+    val profileEditButtonHeight: Dp = 36.dp,
+    val typeOfMeetingCardHeight: Dp = 80.dp,
+    val createMeetingBottomButtonHeight: Dp = 56.dp,
+    val createMeetingBottomBarHeight: Dp = 116.dp,
+    val createMeetingCompleteStatusBarHeight: Dp = 20.dp,
+    val dotSize: Dp = 6.dp,
+    val pillWidth: Dp = 22.dp,
+    val createMeetingTimeSlotHeight: Dp = 48.dp,
+    val createMeetingParticipantCardHeight: Dp = 80.dp,
+    val topBarDetailsHeight: Dp = 100.dp
 )
