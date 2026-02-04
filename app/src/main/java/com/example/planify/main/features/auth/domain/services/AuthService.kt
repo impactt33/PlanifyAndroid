@@ -9,11 +9,12 @@ import kotlinx.coroutines.flow.StateFlow
 interface AuthService {
     val authStateFlow: StateFlow<AuthState>
 
-    fun isAuthenticated(): Boolean = authStateFlow.value is AuthState.Authenticated
+    fun isAuthenticated(): Boolean
 
     suspend fun register(username: String, email: String, password: String): Result<LoginResult>
     suspend fun login(email: String, password: String): Result<LoginResult>
     suspend fun refresh(): Result<AuthTokenPair>
+
     suspend fun logout(): Result<Unit>
     suspend fun getActiveSessions(): Result<List<AuthSession>>
     suspend fun revokeSession(sessionUuid: String): Result<Unit>

@@ -1,4 +1,4 @@
-package com.example.planify.main.navigation.screens.login_screen
+package com.example.planify.main.navigation.screens.auth_screen
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -7,10 +7,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import java.util.concurrent.ConcurrentLinkedDeque
 
 @Composable
-fun LoginScreen() {
+fun AuthScreen() {
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,

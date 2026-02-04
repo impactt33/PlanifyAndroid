@@ -1,6 +1,6 @@
 package com.example.planify.main.features.auth.data.repositories_impl
 
-import com.example.planify.main.common.network.ApiClient
+import com.example.planify.main.common.network.api_client.ApiClient
 import com.example.planify.main.features.auth.data.dto.login.LoginRequestDTO
 import com.example.planify.main.features.auth.data.dto.login.LoginResponseDTO
 import com.example.planify.main.features.auth.data.dto.refresh.RefreshRequestDTO
@@ -8,18 +8,19 @@ import com.example.planify.main.features.auth.data.dto.refresh.RefreshResponseDT
 import com.example.planify.main.features.auth.data.dto.register.RegisterRequestDTO
 import com.example.planify.main.features.auth.data.dto.register.RegisterResponseDTO
 import com.example.planify.main.features.auth.domain.entities.AuthContext
-import com.example.planify.main.features.auth.domain.entities.AuthState
 import com.example.planify.main.features.auth.domain.entities.AuthTokenPair
 import com.example.planify.main.features.auth.domain.entities.LoginResult
 import com.example.planify.main.features.auth.domain.repositories.AuthRepository
-import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpMethod
 import io.ktor.http.path
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
-class AuthRepositoryImplST(
+@Singleton
+class AuthRepositoryImplST @Inject constructor(
     private val apiClient: ApiClient
 ) : AuthRepository {
     private val authFeaturePath = "/auth"
@@ -36,21 +37,19 @@ class AuthRepositoryImplST(
         )
 
         return@withContext runCatching {
-            val responseDto = apiClient.request<RegisterResponseDTO>(
-                builder = HttpRequestBuilder().apply {
-                    method = HttpMethod.Post
-                    url { path(registerPath) }
-                    setBody(requestDto)
-                }
-            )
+            val responseDTO = apiClient.request<RegisterResponseDTO> {
+                method = HttpMethod.Post
+                url { path(registerPath) }
+                setBody(requestDto)
+            }
 
             LoginResult(
                 authContext = AuthContext(
-                    session = responseDto.session.toEntity(),
-                    user = responseDto.user.toEntity(),
-                    accessInfo = responseDto.accessInfo.toEntity()
+                    session = responseDTO.session.toEntity(),
+                    user = responseDTO.user.toEntity(),
+                    accessInfo = responseDTO.accessInfo.toEntity()
                 ),
-                tokens = responseDto.tokens.toEntity()
+                tokens = responseDTO.tokens.toEntity()
             )
         }
     }
@@ -62,21 +61,19 @@ class AuthRepositoryImplST(
         )
 
         return@withContext runCatching {
-            val responseDto = apiClient.request<LoginResponseDTO>(
-                builder = HttpRequestBuilder().apply {
-                    method = HttpMethod.Post
-                    url { path(loginPath) }
-                    setBody(requestDto)
-                }
-            )
+            val responseDTO = apiClient.request<LoginResponseDTO> {
+                method = HttpMethod.Post
+                url { path(loginPath) }
+                setBody(requestDto)
+            }
 
             LoginResult(
                 authContext = AuthContext(
-                    session = responseDto.session.toEntity(),
-                    user = responseDto.user.toEntity(),
-                    accessInfo = responseDto.accessInfo.toEntity()
+                    session = responseDTO.session.toEntity(),
+                    user = responseDTO.user.toEntity(),
+                    accessInfo = responseDTO.accessInfo.toEntity()
                 ),
-                tokens = responseDto.tokens.toEntity()
+                tokens = responseDTO.tokens.toEntity()
             )
         }
     }
@@ -87,17 +84,15 @@ class AuthRepositoryImplST(
         )
 
         return@withContext runCatching {
-            val responseDto = apiClient.request<RefreshResponseDTO>(
-                builder = HttpRequestBuilder().apply {
-                    method = HttpMethod.Post
-                    url { path(refreshPath) }
-                    setBody(requestDto)
-                }
-            )
+            val responseDTO = apiClient.request<RefreshResponseDTO> {
+                method = HttpMethod.Post
+                url { path(refreshPath) }
+                setBody(requestDto)
+            }
 
             AuthTokenPair(
-                accessToken = responseDto.accessToken,
-                refreshToken = responseDto.refreshToken
+                accessToken = responseDTO.accessToken,
+                refreshToken = responseDTO.refreshToken
             )
         }
     }

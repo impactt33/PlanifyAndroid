@@ -1,5 +1,8 @@
 [versions]
 agp = "9.0.0"
+coilNetworkKtor3 = "3.3.0"
+hiltCompiler = "2.59.1"
+hiltNavigationCompose = "1.3.0"
 kotlin = "2.2.10"
 coreKtx = "1.17.0"
 junit = "4.13.2"
@@ -15,10 +18,17 @@ lifecycleViewmodelCompose = "2.10.0"
 phosphorIcon = "1.0.0"
 uiGeometry = "1.10.1"
 datastore = "1.2.0"
+uiTextGoogleFonts = "1.10.2"
 
 [libraries]
+androidx-compose-ui-text-google-fonts = { module = "androidx.compose.ui:ui-text-google-fonts", version.ref = "uiTextGoogleFonts" }
 androidx-datastore = { module = "androidx.datastore:datastore", version.ref = "datastore" }
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastore" }
+androidx-hilt-navigation-compose = { module = "androidx.hilt:hilt-navigation-compose", version.ref = "hiltNavigationCompose" }
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coilNetworkKtor3" }
+coil-network-ktor3 = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coilNetworkKtor3" }
+hilt-android = { module = "com.google.dagger:hilt-android", version.ref = "hiltCompiler" }
+hilt-compiler = { module = "com.google.dagger:hilt-compiler", version.ref = "hiltCompiler" }
 kotlinx-serialization-json = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerializationJson" }
 ktor-client = { group = "io.ktor", name="ktor-client", version.ref = "ktorClient" }
 ktor-client-cio = { group = "io.ktor", name="ktor-client-cio", version.ref = "ktorClient" }

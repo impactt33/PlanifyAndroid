@@ -1,39 +1,42 @@
 package com.example.planify.main.navigation.screens.init_screen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavHostController
 import com.example.planify.main.features.auth.domain.services.AuthService
 import com.example.planify.main.navigation.AppRoute
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class InitScreenViewModel(
-    val authService: AuthService,
-    val navHostController: NavHostController
+@HiltViewModel
+class InitScreenViewModel @Inject constructor(
+    val authService: AuthService
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UIState.LOADING)
     val uiState = _uiState.asStateFlow()
 
+    private val _navigation = MutableSharedFlow<AppRoute>()
+    val navigation = _navigation.asSharedFlow()
+
     init {
+        checkAuth()
+    }
+
+    fun checkAuth() {
         viewModelScope.launch {
-            if (!pingServer()) {
-                _uiState.value = UIState.SERVER_NOT_AVAILABLE
-                return@launch
-            }
-            if (isAuthorized()) {
-                navHostController.navigate(AppRoute.Main.route)
-            } else {
-                navHostController.navigate(AppRoute.Login.route)
-            }
+            if (!pingServer()) return@launch
+            if (isAuthenticated()) _navigation.emit(AppRoute.Main)
+            else _navigation.emit(AppRoute.Auth)
         }
     }
 
-    fun isAuthorized(): Boolean {
-        return authService.isAuthenticated()
-    }
+    fun isAuthenticated(): Boolean = authService.isAuthenticated()
 
     suspend fun pingServer(): Boolean {
         delay(1000)

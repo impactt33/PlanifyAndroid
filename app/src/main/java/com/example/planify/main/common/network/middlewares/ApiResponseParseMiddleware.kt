@@ -2,18 +2,32 @@ package com.example.planify.main.common.network.middlewares
 
 import com.example.planify.core.network.ApiRequestContext
 import com.example.planify.core.network.middleware.ApiClientMiddleware
-import com.example.planify.core.network.middleware.NextMiddlewareCall
-import com.example.planify.core.network.middleware.RequestCall
 import com.example.planify.main.common.entities.ApiResponse
-import io.ktor.client.call.body
+import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.statement.HttpResponse
+import io.ktor.client.statement.bodyAsText
+import kotlinx.serialization.KSerializer
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.JsonElement
 
-class ApiResponseParseMiddleware<T> : ApiClientMiddleware<HttpResponse, ApiResponse<T>> {
+class ApiResponseParseMiddleware<T> : ApiClientMiddleware<HttpRequestBuilder, ApiResponse<T>> {
     override suspend fun proceed(
         context: ApiRequestContext,
-        request: RequestCall<HttpResponse>,
-        next: NextMiddlewareCall<HttpResponse, ApiResponse<T>>
+        next: suspend (HttpRequestBuilder) -> Any?,
+        input: HttpRequestBuilder
     ): ApiResponse<T> {
-        return request().body<ApiResponse<T>>()
+        val httpResponse = next(input) as HttpResponse
+        val text = httpResponse.bodyAsText()
+
+        val apiResponseJson = Json.decodeFromString<ApiResponse<JsonElement>>(text)
+        val serializer = context.getFromMeta<KSerializer<T>>("serializer") ?: throw IllegalStateException("Serializer for type T not found in context")
+        val data: T = Json.decodeFromJsonElement(serializer, apiResponseJson.data!!)
+
+        return ApiResponse(
+            ok = apiResponseJson.ok,
+            appCode = apiResponseJson.appCode,
+            message = apiResponseJson.message,
+            data = data
+        )
     }
 }

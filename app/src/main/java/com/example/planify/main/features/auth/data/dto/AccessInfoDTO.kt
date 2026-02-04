@@ -6,10 +6,10 @@ import kotlinx.serialization.Serializable
 
 @Serializable
 data class AccessInfoDTO(
-    @SerialName("accessToken")
+    @SerialName("authorities")
     val authorities: List<AuthorityDTO> = emptyList(),
 
-    @SerialName("accessToken")
+    @SerialName("roles")
     val roles: List<RoleDTO> = emptyList()
 ) {
     fun toEntity(): AccessInfo = AccessInfo(

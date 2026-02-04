@@ -1,9 +1,12 @@
-import java.util.Properties
-
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
+
+    kotlin("plugin.serialization") version "2.2.10"
+
+    id("kotlin-kapt")
+    id("com.google.dagger.hilt.android")
 }
 
 android {
@@ -44,16 +47,32 @@ android {
     }
 }
 
+kapt {
+    correctErrorTypes = true
+    javacOptions {
+        // These options are normally set automatically via the Hilt Gradle plugin, but we
+        // set them manually to workaround a bug in the Kotlin 1.5.20
+        option("-Adagger.fastInit=ENABLED")
+        option("-Adagger.hilt.android.internal.disableAndroidSuperclassValidation=true")
+    }
+}
+
 dependencies {
-    implementation("io.coil-kt.coil3:coil-compose:3.3.0")
-    implementation("io.coil-kt.coil3:coil-network-ktor3:3.3.0")
+    implementation(libs.hilt.android)
+    implementation(libs.androidx.hilt.navigation.compose)
+    kapt(libs.hilt.compiler)
+
+    implementation(libs.coil.compose)
+    implementation(libs.coil.network.ktor3)
 
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.datastore.preferences)
 
+    implementation(libs.kotlinx.serialization.json)
+
     implementation(libs.androidx.compose.material3.window.size.class1)
     implementation(libs.phosphor.icon)
-    implementation("androidx.compose.ui:ui-text-google-fonts:1.10.1")
+    implementation(libs.androidx.compose.ui.text.google.fonts)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)

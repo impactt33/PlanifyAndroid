@@ -1,17 +1,16 @@
-package com.example.planify.main.features.auth.domain.utils.network
+package com.example.planify.main.features.auth.domain.utils.network.middleware
 
 import com.example.planify.core.network.ApiRequestContext
 import com.example.planify.core.network.middleware.ApiClientMiddleware
-import com.example.planify.core.network.middleware.NextMiddlewareCall
-import com.example.planify.core.network.middleware.RequestCall
 import com.example.planify.main.features.auth.domain.AuthTokenManager
 import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.headers
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.HttpHeaders
 
 class AuthMiddleware(
     private val tokenManager: AuthTokenManager
-) : ApiClientMiddleware<HttpRequestBuilder, HttpRequestBuilder> {
+) : ApiClientMiddleware<HttpRequestBuilder, HttpResponse> {
     private val authTokenType = "Bearer"
 
     private fun constructHeader(accessToken: String): String {
@@ -20,15 +19,17 @@ class AuthMiddleware(
 
     override suspend fun proceed(
         context: ApiRequestContext,
-        request: RequestCall<HttpRequestBuilder>,
-        next: NextMiddlewareCall<HttpRequestBuilder, HttpRequestBuilder>
-    ): HttpRequestBuilder {
+        next: suspend (HttpRequestBuilder) -> Any?,
+        input: HttpRequestBuilder
+    ): HttpResponse {
         val tokens = tokenManager.getTokenPair()
 
-        return request().apply {
+        input.apply {
             headers {
-                append(HttpHeaders.Authorization, constructHeader(tokens.accessToken))
+                set(HttpHeaders.Authorization, constructHeader(tokens.accessToken))
             }
         }
+
+        return next(input) as HttpResponse
     }
 }
