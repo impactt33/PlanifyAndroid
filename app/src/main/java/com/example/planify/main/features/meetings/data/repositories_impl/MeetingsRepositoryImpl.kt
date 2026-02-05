@@ -1,15 +1,19 @@
 package com.example.planify.main.features.meetings.data.repositories_impl
 
+import com.example.planify.core.data.serializers.InstantToLocalDateSerializer
+import com.example.planify.core.data.serializers.jsonCore
 import com.example.planify.main.features.auth.domain.utils.network.AuthenticatedApiClient
 import com.example.planify.main.features.meetings.data.dto.create_meeting.CreateMeetingResponseDTO
 import com.example.planify.main.features.meetings.data.dto.create_meeting.GetMeetingResponseDTO
 import com.example.planify.main.features.meetings.data.dto.get_my_daily_meetings.GetMyDailyMeetingsDTO
 import com.example.planify.main.features.meetings.data.dto.get_my_daily_meetings_short.GetMyDailyMeetingsShortDTO
+import com.example.planify.main.features.meetings.data.dto.patch_meeting.PatchMeetingRequestDTO
 import com.example.planify.main.features.meetings.domain.entities.Meeting
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import com.example.planify.main.features.meetings.domain.repositories.MeetingsRepository
 import com.example.planify.main.features.meetings.domain.schemas.CreateMeetingSchema
-import com.example.planify.main.features.meetings.domain.schemas.MeetingPatchSchema
+import com.example.planify.main.features.meetings.domain.schemas.PatchMeetingSchema
+import io.ktor.client.request.setBody
 import io.ktor.http.HttpMethod
 import io.ktor.http.path
 import jakarta.inject.Inject
@@ -50,11 +54,20 @@ class MeetingsRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun patchMeeting(meetingId: Long, patch: MeetingPatchSchema): Result<Unit> = withContext(Dispatchers.IO) {
+    override suspend fun patchMeeting(meetingId: Long, patch: PatchMeetingSchema): Result<Unit> = withContext(Dispatchers.IO) {
+        val requestDTO = PatchMeetingRequestDTO(
+            name = patch.name,
+            description = patch.description,
+            location = patch.location,
+            startsAt = patch.startsAt,
+            duration = patch.duration
+        )
+
         return@withContext runCatching {
             authenticatedApiClient.request<Unit> {  // TODO: Will this work with Unit?
                 method = HttpMethod.Patch
                 url { path(patchMeetingPath.format(meetingId)) }
+                setBody(requestDTO)
             }
         }
     }
@@ -66,7 +79,11 @@ class MeetingsRepositoryImpl @Inject constructor(
                 url { path(getMyDailyMeetingsPath) }
             }
 
-            response.meetings.mapValues { (_, value) -> value.map { it.toEntity() } }
+            response.meetings.map { (key, value) ->
+                val newKey = jsonCore.decodeFromString(InstantToLocalDateSerializer, key)
+                val newValue = value.map { it.toEntity() }
+                newKey to newValue
+            }.toMap()
         }
     }
 
@@ -76,8 +93,9 @@ class MeetingsRepositoryImpl @Inject constructor(
                 method = HttpMethod.Get
                 url { path(getMyDailyMeetingsShortPath) }
             }
-
-            response.meetings
+            response.meetings.mapKeys { (key, _) ->
+                jsonCore.decodeFromString(InstantToLocalDateSerializer, key)
+            }
         }
     }
 }

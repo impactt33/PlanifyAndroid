@@ -1,6 +1,5 @@
 package com.example.planify.main.features.auth.data.dto
 
-import com.example.planify.core.data.serializers.LocalDateTimeSerializer
 import com.example.planify.main.features.auth.domain.entities.AuthSession
 import kotlinx.serialization.Contextual
 import kotlinx.serialization.SerialName
@@ -23,17 +22,14 @@ data class AuthSessionPrivateDTO(
 
     @Contextual
     @SerialName("createdAt")
-    @Serializable(with = LocalDateTimeSerializer::class)
     val createdAt: LocalDateTime,
 
     @Contextual
     @SerialName("lastUsedAt")
-    @Serializable(with = LocalDateTimeSerializer::class)
     val lastUsedAt: LocalDateTime,
 
     @Contextual
     @SerialName("expiresAt")
-    @Serializable(with = LocalDateTimeSerializer::class)
     val expiresAt: LocalDateTime
 ) {
     fun toEntity(): AuthSession = AuthSession(

@@ -11,7 +11,6 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
-import java.time.temporal.ChronoUnit
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -23,7 +22,7 @@ class HomeViewModel @Inject constructor(
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate.asStateFlow()
 
-    fun getMeetingsInfo(): Unit {
+    fun getMeetingsInfo() {
         viewModelScope.launch {
             _uiState.emit(UIState.Loading)
             meetingService.fetchMyDailyMeetings(
@@ -48,7 +47,7 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun onDateSelected(date: LocalDate): Unit {
+    fun onDateSelected(date: LocalDate) {
         _selectedDate.value = date
     }
 }

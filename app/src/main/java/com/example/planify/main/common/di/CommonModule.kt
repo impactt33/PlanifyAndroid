@@ -2,7 +2,7 @@ package com.example.planify.main.common.di
 
 import android.util.Log
 import com.example.planify.BuildConfig
-import com.example.planify.core.data.serializers.LocalDateTimeSerializer
+import com.example.planify.core.data.serializers.jsonCore
 import com.example.planify.main.common.network.api_client.ApiClient
 import com.example.planify.main.common.network.policies.app_code.AppCodeProcessingPolicy
 import dagger.Module
@@ -20,9 +20,6 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.URLProtocol
 import io.ktor.serialization.kotlinx.json.json
 import jakarta.inject.Singleton
-import kotlinx.serialization.json.Json
-import kotlinx.serialization.modules.SerializersModule
-import java.time.LocalDateTime
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -41,18 +38,13 @@ object CommonModule {
             }
 
             install(ContentNegotiation) {
-                json(Json {
-                    ignoreUnknownKeys = true
-                    serializersModule = SerializersModule {
-                        contextual(LocalDateTime::class) { LocalDateTimeSerializer }
-                    }
-                })
+                json(jsonCore)
             }
 
             install(HttpTimeout) {
-                requestTimeoutMillis = 30000
-                connectTimeoutMillis = 30000
-                socketTimeoutMillis = 30000
+                requestTimeoutMillis = 15000
+                connectTimeoutMillis = 15000
+                socketTimeoutMillis = 15000
             }
 
             defaultRequest {

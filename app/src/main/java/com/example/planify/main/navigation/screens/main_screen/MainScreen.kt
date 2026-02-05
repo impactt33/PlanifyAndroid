@@ -27,6 +27,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
 import com.example.planify.main.features.create_meeting.CreateMeetingDialog
@@ -50,7 +51,8 @@ fun MainScreenBox(
     ) {
         MainScreen(
             onSettings = onSettings,
-            onOpen = { opened = true }
+            onOpen = { opened = true },
+            viewModel = hiltViewModel()
         )
 
         AnimatedVisibility(
@@ -97,7 +99,8 @@ fun MainScreenBox(
 @Composable
 private fun MainScreen(
     onSettings: () -> Unit,
-    onOpen: () -> Unit
+    onOpen: () -> Unit,
+    viewModel: MainScreenViewModel
 ) {
     val router = rememberPagerRouterScreenState(
         routes = MainScreenRoute.routes,
@@ -108,15 +111,19 @@ private fun MainScreen(
     var monthTitle by remember { mutableStateOf("") }
 
     Scaffold(
-        topBar = { TopBar(
-            pagerRouter = router,
-            monthTitle = monthTitle,
-            onSettings = onSettings
-            ) },
-        bottomBar = { BottomNavBar(
-            pagerRouter = router,
-            onOpenCreateDialog = onOpen
-        ) },
+        topBar = {
+            TopBar(
+                pagerRouter = router,
+                monthTitle = monthTitle,
+                onSettings = onSettings
+            )
+        },
+        bottomBar = {
+            BottomNavBar(
+                pagerRouter = router,
+                onOpenCreateDialog = onOpen
+            )
+        },
         containerColor = colors.background
     ) { padding ->
         PagerRouterScreen(
@@ -129,8 +136,8 @@ private fun MainScreen(
                     setMonthTitle = { monthTitle = it }
                 )
             }
-            screen(MainScreenRoute.Chat) {Screen()}
-            screen(MainScreenRoute.Inbox) {Screen()}
+            screen(MainScreenRoute.Chat) { Screen() }
+            screen(MainScreenRoute.Inbox) { Screen() }
             screen(MainScreenRoute.Profile) {
                 ProfileView(
                     scaffoldPadding = padding,
