@@ -51,7 +51,7 @@ class ActionsReader(
 
                 if (attempts > maxAttempts) {
                     Log.e(this::class.simpleName, "Failed to fetch actions $maxAttempts times, stopping reader")
-                    throw error
+                    return@callbackFlow
                 }
 
                 Log.w(this::class.simpleName, "Failed to fetch actions (retrying in 2s...): ${error.message}")
