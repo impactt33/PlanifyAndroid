@@ -19,7 +19,9 @@ import com.example.planify.main.features.meetings.domain.schemas.actions.UserAct
 import com.example.planify.main.features.meetings.domain.services.MeetingsService
 import java.time.LocalDate
 import javax.inject.Inject
+import javax.inject.Singleton
 
+@Singleton
 class MeetingsServiceImpl @Inject constructor(
     private val meetingsRepository: MeetingsRepository,
     actionDataParser: ActionDataParser

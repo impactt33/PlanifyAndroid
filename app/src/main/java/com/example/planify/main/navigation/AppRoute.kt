@@ -6,6 +6,6 @@ sealed class AppRoute(val route: String) {
     object Init : AppRoute("init")
     object Settings : AppRoute("settings")
     object CreateMeetingMenu : AppRoute("create_meeting")
-
     object MeetingInfoMenu : AppRoute("meeting_info")
+    object EditProfile : AppRoute("edit_profile")
 }

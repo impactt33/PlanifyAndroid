@@ -1,4 +1,4 @@
-package com.example.planify.main.features.settings.entities
+package com.example.planify.main.features.settings.domain.entities
 
 import com.example.planify.main.common.entities.ThemeId
 

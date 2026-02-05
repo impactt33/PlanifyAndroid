@@ -19,6 +19,10 @@ class HomeViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<UIState> = MutableStateFlow(UIState.Loading)
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
 
+    init {
+        getMeetingsInfo()
+    }
+
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate.asStateFlow()
 

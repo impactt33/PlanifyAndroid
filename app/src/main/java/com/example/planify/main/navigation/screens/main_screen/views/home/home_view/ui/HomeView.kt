@@ -78,10 +78,6 @@ private fun HomeView(
         }
     }
 
-    LaunchedEffect(Unit) {
-        viewModel.getMeetingsInfo()
-    }
-
     Scaffold(
         modifier = Modifier
             .fillMaxSize()

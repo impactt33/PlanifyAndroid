@@ -1,6 +1,6 @@
 package com.example.planify.main.navigation.screens.settings_screen
 
-import com.example.planify.main.features.settings.entities.LocalSettings
+import com.example.planify.main.features.settings.domain.entities.LocalSettings
 
 sealed interface UIState {
     object Loading: UIState

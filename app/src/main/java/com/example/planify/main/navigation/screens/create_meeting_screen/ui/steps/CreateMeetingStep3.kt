@@ -319,6 +319,9 @@ fun CreateMeetingStep3(
                     onSelectedChanged(participants.filter { it in selectedParticipants })
                 }
             }
+            item {
+                Spacer(modifier = Modifier.height(0.dp))
+            }
         }
     }
 }

@@ -17,12 +17,14 @@ import io.ktor.client.request.setBody
 import io.ktor.http.HttpMethod
 import io.ktor.http.path
 import jakarta.inject.Inject
+import jakarta.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.Instant
 import java.time.LocalDate
 import java.time.ZoneOffset
 
+@Singleton
 class MeetingsRepositoryImpl @Inject constructor(
     val authenticatedApiClient: AuthenticatedApiClient
 ) : MeetingsRepository {

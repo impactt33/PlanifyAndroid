@@ -30,7 +30,6 @@
     <string name="position">Должность</string>
     <string name="department">Отдел</string>
     <string name="log_out">Выйти из аккаунта</string>
-    <string name="notifications">Выйти из аккаунта</string>
     <string name="app_theme">Тема приложения</string>
     <string name="error">Что-то пошло не так...</string>
 
@@ -78,6 +77,38 @@
     <string name="participants">Участники</string>
     <string name="accepted">Принято</string>
     <string name="not_accepted">Не принято</string>
+
+    <string name="save">Сохранить</string>
+    <string name="cancel">Отмена</string>
+    <string name="click_to_change_photo">Нажмите, чтобы изменить фото</string>
+
+    <string name="first_name">Имя</string>
+    <string name="last_name">Фамилия</string>
+    <string name="phone_number">Номер телефона</string>
+
+    <string name="first_name_placeholder">Введите имя...</string>
+    <string name="last_name_placeholder">Введите фамилию...</string>
+    <string name="phone_number_placeholder">Введите номер телефона...</string>
+    <string name="department_placeholder">Введите отдел...</string>
+    <string name="email_placeholder">Введите почту...</string>
+
+    <string name="settings">Настройки</string>
+    <string name="dark_theme">Темная тема</string>
+    <string name="dark_theme_desc">Меняет цветовое оформление</string>
+    <string name="notifications">Уведомления</string>
+    <string name="notifications_desc">Включить уведомления о встречах</string>
+
+    <string name="password">Пароль</string>
+    <string name="welcome_back">С возвращением</string>
+    <string name="log_in_to_continue">Войдите для продолжения работы</string>
+    <string name="forget_password">Забыли пароль?</string>
+    <string name="have_not_account">Нет аккаунта?</string>
+    <string name="sign_in">Зарегистрироваться</string>
+
+    <string name="email_example">example@company.com</string>
+    <string name="enter_password">Введите пароль</string>
+
+    <string name="enter">Войти</string>
 
 
 </resources>

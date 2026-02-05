@@ -1,9 +1,10 @@
 package com.example.planify.main.navigation.screens.settings_screen.ui
 
-import android.app.Notification
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -11,9 +12,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -26,27 +29,31 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.font.FontVariation
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import com.adamglin.PhosphorIcons
+import com.adamglin.phosphoricons.Regular
+import com.adamglin.phosphoricons.regular.X
+import com.example.planify.R
 import com.example.planify.main.common.entities.ThemeId
+import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.features.settings.domain.services.SettingsService
 import com.example.planify.main.navigation.screens.fixed_screens.ErrorScreen
 import com.example.planify.main.navigation.screens.init_screen.components.LoadingView
-import com.example.planify.main.navigation.screens.main_screen.views.profile.ProfileViewModel
 import com.example.planify.main.navigation.screens.settings_screen.SettingsViewModel
-import com.example.planify.main.navigation.screens.settings_screen.SettingsViewModelFactory
 import com.example.planify.main.navigation.screens.settings_screen.UIState
 
 @Composable
 fun SettingsScreen(
-    settingsService: SettingsService
+    onBack: () -> Unit
 ) {
-    val factory = remember { SettingsViewModelFactory(settingsService = settingsService) }
-
     SettingsScreen(
-        viewModel = viewModel(factory = factory)
+        viewModel = hiltViewModel(),
+        onBack = onBack
     )
 }
 
@@ -54,7 +61,8 @@ fun SettingsScreen(
 fun SettingsInfo(
     setTheme: (ThemeId) -> Unit,
     setNotificationsEnable: (Boolean) -> Unit,
-    uiState: UIState.ContentData
+    uiState: UIState.ContentData,
+    onBack: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
 
@@ -74,20 +82,42 @@ fun SettingsInfo(
                 .padding(top = 12.dp),
             verticalArrangement = Arrangement.Top
         ) {
-            Text(
-                text = "Настройки",
-                style = MaterialTheme.typography.headlineMedium.copy(
-                    fontWeight = FontWeight.SemiBold
-                ),
-                color = colors.primary
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+            ) {
+                Text(
+                    text = stringResource(R.string.settings),
+                    style = MaterialTheme.typography.headlineMedium.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = colors.primary
+                )
+
+                Spacer(modifier = Modifier.weight(1f))
+
+                Box(
+                    modifier = Modifier
+                        .size(Locals.icons.smallPlus)
+                        .clip(CircleShape)
+                        .clickable(
+                            onClick = onBack
+                        )
+                ) {
+                    Icon(
+                        imageVector = PhosphorIcons.Regular.X,
+                        contentDescription = null
+                    )
+                }
+
+            }
 
             Spacer(Modifier.height(12.dp))
 
             SettingsCard {
                 SettingsSwitchRow(
-                    title = "Тёмная тема",
-                    subtitle = "Меня цветовое оформление",
+                    title = stringResource(R.string.dark_theme),
+                    subtitle = stringResource(R.string.dark_theme_desc),
                     checked = when(uiState.settings.theme) {
                         ThemeId.DARK -> true
                         ThemeId.LIGHT -> false
@@ -107,8 +137,8 @@ fun SettingsInfo(
                 DividerLine()
 
                 SettingsSwitchRow(
-                    title = "Уведомления",
-                    subtitle = "Включить уведомления о встречах",
+                    title = stringResource(R.string.notifications),
+                    subtitle = stringResource(R.string.notifications_desc),
                     checked = uiState.settings.notifications ?: false,
                     onCheckedChange = {
                         checkedStateNotifications.value = it
@@ -127,7 +157,8 @@ fun SettingsInfo(
 
 @Composable
 private fun SettingsScreen(
-    viewModel: SettingsViewModel
+    viewModel: SettingsViewModel,
+    onBack: () -> Unit
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
@@ -139,7 +170,8 @@ private fun SettingsScreen(
             SettingsInfo(
                 setTheme = { viewModel.setTheme(it) },
                 setNotificationsEnable = { viewModel.setNotificationsEnable(it) },
-                uiState = uiState as UIState.ContentData
+                uiState = uiState as UIState.ContentData,
+                onBack = onBack
             )
         }
         is UIState.Error -> {

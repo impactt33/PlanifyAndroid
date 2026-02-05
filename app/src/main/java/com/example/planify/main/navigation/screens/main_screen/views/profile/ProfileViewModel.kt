@@ -1,5 +1,6 @@
 package com.example.planify.main.navigation.screens.main_screen.views.profile
 
+import androidx.compose.runtime.LaunchedEffect
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.main.features.auth.domain.entities.UserPrivate
@@ -21,6 +22,10 @@ class ProfileViewModel @Inject constructor(
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<UIState> = MutableStateFlow(UIState.Loading)
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
+
+    init {
+        getOrFetchUserInfo()
+    }
     fun getOrFetchUserInfo() {
         viewModelScope.launch {
             _uiState.emit(UIState.Loading)
