@@ -19,12 +19,12 @@ class SessionsRepositoryImpl @Inject constructor(
 
     private val logoutPath = "$authFeaturePath/logout"
     private val getActiveSessionsPath = "$authFeaturePath/sessions/active"
-    private val revokeSessionPath = "$authFeaturePath/sessions/{}"
+    private val revokeSessionPath = "$authFeaturePath/sessions/%d"
     private val revokeAllSessionsExceptCurrentPath = "$authFeaturePath/sessions/active"
 
     override suspend fun logout(): Result<Unit> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
-            authenticatedApiClient.request<Unit> {
+            authenticatedApiClient.requestUnit {
                 method = HttpMethod.Delete
                 url { path(logoutPath) }
             }
@@ -35,7 +35,7 @@ class SessionsRepositoryImpl @Inject constructor(
 
     override suspend fun getActiveSessions(): Result<List<AuthSession>> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
-            val responseDTO = authenticatedApiClient.request<GetActiveSessionsResponseDTO> {
+            val responseDTO = authenticatedApiClient.requestNotNull<GetActiveSessionsResponseDTO> {
                 method = HttpMethod.Get
                 url { path(getActiveSessionsPath) }
             }
@@ -46,7 +46,7 @@ class SessionsRepositoryImpl @Inject constructor(
 
     override suspend fun revokeSession(sessionUuid: String): Result<Unit> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
-            authenticatedApiClient.request<Unit> {
+            authenticatedApiClient.requestUnit {
                 method = HttpMethod.Delete
                 url { path(revokeSessionPath.format(sessionUuid)) }
             }
@@ -57,7 +57,7 @@ class SessionsRepositoryImpl @Inject constructor(
 
     override suspend fun revokeAllSessionsExceptCurrent(): Result<Unit> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
-            authenticatedApiClient.request<Unit> {
+            authenticatedApiClient.requestUnit {
                 method = HttpMethod.Delete
                 url { path(revokeAllSessionsExceptCurrentPath) }
             }

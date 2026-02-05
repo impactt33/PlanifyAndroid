@@ -17,7 +17,7 @@ class ProfilesRepositoryImpl @Inject constructor(
 ) : ProfilesRepository {
     override suspend fun fetchMyProfile(): Result<Profile> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
-            val response = authenticatedApiClient.request<GetMyProfileResponseDTO> {
+            val response = authenticatedApiClient.requestNotNull<GetMyProfileResponseDTO> {
                 method = HttpMethod.Get
                 url { path("/profiles/my") }
             }

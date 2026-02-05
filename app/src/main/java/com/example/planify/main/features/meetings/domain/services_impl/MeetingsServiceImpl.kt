@@ -16,14 +16,14 @@ import com.example.planify.main.features.meetings.domain.schemas.actions.UserAct
 import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInviteRescheduleRespondedSchema
 import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInviteStatusUpdatedSchema
 import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInvitedToMeetingSchema
-import com.example.planify.main.features.meetings.domain.services.MeetingService
+import com.example.planify.main.features.meetings.domain.services.MeetingsService
 import java.time.LocalDate
 import javax.inject.Inject
 
-class MeetingServiceImpl @Inject constructor(
+class MeetingsServiceImpl @Inject constructor(
     private val meetingsRepository: MeetingsRepository,
     actionDataParser: ActionDataParser
-) : MeetingService {
+) : MeetingsService {
     init {
         actionDataParser.registerSchema<MeetingActionInviteRescheduleRequestedSchema>("meetings:invite_reschedule_requested")
         actionDataParser.registerSchema<MeetingActionInviteRescheduleRespondedSchema>("meetings:invite_reschedule_responded")
@@ -40,7 +40,7 @@ class MeetingServiceImpl @Inject constructor(
         return meetingsRepository.createMeeting(schema)
     }
 
-    override suspend fun getMeeting(meetingId: Long): Result<Meeting> {
+    override suspend fun fetchMeeting(meetingId: Long): Result<Meeting> {
         return meetingsRepository.getMeeting(meetingId)
     }
 

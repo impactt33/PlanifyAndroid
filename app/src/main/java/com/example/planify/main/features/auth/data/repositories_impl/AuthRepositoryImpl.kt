@@ -37,7 +37,7 @@ class AuthRepositoryImpl @Inject constructor(
         )
 
         return@withContext runCatching {
-            val responseDTO = apiClient.request<RegisterResponseDTO> {
+            val responseDTO = apiClient.requestNotNull<RegisterResponseDTO> {
                 method = HttpMethod.Post
                 url { path(registerPath) }
                 setBody(requestDto)
@@ -61,7 +61,7 @@ class AuthRepositoryImpl @Inject constructor(
         )
 
         return@withContext runCatching {
-            val responseDTO = apiClient.request<LoginResponseDTO> {
+            val responseDTO = apiClient.requestNotNull<LoginResponseDTO> {
                 method = HttpMethod.Post
                 url { path(loginPath) }
                 setBody(requestDto)
@@ -84,7 +84,7 @@ class AuthRepositoryImpl @Inject constructor(
         )
 
         return@withContext runCatching {
-            val responseDTO = apiClient.request<RefreshResponseDTO> {
+            val responseDTO = apiClient.requestNotNull<RefreshResponseDTO> {
                 method = HttpMethod.Post
                 url { path(refreshPath) }
                 setBody(requestDto)

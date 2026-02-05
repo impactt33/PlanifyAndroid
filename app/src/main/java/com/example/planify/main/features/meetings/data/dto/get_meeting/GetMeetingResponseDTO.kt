@@ -1,4 +1,4 @@
-package com.example.planify.main.features.meetings.data.dto.create_meeting
+package com.example.planify.main.features.meetings.data.dto.get_meeting
 
 import com.example.planify.main.features.meetings.data.dto.MeetingDTO
 import kotlinx.serialization.SerialName

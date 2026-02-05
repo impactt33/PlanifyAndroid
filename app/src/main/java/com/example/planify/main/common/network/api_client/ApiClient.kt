@@ -34,7 +34,7 @@ open class ApiClient(
 
     suspend inline fun <reified T> request(
         crossinline build: HttpRequestBuilder.() -> Unit
-    ): T {
+    ): T? {
         val context = ApiRequestContext.Builder()
             .meta("serializer", serializer<T>())
             .build()
@@ -46,6 +46,20 @@ open class ApiClient(
 
         val response = chain.execute(builder, context)
 
-        return response.data!!
+        return response.data
+    }
+
+    suspend inline fun <reified T> requestNotNull(
+        crossinline build: HttpRequestBuilder.() -> Unit
+    ): T {
+        return request<T>(build)!!
+    }
+
+    @Suppress("RedundantUnitExpression", "RedundantUnitReturnType")
+    suspend inline fun requestUnit(
+        crossinline build: HttpRequestBuilder.() -> Unit
+    ): Unit {
+        request<Unit>(build)
+        return Unit
     }
 }

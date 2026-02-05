@@ -17,7 +17,7 @@ class UsersRepositoryImpl @Inject constructor(
 ) : UsersRepository {
     override suspend fun fetchMe(): Result<UserPrivate> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
-            val response = authenticatedApiClient.request<GetMeResponseDTO> {
+            val response = authenticatedApiClient.requestNotNull<GetMeResponseDTO> {
                 method = HttpMethod.Get
                 url { path("/users/me") }
             }

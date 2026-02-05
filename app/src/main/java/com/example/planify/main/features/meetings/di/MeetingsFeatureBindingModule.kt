@@ -2,8 +2,8 @@ package com.example.planify.main.features.meetings.di
 
 import com.example.planify.main.features.meetings.data.repositories_impl.MeetingsRepositoryImpl
 import com.example.planify.main.features.meetings.domain.repositories.MeetingsRepository
-import com.example.planify.main.features.meetings.domain.services.MeetingService
-import com.example.planify.main.features.meetings.domain.services_impl.MeetingServiceImpl
+import com.example.planify.main.features.meetings.domain.services.MeetingsService
+import com.example.planify.main.features.meetings.domain.services_impl.MeetingsServiceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -19,5 +19,5 @@ abstract class MeetingsFeatureBindingModule {
 
     @Binds
     @Singleton
-    abstract fun bindMeetingsService(impl: MeetingServiceImpl): MeetingService
+    abstract fun bindMeetingsService(impl: MeetingsServiceImpl): MeetingsService
 }

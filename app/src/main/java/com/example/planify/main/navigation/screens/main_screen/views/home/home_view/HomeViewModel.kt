@@ -3,7 +3,7 @@ package com.example.planify.main.navigation.screens.main_screen.views.home.home_
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
-import com.example.planify.main.features.meetings.domain.services.MeetingService
+import com.example.planify.main.features.meetings.domain.services.MeetingsService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,7 +14,7 @@ import java.time.LocalDate
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    val meetingService: MeetingService
+    val meetingsService: MeetingsService
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<UIState> = MutableStateFlow(UIState.Loading)
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
@@ -25,7 +25,7 @@ class HomeViewModel @Inject constructor(
     fun getMeetingsInfo() {
         viewModelScope.launch {
             _uiState.emit(UIState.Loading)
-            meetingService.fetchMyDailyMeetings(
+            meetingsService.fetchMyDailyMeetings(
                 LocalDate.now(),
                 LocalDate.now().plusDays(7)
             )

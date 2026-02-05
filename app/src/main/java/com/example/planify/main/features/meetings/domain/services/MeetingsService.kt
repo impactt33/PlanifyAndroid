@@ -6,9 +6,9 @@ import com.example.planify.main.features.meetings.domain.schemas.CreateMeetingSc
 import com.example.planify.main.features.meetings.domain.schemas.PatchMeetingSchema
 import java.time.LocalDate
 
-interface MeetingService {
+interface MeetingsService {
     suspend fun createMeeting(schema: CreateMeetingSchema): Result<Meeting>
-    suspend fun getMeeting(meetingId: Long): Result<Meeting>
+    suspend fun fetchMeeting(meetingId: Long): Result<Meeting>
     suspend fun patchMeeting(meetingId: Long, patch: PatchMeetingSchema): Result<Unit>
 
     suspend fun fetchMyDailyMeetings(startDate: LocalDate, endDate: LocalDate): Result<Map<LocalDate, List<MeetingContext>>>

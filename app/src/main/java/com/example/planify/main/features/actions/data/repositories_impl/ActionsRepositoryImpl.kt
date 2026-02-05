@@ -22,7 +22,7 @@ class ActionsRepositoryImpl @Inject constructor(
 
     override suspend fun fetchActions(): Result<List<Action<*>>> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
-            val response = authenticatedApiClient.request<GetMyIncomingActionsDTO> {
+            val response = authenticatedApiClient.requestNotNull<GetMyIncomingActionsDTO> {
                 method = HttpMethod.Get
                 url { path(getMyIncomingActionsPath) }
                 timeout {

@@ -1,10 +1,9 @@
 package com.example.planify.main.features.meetings.data.repositories_impl
 
-import com.example.planify.core.data.serializers.InstantToLocalDateSerializer
-import com.example.planify.core.data.serializers.jsonCore
 import com.example.planify.main.features.auth.domain.utils.network.AuthenticatedApiClient
+import com.example.planify.main.features.meetings.data.dto.create_meeting.CreateMeetingRequestDTO
 import com.example.planify.main.features.meetings.data.dto.create_meeting.CreateMeetingResponseDTO
-import com.example.planify.main.features.meetings.data.dto.create_meeting.GetMeetingResponseDTO
+import com.example.planify.main.features.meetings.data.dto.get_meeting.GetMeetingResponseDTO
 import com.example.planify.main.features.meetings.data.dto.get_my_daily_meetings.GetMyDailyMeetingsDTO
 import com.example.planify.main.features.meetings.data.dto.get_my_daily_meetings_short.GetMyDailyMeetingsShortDTO
 import com.example.planify.main.features.meetings.data.dto.patch_meeting.PatchMeetingRequestDTO
@@ -20,7 +19,9 @@ import io.ktor.http.path
 import jakarta.inject.Inject
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import java.time.Instant
 import java.time.LocalDate
+import java.time.ZoneOffset
 
 class MeetingsRepositoryImpl @Inject constructor(
     val authenticatedApiClient: AuthenticatedApiClient
@@ -28,16 +29,26 @@ class MeetingsRepositoryImpl @Inject constructor(
     private val meetingsFeaturePath = "/meetings"
 
     private val createMeetingPath = meetingsFeaturePath
-    private val getMeetingPath = "$meetingsFeaturePath/{}"
-    private val patchMeetingPath = "$meetingsFeaturePath/{}"
+    private val getMeetingPath = "$meetingsFeaturePath/%d"
+    private val patchMeetingPath = "$meetingsFeaturePath/%d"
     private val getMyDailyMeetingsPath = "$meetingsFeaturePath/my"
     private val getMyDailyMeetingsShortPath = "$meetingsFeaturePath/my/short"
 
     override suspend fun createMeeting(schema: CreateMeetingSchema): Result<Meeting> = withContext(Dispatchers.IO) {
+        val requestDTO = CreateMeetingRequestDTO(
+            name = schema.name,
+            description = schema.description,
+            location = schema.location,
+            startsAt = schema.startsAt,
+            duration = schema.duration,
+            inviteUserIds = schema.inviteUserIds
+        )
+
         return@withContext runCatching {
-            val response = authenticatedApiClient.request<CreateMeetingResponseDTO> {
+            val response = authenticatedApiClient.requestNotNull<CreateMeetingResponseDTO> {
                 method = HttpMethod.Post
                 url { path(createMeetingPath) }
+                setBody(requestDTO)
             }
 
             response.meeting.toEntity()
@@ -46,7 +57,7 @@ class MeetingsRepositoryImpl @Inject constructor(
 
     override suspend fun getMeeting(meetingId: Long): Result<Meeting> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
-            val response = authenticatedApiClient.request<GetMeetingResponseDTO> {
+            val response = authenticatedApiClient.requestNotNull<GetMeetingResponseDTO> {
                 method = HttpMethod.Get
                 url { path(getMeetingPath.format(meetingId)) }
             }
@@ -65,7 +76,7 @@ class MeetingsRepositoryImpl @Inject constructor(
         )
 
         return@withContext runCatching {
-            authenticatedApiClient.request<Unit> {  // TODO: Will this work with Unit?
+            authenticatedApiClient.requestUnit {
                 method = HttpMethod.Patch
                 url { path(patchMeetingPath.format(meetingId)) }
                 setBody(requestDTO)
@@ -75,7 +86,7 @@ class MeetingsRepositoryImpl @Inject constructor(
 
     override suspend fun fetchMyDailyMeetings(startDate: LocalDate, endDate: LocalDate): Result<Map<LocalDate, List<MeetingContext>>> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
-            val response = authenticatedApiClient.request<GetMyDailyMeetingsDTO> {
+            val response = authenticatedApiClient.requestNotNull<GetMyDailyMeetingsDTO> {
                 method = HttpMethod.Get
                 url { path(getMyDailyMeetingsPath) }
                 parameter("dateStart", startDate.toString())
@@ -83,7 +94,7 @@ class MeetingsRepositoryImpl @Inject constructor(
             }
 
             response.meetings.map { (key, value) ->
-                val newKey = jsonCore.decodeFromString(InstantToLocalDateSerializer, key)
+                val newKey = Instant.parse(key).atZone(ZoneOffset.UTC).toLocalDate()
                 val newValue = value.map { it.toEntity() }
                 newKey to newValue
             }.toMap()
@@ -92,14 +103,17 @@ class MeetingsRepositoryImpl @Inject constructor(
 
     override suspend fun fetchMyDailyMeetingsShort(startDate: LocalDate, endDate: LocalDate): Result<Map<LocalDate, Int>> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
-            val response = authenticatedApiClient.request<GetMyDailyMeetingsShortDTO> {
+            val response = authenticatedApiClient.requestNotNull<GetMyDailyMeetingsShortDTO> {
                 method = HttpMethod.Get
                 url { path(getMyDailyMeetingsShortPath) }
                 parameter("dateStart", startDate.toString())
                 parameter("dateEnd", endDate.toString())
             }
+
             response.meetings.mapKeys { (key, _) ->
-                jsonCore.decodeFromString(InstantToLocalDateSerializer, key)
+                Instant.parse(key)
+                    .atZone(ZoneOffset.UTC)
+                    .toLocalDate()
             }
         }
     }
