@@ -13,6 +13,7 @@ import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import com.example.planify.main.features.meetings.domain.repositories.MeetingsRepository
 import com.example.planify.main.features.meetings.domain.schemas.CreateMeetingSchema
 import com.example.planify.main.features.meetings.domain.schemas.PatchMeetingSchema
+import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpMethod
 import io.ktor.http.path
@@ -77,6 +78,8 @@ class MeetingsRepositoryImpl @Inject constructor(
             val response = authenticatedApiClient.request<GetMyDailyMeetingsDTO> {
                 method = HttpMethod.Get
                 url { path(getMyDailyMeetingsPath) }
+                parameter("dateStart", startDate.toString())
+                parameter("dateEnd", endDate.toString())
             }
 
             response.meetings.map { (key, value) ->
@@ -92,6 +95,8 @@ class MeetingsRepositoryImpl @Inject constructor(
             val response = authenticatedApiClient.request<GetMyDailyMeetingsShortDTO> {
                 method = HttpMethod.Get
                 url { path(getMyDailyMeetingsShortPath) }
+                parameter("dateStart", startDate.toString())
+                parameter("dateEnd", endDate.toString())
             }
             response.meetings.mapKeys { (key, _) ->
                 jsonCore.decodeFromString(InstantToLocalDateSerializer, key)
