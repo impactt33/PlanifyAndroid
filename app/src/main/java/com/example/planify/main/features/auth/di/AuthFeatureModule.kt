@@ -1,12 +1,15 @@
 package com.example.planify.main.features.auth.di
 
+import android.content.Context
 import com.example.planify.main.common.network.policies.app_code.AppCodeProcessingPolicy
+import com.example.planify.main.features.auth.data.local.SecuredAuthInfoStorage
 import com.example.planify.main.features.auth.domain.AuthTokenManager
 import com.example.planify.main.features.auth.domain.utils.network.AuthenticatedApiClient
-import dagger.Binds
+import com.google.crypto.tink.Aead
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
+import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import io.ktor.client.HttpClient
 import javax.inject.Singleton
@@ -22,5 +25,14 @@ object AuthFeatureModule {
         policy: AppCodeProcessingPolicy
     ): AuthenticatedApiClient {
         return AuthenticatedApiClient(tokenManager, httpClient, policy)
+    }
+
+    @Provides
+    @Singleton
+    fun provideSecureAuthInfoStorage(
+        @ApplicationContext context: Context,
+        aead: Aead
+    ): SecuredAuthInfoStorage {
+        return SecuredAuthInfoStorage(context, aead)
     }
 }

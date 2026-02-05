@@ -1,6 +1,7 @@
 package com.example.planify.main.features.auth.data.repositories_impl
 
 import com.example.planify.main.common.network.api_client.ApiClient
+import com.example.planify.main.features.auth.data.dto.get_actual_auth_context.GetActualAuthContextDTO
 import com.example.planify.main.features.auth.data.dto.login.LoginRequestDTO
 import com.example.planify.main.features.auth.data.dto.login.LoginResponseDTO
 import com.example.planify.main.features.auth.data.dto.refresh.RefreshRequestDTO
@@ -11,7 +12,9 @@ import com.example.planify.main.features.auth.domain.entities.AuthContext
 import com.example.planify.main.features.auth.domain.entities.AuthTokenPair
 import com.example.planify.main.features.auth.domain.entities.LoginResult
 import com.example.planify.main.features.auth.domain.repositories.AuthRepository
+import io.ktor.client.request.headers
 import io.ktor.client.request.setBody
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.path
 import jakarta.inject.Inject
@@ -28,6 +31,7 @@ class AuthRepositoryImpl @Inject constructor(
     private val registerPath = "$authFeaturePath/register"
     private val loginPath = "$authFeaturePath/login"
     private val refreshPath = "$authFeaturePath/refresh"
+    private val fetchActualAuthContextPath = "$authFeaturePath/context"
 
     override suspend fun register(username: String, email: String, password: String): Result<LoginResult> = withContext(Dispatchers.IO) {
         val requestDto = RegisterRequestDTO(
@@ -94,6 +98,20 @@ class AuthRepositoryImpl @Inject constructor(
                 accessToken = responseDTO.accessToken,
                 refreshToken = responseDTO.refreshToken
             )
+        }
+    }
+
+    override suspend fun fetchActualAuthContext(accessToken: String): Result<AuthContext> = withContext(Dispatchers.IO) {
+        return@withContext runCatching {
+            val response = apiClient.requestNotNull<GetActualAuthContextDTO> {
+                method = HttpMethod.Get
+                url { path(fetchActualAuthContextPath) }
+                headers {
+                    set(HttpHeaders.Authorization, "Bearer $accessToken")
+                }
+            }
+
+            response.context.toEntity()
         }
     }
 }

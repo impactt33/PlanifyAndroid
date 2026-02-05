@@ -8,9 +8,7 @@ import com.example.planify.main.features.auth.domain.repositories.AuthRepository
 import com.example.planify.main.features.auth.domain.repositories.SessionsRepository
 import com.example.planify.main.features.auth.domain.repositories.UsersRepository
 import com.example.planify.main.features.auth.domain.services.AuthService
-import com.example.planify.main.features.auth.domain.services.UsersService
 import com.example.planify.main.features.auth.domain.services_impl.AuthServiceImpl
-import com.example.planify.main.features.auth.domain.services_impl.UsersServiceImpl
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -39,8 +37,4 @@ abstract class AuthFeatureBindingModule {
     @Binds
     @Singleton
     abstract fun bindUsersRepository(impl: UsersRepositoryImpl): UsersRepository
-
-    @Binds
-    @Singleton
-    abstract fun bindUsersService(impl: UsersServiceImpl): UsersService
 }

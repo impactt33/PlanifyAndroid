@@ -2,10 +2,10 @@ package com.example.planify.main.navigation.screens.main_screen.views.profile
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.planify.main.features.auth.domain.services.UsersService
 import com.example.planify.main.features.auth.domain.entities.UserPrivate
-import com.example.planify.main.features.profiles.domain.services.ProfilesService
+import com.example.planify.main.features.auth.domain.services.AuthService
 import com.example.planify.main.features.profiles.domain.entities.Profile
+import com.example.planify.main.features.profiles.domain.services.ProfilesService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -17,19 +17,19 @@ import javax.inject.Inject
 @HiltViewModel
 class ProfileViewModel @Inject constructor(
     val profilesService: ProfilesService,
-    val usersService: UsersService
-): ViewModel() {
+    val authService: AuthService
+) : ViewModel() {
     private val _uiState: MutableStateFlow<UIState> = MutableStateFlow(UIState.Loading)
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
     fun getOrFetchUserInfo() {
         viewModelScope.launch {
             _uiState.emit(UIState.Loading)
 
-            var userInfo: UserPrivate? = null
-            var profileInfo: Profile? = null
+            var userInfo: UserPrivate?
+            var profileInfo: Profile?
 
             try {
-                val userFetching = async { usersService.fetchMe() }
+                val userFetching = async { authService.fetchMe() }
                 val profileFetching = async { profilesService.fetchMyProfile() }
 
                 val userRes = userFetching.await()
@@ -37,8 +37,7 @@ class ProfileViewModel @Inject constructor(
 
                 userInfo = userRes.getOrThrow()
                 profileInfo = profileRes.getOrThrow()
-            }
-            catch (error: Exception) {
+            } catch (error: Exception) {
                 _uiState.emit(
                     UIState.Error(error.message.orEmpty())
                 )

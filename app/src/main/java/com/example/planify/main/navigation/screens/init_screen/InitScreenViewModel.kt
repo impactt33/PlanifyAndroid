@@ -1,11 +1,12 @@
 package com.example.planify.main.navigation.screens.init_screen
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.planify.main.features.auth.domain.entities.AuthState
 import com.example.planify.main.features.auth.domain.services.AuthService
 import com.example.planify.main.navigation.AppRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -26,21 +27,30 @@ class InitScreenViewModel @Inject constructor(
     val navigation = _navigation.asSharedFlow()
 
     init {
-        viewModelScope.launch {
-            authService.login(
-                email = "admin@example.com",
-                password = "adminpass"
-            )
-        }
         checkAuth()
     }
 
     fun checkAuth() {
         viewModelScope.launch {
-            delay(5000)
-            if (!pingServer()) return@launch
-            if (isAuthenticated()) _navigation.emit(AppRoute.Main)
-            else _navigation.emit(AppRoute.Auth)
+            if (!pingServer()) return@launch  // TODO
+        }
+
+        viewModelScope.launch {
+            async { authService.readSavedAuthInfo() }.await()
+
+            authService.authStateFlow.collect { state ->
+                when (state) {
+                    is AuthState.Authenticated -> _navigation.emit(AppRoute.Main)
+                    is AuthState.Unauthenticated -> {  // _navigation.emit(AppRoute.Auth)
+                        authService.login(
+                            email = "admin@example.com",
+                            password = "adminpass"
+                        )
+                    }
+
+                    is AuthState.Loading -> {}
+                }
+            }
         }
     }
 

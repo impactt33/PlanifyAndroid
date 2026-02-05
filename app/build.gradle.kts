@@ -76,18 +76,29 @@ kapt {
 }
 
 dependencies {
+    // Google Tink
+    implementation(libs.tink.android)
+
+    // Hilt
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
     kapt(libs.hilt.compiler)
 
-    implementation(libs.coil.compose)
+    // Ktor
     implementation(libs.coil.network.ktor3)
+    implementation(libs.coil.compose)
+    implementation(libs.bundles.ktor)
 
+    // DataStore
     implementation(libs.androidx.datastore)
     implementation(libs.androidx.datastore.preferences)
+    implementation(libs.protobuf.javalite)
 
+    // Serialization
+    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.json)
 
+    // UI
     implementation(libs.androidx.compose.material3.window.size.class1)
     implementation(libs.phosphor.icon)
     implementation(libs.androidx.compose.ui.text.google.fonts)
@@ -103,9 +114,7 @@ dependencies {
     implementation(libs.androidx.navigation.compose)
     implementation(libs.androidx.compose.ui.geometry)
 
-    implementation(libs.bundles.ktor)
-    implementation(libs.kotlinx.serialization.json)
-
+    // Test and tools
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
@@ -113,5 +122,4 @@ dependencies {
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
     debugImplementation(libs.androidx.compose.ui.tooling)
     debugImplementation(libs.androidx.compose.ui.test.manifest)
-
 }
