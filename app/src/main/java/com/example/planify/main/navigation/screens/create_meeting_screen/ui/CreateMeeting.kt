@@ -24,7 +24,8 @@ import com.example.planify.main.navigation.screens.create_meeting_screen.compone
 
 @Composable
 fun CreateMeeting(
-    onBack: () -> Unit
+    onBack: () -> Unit,
+    onCreate: () -> Unit
 ) {
     val router = rememberPagerRouterScreenState(
         routes = CreateMeetingRoute.Companion.routes,
@@ -45,7 +46,8 @@ fun CreateMeeting(
             BottomBar(
                 currentPage = router.currentRouteIndex,
                 onBackButton = { router.navigateTo(router.currentRouteIndex - 1) },
-                onButtonClick = { router.navigateTo(router.currentRouteIndex + 1) }
+                onButtonClick = { router.navigateTo(router.currentRouteIndex + 1) },
+                onCreate = onCreate
             )
         },
         topBar = {

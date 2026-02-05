@@ -39,7 +39,8 @@ import com.example.planify.main.common.ui.withShapeBackground
 fun BottomBar(
     currentPage: Int,
     onBackButton: () -> Unit,
-    onButtonClick: () -> Unit
+    onButtonClick: () -> Unit,
+    onCreate: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
 
@@ -100,7 +101,8 @@ fun BottomBar(
                     RowWith2Buttons(
                         mainButtonTitle = "Создать",
                         onBackButton = onBackButton,
-                        onButtonClick = onButtonClick
+                        onButtonClick = onButtonClick,
+                        onCreate = onCreate
                     )
                 }
             }
@@ -149,6 +151,51 @@ fun RowWith2Buttons(
         BottomButton(
             text = mainButtonTitle,
             onClick = onButtonClick
+        )
+    }
+}
+
+@Composable
+fun RowWith2Buttons(
+    mainButtonTitle: String,
+    onBackButton: () -> Unit,
+    onButtonClick: () -> Unit,
+    onCreate: () -> Unit = {},
+) {
+    val colors = MaterialTheme.colorScheme
+
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                paddingValues = PaddingValues(
+                    start = Locals.spacing.m
+                )
+            )
+    ) {
+        Box(
+            modifier = Modifier
+                .wrapContentSize()
+                .withShapeBackground(
+                    shape = CircleShape,
+                    color = colors.surface
+                )
+                .clickable(
+                    onClick = onBackButton
+                )
+        ) {
+            Icon(
+                modifier = Modifier
+                    .size(Locals.icons.medium)
+                    .padding(Locals.spacing.xs),
+                imageVector = PhosphorIcons.Regular.CaretLeft,
+                contentDescription = null
+            )
+        }
+
+        BottomButton(
+            text = mainButtonTitle,
+            onClick = onCreate
         )
     }
 }

@@ -35,12 +35,12 @@ import com.adamglin.phosphoricons.regular.MapPin
 import com.adamglin.phosphoricons.regular.Users
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
-import com.example.planify.main.features.meetings.meetings.domain.entities.MeetingInfo
+import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun MeetingCard(
-    meetingInfo: MeetingInfo,
+    meetingInfo: MeetingContext,
     modifier: Modifier = Modifier
 ) {
     val shape = Locals.shapes.mediumShape
@@ -77,7 +77,7 @@ fun MeetingCard(
                 verticalArrangement = Arrangement.spacedBy(Locals.spacing.xs)
             ) {
                 Text(
-                    text = meeting.title,
+                    text = meeting.name,
                     style = MaterialTheme.typography.titleLarge.copy(
                         fontWeight = FontWeight.Bold,
                         fontSize = 18.sp,
@@ -99,9 +99,9 @@ fun MeetingCard(
                 ) {
                     InfoRow(
                         icon = PhosphorIcons.Regular.Clock,
-                        text = meeting.timeStart
+                        text = meeting.startsAt
                             .format(DateTimeFormatter.ofPattern("HH:mm"))
-                                + " - " + meeting.timeStart.plus(meeting.duration)
+                                + " - " + meeting.startsAt.plusHours(meeting.duration.toLong())
                                     .format(DateTimeFormatter.ofPattern("HH:mm")),
                         iconColor = Locals.extras.primary,
                     )
@@ -112,7 +112,7 @@ fun MeetingCard(
                     )
                     InfoRow(
                         icon = PhosphorIcons.Regular.Users,
-                        text = meetingInfo.participants.size.toString(),
+                        text = meetingInfo.participantProfiles.size.toString(),
                         iconColor = Locals.extras.primary,
                     )
 

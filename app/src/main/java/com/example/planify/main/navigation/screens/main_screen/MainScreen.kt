@@ -30,7 +30,6 @@ import androidx.compose.ui.unit.dp
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
 import com.example.planify.main.features.create_meeting.CreateMeetingDialog
-import com.example.planify.main.features.meetings.meetings.domain.services_impl.MeetingServiceImpl
 import com.example.planify.main.navigation.screens.main_screen.components.BottomNavBar
 import com.example.planify.main.navigation.screens.main_screen.components.TopBar
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.HomeView
@@ -127,8 +126,7 @@ private fun MainScreen(
             screen(MainScreenRoute.Home) {
                 HomeView(
                     scaffoldPadding = padding,
-                    setMonthTitle = { monthTitle = it },
-                    meetingService = MeetingServiceImpl.get()
+                    setMonthTitle = { monthTitle = it }
                 )
             }
             screen(MainScreenRoute.Chat) {Screen()}

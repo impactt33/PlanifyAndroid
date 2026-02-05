@@ -17,6 +17,7 @@ data class MeetingInviteDTO(
         uuid = uuid,
         meetingId = meetingId,
         senderId = senderId,
+        targetUserId = targetUserId,
         status = status,
         createdAt = createdAt,
         updatedAt = updatedAt

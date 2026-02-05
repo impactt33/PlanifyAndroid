@@ -2,15 +2,19 @@ package com.example.planify.main.navigation.screens.main_screen.views.home.home_
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.planify.main.features.meetings.meetings.domain.services.MeetingService
-import com.example.planify.main.features.meetings.meetings.domain.entities.MeetingInfo
+import com.example.planify.main.features.meetings.domain.entities.MeetingContext
+import com.example.planify.main.features.meetings.domain.services.MeetingService
+import dagger.hilt.android.lifecycle.HiltViewModel
+import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
+import java.time.temporal.ChronoUnit
 
-class HomeViewModel(
+@HiltViewModel
+class HomeViewModel @Inject constructor(
     val meetingService: MeetingService
 ) : ViewModel() {
     private val _uiState: MutableStateFlow<UIState> = MutableStateFlow(UIState.Loading)
@@ -22,7 +26,10 @@ class HomeViewModel(
     fun getMeetingsInfo(): Unit {
         viewModelScope.launch {
             _uiState.emit(UIState.Loading)
-            runCatching { meetingService.fetchMeetingsInfo() }
+            meetingService.fetchMyDailyMeetings(
+                LocalDate.now(),
+                LocalDate.now().plusDays(7)
+            )
                 .onSuccess { map ->
                     _uiState.emit(UIState.ContentData(map))
                 }
@@ -32,10 +39,10 @@ class HomeViewModel(
         }
     }
 
-    fun getMeetingsInfoByDate(date: LocalDate): List<MeetingInfo> {
+    fun getMeetingsInfoByDate(date: LocalDate): List<MeetingContext> {
         return if (_uiState.value is UIState.ContentData) {
             ((_uiState.value as UIState.ContentData).meetingsInfo[date] ?: emptyList())
-                .sortedBy { it.meeting.timeStart }
+                .sortedBy { it.meeting.startsAt }
         } else {
             emptyList()
         }

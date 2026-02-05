@@ -31,7 +31,7 @@ import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.objectClickable
 import com.example.planify.main.common.ui.withShapeBackground
 import com.example.planify.main.common.utils.monthForPage
-import com.example.planify.main.features.meetings.meetings.domain.entities.MeetingInfo
+import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.UIState
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.MeetingCard
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.CalendarDay
@@ -51,7 +51,7 @@ fun HomeMonthView(
     selectedDate: LocalDate,
     pagerState: PagerState,
     initialPage: Int,
-    getMeetingsInfoByDate: (LocalDate) -> List<MeetingInfo>,
+    getMeetingsInfoByDate: (LocalDate) -> List<MeetingContext>,
     uiState: UIState,
     scaffoldPadding: PaddingValues
 ) {

@@ -11,13 +11,12 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
 import com.example.planify.main.common.utils.pageForDate
-import com.example.planify.main.features.meetings.meetings.domain.services.MeetingService
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewModel
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewModelFactory
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewRoute
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.TopNavBar
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.HomeDayView
@@ -133,13 +132,10 @@ private fun HomeView(
 @Composable
 fun HomeView(
     scaffoldPadding: PaddingValues,
-    setMonthTitle: (String) -> Unit,
-    meetingService: MeetingService
+    setMonthTitle: (String) -> Unit
 ) {
-    val factory = remember { HomeViewModelFactory(meetingService = meetingService) }
-
     HomeView(
-        viewModel = viewModel(factory = factory),
+        viewModel = hiltViewModel(),
         scaffoldPadding = scaffoldPadding,
         setMonthTitle = setMonthTitle
     )

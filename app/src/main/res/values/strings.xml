@@ -71,5 +71,13 @@
 
     <string name="meeting_detail">Детали встречи</string>
 
+    <string name="date">Дата</string>
+    <string name="time">Время</string>
+    <string name="place">Место</string>
+    <string name="owner">Организатор</string>
+    <string name="participants">Участники</string>
+    <string name="accepted">Принято</string>
+    <string name="not_accepted">Не принято</string>
+
 
 </resources>
