@@ -1,3 +1,5 @@
+import com.android.build.api.dsl.ApplicationExtension
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import java.util.Properties
 
 val props = Properties().apply {
@@ -16,13 +18,14 @@ plugins {
     id("com.google.dagger.hilt.android")
 }
 
-android {
+configure<ApplicationExtension> {
     namespace = "com.example.planify"
     compileSdk = 36
 
     buildFeatures {
         buildConfig = true
         compose = true
+        resValues = true
     }
 
     defaultConfig {
@@ -59,17 +62,17 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+}
 
-    kotlinOptions {
-        jvmTarget = "11"
+kotlin {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.JVM_11)
     }
 }
 
 kapt {
     correctErrorTypes = true
     javacOptions {
-        // These options are normally set automatically via the Hilt Gradle plugin, but we
-        // set them manually to workaround a bug in the Kotlin 1.5.20
         option("-Adagger.fastInit=ENABLED")
         option("-Adagger.hilt.android.internal.disableAndroidSuperclassValidation=true")
     }
