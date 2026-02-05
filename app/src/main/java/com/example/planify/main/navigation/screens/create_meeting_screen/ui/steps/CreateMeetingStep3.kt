@@ -43,8 +43,8 @@ import coil3.compose.AsyncImage
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.features.auth.domain.entities.UserPrivate
-import com.example.planify.main.features.meetings.create_meeting.entities.Participant
-import com.example.planify.main.features.profile.domain.entities.Profile
+import com.example.planify.main.features.create_meeting.entities.Participant
+import com.example.planify.main.features.profiles.domain.entities.Profile
 
 private val participants123 = listOf(
     Participant(

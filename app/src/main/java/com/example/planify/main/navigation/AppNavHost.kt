@@ -6,7 +6,7 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.planify.main.features.meetings.meeting.ui_screens.MeetingInfoScreen
+import com.example.planify.main.features.meetings.meetings.ui_screens.MeetingInfoScreen
 import com.example.planify.main.features.settings.domain.services_impl.SettingsServiceImplST
 import com.example.planify.main.navigation.screens.auth_screen.AuthScreen
 import com.example.planify.main.navigation.screens.create_meeting_screen.ui.CreateMeeting

@@ -1,6 +1,7 @@
 package com.example.planify.main.common.di
 
 import android.util.Log
+import com.example.planify.BuildConfig
 import com.example.planify.core.data.serializers.LocalDateTimeSerializer
 import com.example.planify.main.common.network.api_client.ApiClient
 import com.example.planify.main.common.network.policies.app_code.AppCodeProcessingPolicy
@@ -12,8 +13,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
-import io.ktor.client.plugins.logging.DEFAULT
 import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
 import io.ktor.client.plugins.logging.Logging
 import io.ktor.http.HttpHeaders
 import io.ktor.http.URLProtocol
@@ -22,7 +23,6 @@ import jakarta.inject.Singleton
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.modules.SerializersModule
 import java.time.LocalDateTime
-import io.ktor.client.plugins.logging.Logger
 
 @Module
 @InstallIn(SingletonComponent::class)
@@ -56,7 +56,7 @@ object CommonModule {
             }
 
             defaultRequest {
-                host = "r2.server.universallplus.ru:8855/api/v1"  // TODO: Use env
+                host = BuildConfig.API_HOST
                 url { protocol = URLProtocol.HTTP }
                 headers {
                     set(HttpHeaders.ContentType, "application/json")

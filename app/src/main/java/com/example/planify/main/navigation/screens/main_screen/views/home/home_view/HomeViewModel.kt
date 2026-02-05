@@ -2,8 +2,8 @@ package com.example.planify.main.navigation.screens.main_screen.views.home.home_
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.planify.main.features.meetings.meeting.domain.services.MeetingService
-import com.example.planify.main.features.meetings.meeting.domain.entities.MeetingInfo
+import com.example.planify.main.features.meetings.meetings.domain.services.MeetingService
+import com.example.planify.main.features.meetings.meetings.domain.entities.MeetingInfo
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow

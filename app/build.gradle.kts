@@ -1,3 +1,10 @@
+import java.util.Properties
+
+val props = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) file.inputStream().use { load(it) }
+}
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -30,10 +37,21 @@ android {
     buildTypes {
         release {
             isMinifyEnabled = false
+
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            getByName("debug") {
+                val apiUrl = props.getProperty("API_HOST")
+                buildConfigField("String", "API_HOST", apiUrl)
+            }
+
+            getByName("release") {
+                val apiUrl = props.getProperty("API_HOST")
+                buildConfigField("String", "API_HOST", apiUrl)
+            }
         }
     }
 

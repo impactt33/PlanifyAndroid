@@ -4,8 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.main.features.auth.domain.services.UsersService
 import com.example.planify.main.features.auth.domain.entities.UserPrivate
-import com.example.planify.main.features.profile.domain.services.ProfilesService
-import com.example.planify.main.features.profile.domain.entities.Profile
+import com.example.planify.main.features.profiles.domain.services.ProfilesService
+import com.example.planify.main.features.profiles.domain.entities.Profile
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.flow.MutableStateFlow

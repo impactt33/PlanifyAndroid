@@ -28,7 +28,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
-import com.example.planify.main.features.meetings.create_meeting.entities.TimeSlot
+import com.example.planify.main.features.create_meeting.entities.TimeSlot
 
 @Composable
 fun CreateMeetingStep2(

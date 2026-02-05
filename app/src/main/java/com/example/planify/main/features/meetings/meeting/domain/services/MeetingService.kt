@@ -1,8 +1,0 @@
-package com.example.planify.main.features.meetings.meeting.domain.services
-
-import com.example.planify.main.features.meetings.meeting.domain.entities.MeetingInfo
-import java.time.LocalDate
-
-interface MeetingService {
-    suspend fun fetchMeetingsInfo(): Map<LocalDate, List<MeetingInfo>>
-}

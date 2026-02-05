@@ -14,7 +14,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
-import com.example.planify.main.features.meetings.create_meeting.entities.Participant
+import com.example.planify.main.features.create_meeting.entities.Participant
 import com.example.planify.main.navigation.screens.create_meeting_screen.CreateMeetingRoute
 import com.example.planify.main.navigation.screens.create_meeting_screen.ui.steps.CreateMeetingStep1
 import com.example.planify.main.navigation.screens.create_meeting_screen.ui.steps.CreateMeetingStep2

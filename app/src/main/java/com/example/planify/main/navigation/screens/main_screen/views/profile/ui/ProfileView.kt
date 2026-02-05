@@ -50,7 +50,7 @@ import com.adamglin.phosphoricons.regular.SignOut
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.features.auth.domain.entities.UserPrivate
-import com.example.planify.main.features.profile.domain.entities.Profile
+import com.example.planify.main.features.profiles.domain.entities.Profile
 import com.example.planify.main.navigation.screens.fixed_screens.ErrorScreen
 import com.example.planify.main.navigation.screens.main_screen.views.profile.ProfileViewModel
 import com.example.planify.main.navigation.screens.main_screen.views.profile.UIState

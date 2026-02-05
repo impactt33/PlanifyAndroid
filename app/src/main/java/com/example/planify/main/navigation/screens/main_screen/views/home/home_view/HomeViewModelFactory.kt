@@ -2,7 +2,7 @@ package com.example.planify.main.navigation.screens.main_screen.views.home.home_
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import com.example.planify.main.features.meetings.meeting.domain.services.MeetingService
+import com.example.planify.main.features.meetings.meetings.domain.services.MeetingService
 
 class HomeViewModelFactory(
     val meetingService: MeetingService

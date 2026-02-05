@@ -15,7 +15,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
 import com.example.planify.main.common.utils.pageForDate
-import com.example.planify.main.features.meetings.meeting.domain.services.MeetingService
+import com.example.planify.main.features.meetings.meetings.domain.services.MeetingService
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewModel
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewModelFactory
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewRoute

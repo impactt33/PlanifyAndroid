@@ -24,8 +24,8 @@ open class AuthenticatedApiClient @Inject constructor(
             .add(ktorMiddleware)
             .add(authMiddleware)
             .add(ApiResponseParseMiddleware<T>())
-            .add(appCodeValidatorMiddleware)
             .add(autoRefreshTokensMiddleware)
+            .add(appCodeValidatorMiddleware)
             .build()
     }
 }
