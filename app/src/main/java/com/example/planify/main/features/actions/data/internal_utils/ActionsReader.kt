@@ -1,4 +1,4 @@
-package com.example.planify.main.features.actions.domain.internal_utils
+package com.example.planify.main.features.actions.data.internal_utils
 
 import android.util.Log
 import com.example.planify.core.exceptions.UnauthenticatedAppError
@@ -15,21 +15,25 @@ import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.emitAll
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.shareIn
 import kotlinx.coroutines.isActive
 
 typealias ActionsFetcher = suspend () -> Result<List<Action<*>>>
+typealias ActionsInitializer = suspend () -> Result<List<Action<*>>>
 
 class ActionsReader(
     dispatcher: CoroutineDispatcher = Dispatchers.IO,
-    private val fetcher: ActionsFetcher
+    private val fetcher: ActionsFetcher,
+    private val initializer: ActionsInitializer
 ) {
     private val maxAttempts = 5
     private val readerJob = SupervisorJob()
     private val readerCoroutineScope = CoroutineScope(dispatcher + readerJob)
 
     val actionsFlow: SharedFlow<Action<*>> =
-        pollingFlow()
+        combinedFlow()
             .shareIn(
                 scope = readerCoroutineScope,
                 started = SharingStarted.WhileSubscribed(
@@ -37,6 +41,12 @@ class ActionsReader(
                 ),
                 replay = 0
             )
+
+    private fun combinedFlow(): Flow<Action<*>> = flow {
+        val local = initializer().getOrThrow()
+        local.forEach { emit(it) }
+        emitAll(pollingFlow())
+    }
 
     private fun pollingFlow(): Flow<Action<*>> = callbackFlow {
         var attempts = 0

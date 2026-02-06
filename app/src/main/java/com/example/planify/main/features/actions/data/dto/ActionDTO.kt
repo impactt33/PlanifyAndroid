@@ -8,16 +8,22 @@ import kotlinx.serialization.json.JsonElement
 
 @Serializable
 data class ActionDTO(
-    @SerialName("uuid")
-    val uuid: String,
+    @SerialName("id")
+    val id: String,
+
     @SerialName("type")
     val type: String,
+
+    @SerialName("checked")
+    val checked: Boolean,
+
     @SerialName("data")
     val data: JsonElement?
 ) {
     fun toEntity(actionDataParser: ActionDataParser): Action<*> = Action(
-        uuid = uuid,
+        id = id,
         type = type,
+        checked = checked,
         data = data?.let { actionDataParser.deserialize(data, type) }
     )
 }

@@ -1,38 +1,39 @@
 package com.example.planify.main.features.actions.data.repositories_impl
 
-import com.example.planify.main.features.actions.data.dto.get_my_incoming_actions.GetMyIncomingActionsDTO
+import com.example.planify.main.features.actions.data.internal_utils.ActionsReader
+import com.example.planify.main.features.actions.data.sources.ActionsLocalDataSource
+import com.example.planify.main.features.actions.data.sources.ActionsRemoteDataSource
 import com.example.planify.main.features.actions.domain.entities.Action
 import com.example.planify.main.features.actions.domain.repositories.ActionsRepository
 import com.example.planify.main.features.actions.domain.utils.ActionDataParser
-import com.example.planify.main.features.auth.domain.utils.network.AuthenticatedApiClient
-import io.ktor.client.plugins.timeout
-import io.ktor.http.HttpMethod
-import io.ktor.http.path
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
+import kotlinx.coroutines.flow.SharedFlow
+import kotlinx.serialization.KSerializer
 import javax.inject.Inject
 
 class ActionsRepositoryImpl @Inject constructor(
-    private val authenticatedApiClient: AuthenticatedApiClient,
+    private val remoteDataSource: ActionsRemoteDataSource,
+    private val localDataSource: ActionsLocalDataSource,
     private val actionDataParser: ActionDataParser
 ) : ActionsRepository {
-    private val actionsFeaturePath = "/actions"
+    private val actionsReader: ActionsReader = ActionsReader(dispatcher = Dispatchers.IO, fetcher = this::fetchActions, initializer = this::getAllActionLocal)
 
-    private val getMyIncomingActionsPath = "$actionsFeaturePath/my/incoming"
+    override val actionsFlow: SharedFlow<Action<*>> = actionsReader.actionsFlow
 
-    override suspend fun fetchActions(): Result<List<Action<*>>> = withContext(Dispatchers.IO) {
-        return@withContext runCatching {
-            val response = authenticatedApiClient.requestNotNull<GetMyIncomingActionsDTO> {
-                method = HttpMethod.Get
-                url { path(getMyIncomingActionsPath) }
-                timeout {
-                    requestTimeoutMillis = 60000
-                    connectTimeoutMillis = 60000
-                    socketTimeoutMillis = 60000
-                }
-            }
+    override suspend fun fetchActions(): Result<List<Action<*>>> {
+        return remoteDataSource.fetchActions().map { actions -> actions.map { it.toEntity(actionDataParser) } }
+    }
 
-            response.actions.map { it.toEntity(actionDataParser) }
-        }
+    override suspend fun deleteAction(actionId: String): Result<Unit> = runCatching {
+        remoteDataSource.deleteAction(actionId).getOrThrow()
+        localDataSource.deleteAction(actionId).getOrThrow()
+    }
+
+    override suspend fun getAllActionLocal(): Result<List<Action<*>>> {
+        return localDataSource.getAllActions().map { actions -> actions.map { it.toEntity(actionDataParser) } }
+    }
+
+    override suspend fun <T : Any> saveActionToLocalDB(action: Action<T>, serializer: KSerializer<T>): Result<Unit> {
+        return localDataSource.saveAction(action, serializer).map { }
     }
 }

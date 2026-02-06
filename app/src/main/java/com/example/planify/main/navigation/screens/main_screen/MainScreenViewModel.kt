@@ -20,6 +20,6 @@ class MainScreenViewModel @Inject constructor(
     }
 
     fun onAction(action: Action<*>) {
-        Log.i("Actions", "${action.type}: ${action.uuid}")
+        Log.i("Actions", "${action.type}: ${action.id}")
     }
 }

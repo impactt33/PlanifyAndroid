@@ -20,6 +20,10 @@ class ActionDataParser {
     fun deserialize(data: JsonElement, type: String): Any {
         return jsonCore.decodeFromJsonElement(getSerializer(type), data)
     }
+
+    fun deserialize(data: String, type: String): Any {
+        return jsonCore.decodeFromString(getSerializer(type), data)
+    }
 }
 
 inline fun <reified T> ActionDataParser.registerSchema(type: String) {
