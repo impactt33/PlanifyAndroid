@@ -40,7 +40,7 @@ private fun AppNavHost(
     LaunchedEffect(Unit) {
         viewModel.effects.collect { effect ->
             when (effect) {
-                is NavHostUIEffect.Navigate -> navController.navigate(effect.route)
+                is NavHostUIEffect.Navigate -> navController.navigate(effect.route.route)
                 is NavHostUIEffect.ShowDialog -> dialog = effect.dialog
             }
         }
