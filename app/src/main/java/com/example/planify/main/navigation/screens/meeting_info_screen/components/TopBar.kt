@@ -1,4 +1,4 @@
-package com.example.planify.main.features.meetings.ui_screens.components
+package com.example.planify.main.navigation.screens.meeting_info_screen.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -16,9 +16,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.layout.systemBars
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
@@ -33,8 +30,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
-import com.adamglin.phosphoricons.regular.CaretLeft
-import com.adamglin.phosphoricons.regular.Cross
 import com.adamglin.phosphoricons.regular.X
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals

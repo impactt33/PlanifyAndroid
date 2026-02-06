@@ -30,7 +30,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
-import com.example.planify.main.features.create_meeting.CreateMeetingDialog
+import com.example.planify.main.navigation.screens.create_meeting_screen.components.create_meeting_floating_dialog.CreateMeetingDialog
+import com.example.planify.main.navigation.screens.inbox_screen.ui.InboxView
 import com.example.planify.main.navigation.screens.main_screen.components.BottomNavBar
 import com.example.planify.main.navigation.screens.main_screen.components.TopBar
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.HomeView
@@ -107,7 +108,7 @@ private fun MainScreen(
 ) {
     val router = rememberPagerRouterScreenState(
         routes = MainScreenRoute.routes,
-        startRoute = MainScreenRoute.Home
+        startRoute = MainScreenRoute.Inbox // <-------
     )
     val colors = MaterialTheme.colorScheme
 
@@ -140,7 +141,9 @@ private fun MainScreen(
                 )
             }
             screen(MainScreenRoute.Chat) { Screen() }
-            screen(MainScreenRoute.Inbox) { Screen() }
+            screen(MainScreenRoute.Inbox) { InboxView(
+                scaffoldPadding = padding
+            ) }
             screen(MainScreenRoute.Profile) {
                 ProfileView(
                     scaffoldPadding = padding,

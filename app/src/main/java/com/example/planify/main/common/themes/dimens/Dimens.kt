@@ -36,5 +36,6 @@ data class Dimens(
     val topBarDetailsHeight: Dp = 100.dp,
     val editProfileBottomBarButtonHeight: Dp = 56.dp,
     val editProfileCardHeight: Dp = 200.dp,
-    val authButtonHeight: Dp = 56.dp
+    val authButtonHeight: Dp = 56.dp,
+    val inboxBoxTopNavBarHeight: Dp = 72.dp
 )

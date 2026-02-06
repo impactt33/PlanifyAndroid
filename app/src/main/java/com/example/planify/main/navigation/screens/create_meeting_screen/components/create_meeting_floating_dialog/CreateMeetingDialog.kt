@@ -1,4 +1,4 @@
-package com.example.planify.main.features.create_meeting
+package com.example.planify.main.navigation.screens.create_meeting_screen.components.create_meeting_floating_dialog
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border

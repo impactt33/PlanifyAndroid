@@ -110,5 +110,11 @@
 
     <string name="enter">Войти</string>
 
+    <string name="incoming">Входящие</string>
+    <string name="sent">Отправленные</string>
+    <string name="waiting_for_response">Ожидают ответа</string>
+    <string name="accept">Принять</string>
+    <string name="decline">Отклонить</string>
+
 
 </resources>

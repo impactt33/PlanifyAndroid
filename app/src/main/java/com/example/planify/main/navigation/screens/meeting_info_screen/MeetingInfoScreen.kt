@@ -1,9 +1,6 @@
-package com.example.planify.main.features.meetings.ui_screens
+package com.example.planify.main.navigation.screens.meeting_info_screen
 
-import android.support.v4.app.INotificationSideChannel
 import androidx.compose.foundation.BorderStroke
-import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.rememberScrollableState
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,13 +13,10 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
-import androidx.compose.material3.CardColors
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -34,34 +28,25 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.modifier.modifierLocalOf
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.LineHeightStyle
 import androidx.compose.ui.unit.dp
-import coil3.ImageLoader
 import coil3.compose.AsyncImage
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CalendarBlank
 import com.adamglin.phosphoricons.regular.Clock
 import com.adamglin.phosphoricons.regular.MapPin
-import com.adamglin.phosphoricons.regular.Person
-import com.adamglin.phosphoricons.regular.Placeholder
 import com.adamglin.phosphoricons.regular.User
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
-import com.example.planify.main.features.auth.domain.entities.UserPrivate
-import com.example.planify.main.features.create_meeting.entities.Participant
 import com.example.planify.main.features.meetings.domain.entities.Meeting
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import com.example.planify.main.features.meetings.domain.entities.MeetingInvite
 import com.example.planify.main.features.meetings.domain.entities.MeetingInviteStatus
-import com.example.planify.main.features.meetings.ui_screens.components.TopBar
+import com.example.planify.main.navigation.screens.meeting_info_screen.components.TopBar
 import com.example.planify.main.features.profiles.domain.entities.Profile
-import com.example.planify.main.navigation.screens.main_screen.views.profile.ui.edit_profile.components.BottomBar
-import org.jetbrains.annotations.Async
 
 
 import java.time.LocalDateTime

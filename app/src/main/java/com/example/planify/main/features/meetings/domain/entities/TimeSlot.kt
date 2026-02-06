@@ -1,4 +1,4 @@
-package com.example.planify.main.features.create_meeting.entities
+package com.example.planify.main.features.meetings.domain.entities
 
 data class TimeSlot(
     val id: String,
