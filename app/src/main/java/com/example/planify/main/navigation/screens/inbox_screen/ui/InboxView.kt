@@ -102,13 +102,13 @@ fun InboxView(
                     }
                 }
             }
-
-            PagerRouterScreen(
-                modifier = Modifier.fillMaxSize(),
-                state = pagerState
-            ) {
-                screen()
-            }
+//
+//            PagerRouterScreen(
+//                modifier = Modifier.fillMaxSize(),
+//                state = pagerState
+//            ) {
+//                screen()
+//            }
         }
     }
 }

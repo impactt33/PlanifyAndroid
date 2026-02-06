@@ -15,8 +15,8 @@ import javax.inject.Inject
 class AppNavHostViewModel @Inject constructor(
     val authService: AuthService
 ) : ViewModel() {
-    private val _navigation = MutableSharedFlow<AppRoute>()
-    val navigation = _navigation.asSharedFlow()
+    private val _events = MutableSharedFlow<NavHostUIEffect>()
+    val effects = _events.asSharedFlow()
 
     init {
         getAuthState()
@@ -28,8 +28,8 @@ class AppNavHostViewModel @Inject constructor(
                 .distinctUntilChangedBy { it::class }
                 .collect { state ->
                     when (state) {
-                        is AuthState.Unauthenticated -> _navigation.emit(AppRoute.Auth)
-                        is AuthState.Authenticated -> _navigation.emit(AppRoute.Main)
+                        is AuthState.Unauthenticated -> _events.emit(NavHostUIEffect.ShowDialog(DialogType.AuthError))
+                        is AuthState.Authenticated -> _events.emit(NavHostUIEffect.Navigate(AppRoute.Main))
                         is AuthState.Loading -> {}
                     }
                 }
