@@ -20,8 +20,11 @@ class ApiResponseParseMiddleware<T> : ApiClientMiddleware<HttpRequestBuilder, Ap
         val text = httpResponse.bodyAsText()
 
         val apiResponseJson = jsonCore.decodeFromString<ApiResponse<JsonElement>>(text)
-        val serializer = context.getFromMeta<KSerializer<T>>("serializer") ?: throw IllegalStateException("Serializer for type T not found in context")
-        val data: T? = apiResponseJson.data?.let { jsonCore.decodeFromJsonElement(serializer, apiResponseJson.data) }
+
+        val data: T? = apiResponseJson.data?.let {
+            val serializer = context.getFromMeta<KSerializer<T>>("serializer") ?: throw IllegalStateException("Serializer for type T not found in context")
+            jsonCore.decodeFromJsonElement(serializer, apiResponseJson.data)
+        }
 
         return ApiResponse(
             ok = apiResponseJson.ok,

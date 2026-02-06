@@ -1,6 +1,7 @@
 package com.example.planify.main.features.actions.domain.internal_utils
 
 import android.util.Log
+import com.example.planify.core.exceptions.UnauthenticatedAppError
 import com.example.planify.main.features.actions.domain.entities.Action
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.CoroutineDispatcher
@@ -47,6 +48,9 @@ class ActionsReader(
                 actions.forEach { trySend(it) }
             } catch (error: CancellationException) {
                 throw error
+            } catch (error: UnauthenticatedAppError) {
+                Log.w(this::class.simpleName, "Failed to fetch actions: ${error::class.simpleName}: ${error.message}, stopping reader")
+                break
             } catch (error: Exception) {
                 attempts += 1
 

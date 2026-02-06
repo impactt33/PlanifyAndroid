@@ -1,6 +1,7 @@
 package com.example.planify.main.features.auth.domain.services_impl
 
 import android.util.Log
+import com.example.planify.core.exceptions.UnauthenticatedAppError
 import com.example.planify.main.features.auth.data.local.SecuredAuthInfoStorage
 import com.example.planify.main.features.auth.domain.AuthTokenManager
 import com.example.planify.main.features.auth.domain.entities.AuthContext
@@ -21,6 +22,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.sync.Mutex
 
 @Singleton
 class AuthServiceImpl @Inject constructor(
@@ -31,6 +33,8 @@ class AuthServiceImpl @Inject constructor(
 ) : AuthService, AuthTokenManager {
     private val sessionsRepository get() = sessionsRepositoryProvider.get()
     private val usersRepository get() = usersRepositoryProvider.get()
+
+    private val refreshMutex = Mutex()
 
     private val _authStateFlow: MutableStateFlow<AuthState> = MutableStateFlow(AuthState.Loading)
     override val authStateFlow: StateFlow<AuthState> = _authStateFlow.asStateFlow()
@@ -49,13 +53,25 @@ class AuthServiceImpl @Inject constructor(
         }
 
         try {
-            val authContext = fetchActualAuthContext(authInfo.accessToken).getOrThrow()
+            var accessToken = authInfo.accessToken
+            var refreshToken = authInfo.refreshToken
+            var authContext = fetchActualAuthContext(accessToken)
+
+            if (authContext.isFailure) {
+                val error = authContext.exceptionOrNull()!!
+                Log.w(this::class.simpleName, "Failed to fetch auth info using local tokens, refreshing: ${error::class.simpleName}: ${error.message}")
+
+                val tokenPair = refreshUsingToken(refreshToken).getOrThrow()
+                accessToken = tokenPair.accessToken
+                refreshToken = tokenPair.refreshToken
+                authContext = fetchActualAuthContext(accessToken)
+            }
 
             _authStateFlow.value = AuthState.Authenticated(
-                context = authContext,
+                context = authContext.getOrThrow(),
                 tokenPair = AuthTokenPair(
-                    accessToken = authInfo.accessToken,
-                    refreshToken = authInfo.refreshToken
+                    accessToken = accessToken,
+                    refreshToken = refreshToken
                 )
             )
         } catch (error: Exception) {
@@ -102,26 +118,47 @@ class AuthServiceImpl @Inject constructor(
         }
     }
 
-    override suspend fun refresh(): Result<AuthTokenPair> {
+    private suspend fun refreshUsingToken(refreshToken: String): Result<AuthTokenPair> {
+        return authRepository.refresh(refreshToken)
+    }
+
+    override suspend fun refresh(): Result<Unit> {
         val state = _authStateFlow.value
-        if (state !is AuthState.Authenticated) throw IllegalStateException("Cannot refresh tokens: unauthorized")
 
-        return authRepository.refresh(state.tokenPair.refreshToken)
-            .onSuccess { tokenPair ->
-                securedAuthInfoStorage.saveAuthInfo(
-                    AuthLocalInfoSchema(
-                        accessToken = tokenPair.accessToken,
-                        refreshToken = tokenPair.refreshToken
+        if (state !is AuthState.Authenticated) return Result.failure(
+            UnauthenticatedAppError("Cannot refresh tokens: unauthorized")
+        )
+
+        if (!refreshMutex.tryLock()) {
+            refreshMutex.lock()
+            refreshMutex.unlock()
+
+            return if (_authStateFlow.value is AuthState.Authenticated) Result.success(Unit)
+            else Result.failure(UnauthenticatedAppError("Failed to refresh tokens"))
+        }
+
+        try {
+            return refreshUsingToken(state.tokenPair.refreshToken)
+                .onSuccess { tokenPair ->
+                    securedAuthInfoStorage.saveAuthInfo(
+                        AuthLocalInfoSchema(
+                            accessToken = tokenPair.accessToken,
+                            refreshToken = tokenPair.refreshToken
+                        )
                     )
-                )
 
-                _authStateFlow.value = (_authStateFlow.value as AuthState.Authenticated).copy(
-                    tokenPair = tokenPair
-                )
-            }
-            .onFailure {
-                localLogout()
-            }
+                    _authStateFlow.value = (_authStateFlow.value as AuthState.Authenticated).copy(
+                        tokenPair = tokenPair
+                    )
+                }
+                .onFailure { error ->
+                    Log.w(this::class.simpleName, "Failed to refresh tokens: ${error::class.simpleName}: ${error.message}")
+                    localLogout()
+                }
+                .map { }
+        } finally {
+            refreshMutex.unlock()
+        }
     }
 
     override suspend fun logout(): Result<Unit> {
@@ -152,9 +189,9 @@ class AuthServiceImpl @Inject constructor(
     }
 
     override fun getTokenPair(): AuthTokenPair {
-        if (_authStateFlow.value !is AuthState.Authenticated) throw IllegalStateException("Cannot get auth tokens: Unauthenticated")
+        if (_authStateFlow.value !is AuthState.Authenticated) throw UnauthenticatedAppError("Cannot get auth tokens: Unauthenticated")
         return (_authStateFlow.value as AuthState.Authenticated).tokenPair
     }
 
-    override suspend fun refreshTokens(): Result<AuthTokenPair> = refresh()
+    override suspend fun refreshTokens(): Result<Unit> = refresh()
 }

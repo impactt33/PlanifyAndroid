@@ -13,6 +13,8 @@ import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.distinctUntilChangedBy
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -39,17 +41,12 @@ class InitScreenViewModel @Inject constructor(
         viewModelScope.launch {
             authService.readSavedAuthInfo()
 
-            authService.authStateFlow.collect { state ->
+            authService.authStateFlow
+                .distinctUntilChangedBy { it::class }
+                .collect { state ->
                 when (state) {
                     is AuthState.Authenticated -> _navigation.emit(AppRoute.Main)
-                    is AuthState.Unauthenticated -> {  // _navigation.emit(AppRoute.Auth)
-//                        authService.login(
-//                            email = "admin@example.com",
-//                            password = "adminpass"
-//                        )
-                        _navigation.emit(AppRoute.Auth)
-                    }
-
+                    is AuthState.Unauthenticated -> _navigation.emit(AppRoute.Auth)
                     is AuthState.Loading -> {}
                 }
             }

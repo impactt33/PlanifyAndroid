@@ -17,7 +17,7 @@ interface AuthService {
 
     suspend fun register(username: String, email: String, password: String): Result<LoginResult>
     suspend fun login(email: String, password: String): Result<LoginResult>
-    suspend fun refresh(): Result<AuthTokenPair>
+    suspend fun refresh(): Result<Unit>
 
     suspend fun logout(): Result<Unit>
     suspend fun getActiveSessions(): Result<List<AuthSession>>

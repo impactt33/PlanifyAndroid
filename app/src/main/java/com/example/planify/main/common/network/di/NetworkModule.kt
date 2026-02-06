@@ -34,7 +34,7 @@ object NetworkModule {
                         Log.d("KtorClient", message)
                     }
                 }
-                level = LogLevel.ALL
+                level = LogLevel.BODY
             }
 
             install(ContentNegotiation) {
