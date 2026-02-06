@@ -33,5 +33,8 @@ data class Dimens(
     val pillWidth: Dp = 22.dp,
     val createMeetingTimeSlotHeight: Dp = 48.dp,
     val createMeetingParticipantCardHeight: Dp = 80.dp,
-    val topBarDetailsHeight: Dp = 100.dp
+    val topBarDetailsHeight: Dp = 100.dp,
+    val editProfileBottomBarButtonHeight: Dp = 56.dp,
+    val editProfileCardHeight: Dp = 200.dp,
+    val authButtonHeight: Dp = 56.dp
 )

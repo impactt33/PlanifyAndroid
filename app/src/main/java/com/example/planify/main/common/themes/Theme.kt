@@ -29,8 +29,10 @@ import com.example.planify.main.common.themes.shapes.Shapes
 import com.example.planify.main.common.themes.shapes.shapes
 import com.example.planify.main.common.themes.spacing.LocalSpacing
 import com.example.planify.main.common.themes.spacing.Spacing
-import com.example.planify.main.features.settings.domain.services_impl.SettingsServiceImplST
-import com.example.planify.main.features.settings.entities.LocalSettings
+import com.example.planify.main.features.settings.data.repositories_impl.SettingsRepositoryImpl
+import com.example.planify.main.features.settings.domain.services_impl.SettingsServiceImpl
+import com.example.planify.main.features.settings.domain.entities.LocalSettings
+import com.example.planify.main.navigation.screens.settings_screen.SettingsViewModel
 
 /* ---------------------------
    1) Raw colors (из theme.css)
@@ -441,26 +443,13 @@ private val LocalGradients = staticCompositionLocalOf<Gradients> {
     error("PlanifyTheme is not provided")
 }
 
+
 @Composable
 fun PlanifyTheme(
     windowSize: WindowWidthSizeClass = WindowWidthSizeClass.Compact,
+    darkTheme: Boolean,
     content: @Composable () -> Unit
 ) {
-
-    val service = remember { SettingsServiceImplST.get() }
-
-    val settings by service.settingsFlow.collectAsState(
-        initial = LocalSettings(
-            theme = ThemeId.SYSTEM,
-            notifications = true
-        )
-    )
-
-    val darkTheme = when(settings.theme as ThemeId) {
-        ThemeId.SYSTEM -> isSystemInDarkTheme()
-        ThemeId.DARK -> true
-        ThemeId.LIGHT -> false
-    }
 
     val colorScheme = when {
         darkTheme -> darkScheme
@@ -507,7 +496,6 @@ fun PlanifyTheme(
         )
     }
 }
-
 object Locals {
     val dimens: Dimens
         @Composable

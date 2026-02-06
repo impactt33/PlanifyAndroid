@@ -78,10 +78,6 @@ private fun ProfileView(
 
     val uiState by viewModel.uiState.collectAsState()
 
-    LaunchedEffect(Unit) {
-        viewModel.getOrFetchUserInfo() // можно засунуть в init
-    }
-
     Surface(
         modifier = Modifier
             .fillMaxSize()

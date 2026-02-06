@@ -1,13 +1,15 @@
 package com.example.planify.main.features.settings.domain.services_impl
 
-import com.example.planify.core.SingletonHolder
 import com.example.planify.main.common.entities.ThemeId
 import com.example.planify.main.features.settings.domain.repositories.SettingsRepository
 import com.example.planify.main.features.settings.domain.services.SettingsService
-import com.example.planify.main.features.settings.entities.LocalSettings
+import com.example.planify.main.features.settings.domain.entities.LocalSettings
+import jakarta.inject.Inject
+import jakarta.inject.Singleton
 import kotlinx.coroutines.flow.Flow
 
-class SettingsServiceImplST(
+@Singleton
+class SettingsServiceImpl @Inject constructor(
     val settingsRepository: SettingsRepository
 ) : SettingsService {
 
@@ -21,7 +23,5 @@ class SettingsServiceImplST(
     override suspend fun setNotificationsEnabled(enabled: Boolean): Result<Unit> {
         return settingsRepository.setNotificationsEnabled(enabled)
     }
-
-    companion object : SingletonHolder<SettingsServiceImplST, SettingsRepository>(::SettingsServiceImplST)
 
 }

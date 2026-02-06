@@ -1,5 +1,6 @@
 package com.example.planify.main.navigation.screens.init_screen
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.main.features.auth.domain.entities.AuthState

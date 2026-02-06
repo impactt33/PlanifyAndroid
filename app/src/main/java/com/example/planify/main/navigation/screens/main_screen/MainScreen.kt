@@ -39,7 +39,8 @@ import com.example.planify.main.navigation.screens.main_screen.views.profile.ui.
 @Composable
 fun MainScreenBox(
     onSettings: () -> Unit,
-    onCreateClick: () -> Unit
+    onCreateClick: () -> Unit,
+    onEditProfileClick: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
 
@@ -52,7 +53,8 @@ fun MainScreenBox(
         MainScreen(
             onSettings = onSettings,
             onOpen = { opened = true },
-            viewModel = hiltViewModel()
+            viewModel = hiltViewModel(),
+            onEditProfileClick = onEditProfileClick
         )
 
         AnimatedVisibility(
@@ -100,6 +102,7 @@ fun MainScreenBox(
 private fun MainScreen(
     onSettings: () -> Unit,
     onOpen: () -> Unit,
+    onEditProfileClick: () -> Unit,
     viewModel: MainScreenViewModel
 ) {
     val router = rememberPagerRouterScreenState(
@@ -141,7 +144,7 @@ private fun MainScreen(
             screen(MainScreenRoute.Profile) {
                 ProfileView(
                     scaffoldPadding = padding,
-                    onEditClick = {}
+                    onEditClick = onEditProfileClick
                 )
             }
         }

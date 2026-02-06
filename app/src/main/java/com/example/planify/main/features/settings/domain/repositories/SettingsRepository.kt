@@ -1,7 +1,7 @@
 package com.example.planify.main.features.settings.domain.repositories
 
 import com.example.planify.main.common.entities.ThemeId
-import com.example.planify.main.features.settings.entities.LocalSettings
+import com.example.planify.main.features.settings.domain.entities.LocalSettings
 import kotlinx.coroutines.flow.Flow
 
 interface SettingsRepository {
