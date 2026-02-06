@@ -35,6 +35,11 @@ class AuthServiceImpl @Inject constructor(
     private val _authStateFlow: MutableStateFlow<AuthState> = MutableStateFlow(AuthState.Loading)
     override val authStateFlow: StateFlow<AuthState> = _authStateFlow.asStateFlow()
 
+    override suspend fun localLogout() {
+        securedAuthInfoStorage.clearAuthInfo()
+        _authStateFlow.value = AuthState.Unauthenticated
+    }
+
     override suspend fun readSavedAuthInfo() {
         val authInfo = securedAuthInfoStorage.authInfoFlow.first()
 
@@ -55,7 +60,7 @@ class AuthServiceImpl @Inject constructor(
             )
         } catch (error: Exception) {
             Log.w("Auth", "Failed to fetch auth info using local tokens: ${error::class.simpleName}: ${error.message}")
-            _authStateFlow.value = AuthState.Unauthenticated
+            localLogout()
         }
     }
 
@@ -101,25 +106,27 @@ class AuthServiceImpl @Inject constructor(
         val state = _authStateFlow.value
         if (state !is AuthState.Authenticated) throw IllegalStateException("Cannot refresh tokens: unauthorized")
 
-        return authRepository.refresh(state.tokenPair.refreshToken).onSuccess { tokenPair ->
-            securedAuthInfoStorage.saveAuthInfo(
-                AuthLocalInfoSchema(
-                    accessToken = tokenPair.accessToken,
-                    refreshToken = tokenPair.refreshToken
+        return authRepository.refresh(state.tokenPair.refreshToken)
+            .onSuccess { tokenPair ->
+                securedAuthInfoStorage.saveAuthInfo(
+                    AuthLocalInfoSchema(
+                        accessToken = tokenPair.accessToken,
+                        refreshToken = tokenPair.refreshToken
+                    )
                 )
-            )
 
-            _authStateFlow.value = (_authStateFlow.value as AuthState.Authenticated).copy(
-                tokenPair = tokenPair
-            )
-        }
+                _authStateFlow.value = (_authStateFlow.value as AuthState.Authenticated).copy(
+                    tokenPair = tokenPair
+                )
+            }
+            .onFailure {
+                localLogout()
+            }
     }
 
     override suspend fun logout(): Result<Unit> {
         return sessionsRepository.logout().onSuccess {
-            securedAuthInfoStorage.clearAuthInfo()
-
-            _authStateFlow.value = AuthState.Unauthenticated
+            localLogout()
         }
     }
 
@@ -132,11 +139,7 @@ class AuthServiceImpl @Inject constructor(
             if (
                 authStateFlow.value is AuthState.Authenticated &&
                 sessionUuid == (authStateFlow.value as AuthState.Authenticated).context.session.uuid
-            ) {
-                securedAuthInfoStorage.clearAuthInfo()
-
-                _authStateFlow.value = AuthState.Unauthenticated
-            }
+            ) localLogout()
         }
     }
 

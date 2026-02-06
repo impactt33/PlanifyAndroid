@@ -7,6 +7,7 @@ import kotlinx.coroutines.CoroutineDispatcher
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.currentCoroutineContext
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -51,12 +52,14 @@ class ActionsReader(
 
                 if (attempts > maxAttempts) {
                     Log.e(this::class.simpleName, "Failed to fetch actions $maxAttempts times, stopping reader")
-                    return@callbackFlow
+                    break
                 }
 
                 Log.w(this::class.simpleName, "Failed to fetch actions (retrying in 2s...): ${error.message}")
                 delay(2000)
             }
         }
+
+        awaitClose { }
     }
 }

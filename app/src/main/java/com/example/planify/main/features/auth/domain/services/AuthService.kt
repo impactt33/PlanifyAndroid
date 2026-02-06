@@ -11,6 +11,8 @@ import kotlinx.coroutines.flow.StateFlow
 interface AuthService {
     val authStateFlow: StateFlow<AuthState>
 
+    suspend fun localLogout()
+
     fun isAuthenticated(): Boolean
 
     suspend fun register(username: String, email: String, password: String): Result<LoginResult>

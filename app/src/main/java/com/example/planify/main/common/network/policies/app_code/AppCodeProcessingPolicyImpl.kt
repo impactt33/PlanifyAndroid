@@ -10,10 +10,10 @@ class AppCodeProcessingPolicyImpl @Inject constructor() : AppCodeProcessingPolic
         if (appCode in 1000..1999) return
 
         when (appCode) {
-            2001 -> AlreadyExistsHttpException(message)
-            2002 -> NotFoundHttpException(message)
-            2003 -> NotFoundHttpException(message)
-            else -> UnknownHttpException(message)
+            2001 -> throw AlreadyExistsHttpException(message)
+            2002 -> throw NotFoundHttpException(message)
+            2003 -> throw NotFoundHttpException(message)
+            else -> throw UnknownHttpException(message)
         }
     }
 }
