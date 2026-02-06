@@ -26,6 +26,13 @@ class ProfileViewModel @Inject constructor(
     init {
         getOrFetchUserInfo()
     }
+
+    fun logout() {
+        viewModelScope.launch {
+            authService.logout()
+        }
+    }
+
     fun getOrFetchUserInfo() {
         viewModelScope.launch {
             _uiState.emit(UIState.Loading)

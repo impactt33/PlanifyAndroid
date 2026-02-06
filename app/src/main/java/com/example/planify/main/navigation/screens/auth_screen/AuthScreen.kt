@@ -32,6 +32,8 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -44,6 +46,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
@@ -53,6 +56,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavHostController
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
@@ -68,12 +73,39 @@ import kotlin.math.max
 fun AuthScreen(
     onRegister: () -> Unit,
     onForgetPassword: () -> Unit,
-    onAuth: () -> Unit
+    navHostController: NavHostController
+) {
+    AuthScreen(
+        viewModel = hiltViewModel(),
+        onRegister = onRegister,
+        onForgetPassword = onForgetPassword,
+        navHostController = navHostController
+    )
+}
+
+@Composable
+private fun AuthScreen(
+    viewModel: AuthViewModel,
+    onRegister: () -> Unit,
+    onForgetPassword: () -> Unit,
+    navHostController: NavHostController
 ) {
     val colors = MaterialTheme.colorScheme
 
+    val uiState by viewModel.uiState.collectAsState()
+
     var emailQuery by remember { mutableStateOf("") }
     var passwordQuery by remember { mutableStateOf("") }
+
+    LaunchedEffect(uiState) {
+        viewModel.navigation.collect { route ->
+            navHostController.navigate(route.route)
+        }
+    }
+
+    LaunchedEffect(emailQuery, passwordQuery) {
+        viewModel.resetFocusedColor()
+    }
 
     CloudyBackground(
         modifier = Modifier.fillMaxSize(),
@@ -133,6 +165,7 @@ fun AuthScreen(
                 LabeledTextField(
                     label = stringResource(R.string.email),
                     value = emailQuery,
+                    uiState = uiState,
                     onValueChange = { emailQuery = it },
                     placeholder = stringResource(R.string.email_example)
                 )
@@ -142,6 +175,7 @@ fun AuthScreen(
                 LabeledTextField(
                     label = stringResource(R.string.password),
                     value = passwordQuery,
+                    uiState = uiState,
                     onValueChange = { passwordQuery = it },
                     placeholder = stringResource(R.string.enter_password),
                     icon = PhosphorIcons.Regular.Eye
@@ -197,7 +231,12 @@ fun AuthScreen(
                     )
                     .align(Alignment.BottomCenter),
                 shape = Locals.shapes.mediumShape,
-                onClick = onAuth,
+                onClick = {
+                    viewModel.authorize(
+                        email = emailQuery,
+                        password = passwordQuery
+                    )
+                },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent
                 )
@@ -235,6 +274,7 @@ fun AuthScreen(
 private fun LabeledTextField(
     label: String,
     value: String,
+    uiState: UIState,
     onValueChange: (String) -> Unit,
     placeholder: String
 ) {
@@ -264,7 +304,10 @@ private fun LabeledTextField(
                 focusedContainerColor = colors.surface,
                 unfocusedContainerColor = colors.surface,
                 cursorColor = colors.primary,
-                unfocusedIndicatorColor = colors.surface
+                focusedIndicatorColor = if (uiState == UIState.DATA_INCORRECT) colors.error
+                    else colors.primary,
+                unfocusedIndicatorColor = if (uiState == UIState.DATA_INCORRECT) colors.error
+                    else colors.surface
             ),
             shape = shape,
             singleLine = true,
@@ -277,6 +320,7 @@ private fun LabeledTextField(
 private fun LabeledTextField(
     label: String,
     value: String,
+    uiState: UIState,
     onValueChange: (String) -> Unit,
     placeholder: String,
     icon: ImageVector
@@ -309,7 +353,10 @@ private fun LabeledTextField(
                 focusedContainerColor = colors.surface,
                 unfocusedContainerColor = colors.surface,
                 cursorColor = colors.primary,
-                unfocusedIndicatorColor = colors.surface
+                focusedIndicatorColor = if (uiState == UIState.DATA_INCORRECT) colors.error
+                    else colors.primary,
+                unfocusedIndicatorColor = if (uiState == UIState.DATA_INCORRECT) colors.error
+                    else colors.surface
             ),
             shape = shape,
             singleLine = true,
@@ -408,7 +455,7 @@ fun CloudyBackground(
     }
 }
 
-private fun androidx.compose.ui.graphics.drawscope.DrawScope.drawCloud(
+private fun DrawScope.drawCloud(
     center: Offset,
     cloudW: Float,
     cloudH: Float,

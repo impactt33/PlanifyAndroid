@@ -2,7 +2,12 @@ package com.example.planify.main.navigation
 
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -13,11 +18,27 @@ import com.example.planify.main.navigation.screens.create_meeting_screen.ui.Crea
 import com.example.planify.main.navigation.screens.init_screen.ui.InitScreen
 import com.example.planify.main.navigation.screens.main_screen.MainScreenBox
 import com.example.planify.main.navigation.screens.main_screen.views.profile.ui.edit_profile.EditProfile
+import com.example.planify.main.navigation.screens.settings_screen.SettingsViewModel
 import com.example.planify.main.navigation.screens.settings_screen.ui.SettingsScreen
 
 @Composable
 fun AppNavHost() {
+    AppNavHost(
+        viewModel = hiltViewModel()
+    )
+}
+
+@Composable
+private fun AppNavHost(
+    viewModel: AppNavHostViewModel
+) {
     val navController = rememberNavController()
+
+    LaunchedEffect(Unit) {
+        viewModel.navigation.collect { route ->
+            navController.navigate(route.route)
+        }
+    }
 
     NavHost(
         modifier = Modifier.fillMaxSize(),
@@ -35,9 +56,9 @@ fun AppNavHost() {
             onEditProfileClick = { navController.navigate(AppRoute.EditProfile.route) }
         ) }
         composable(AppRoute.Auth.route) { AuthScreen(
-            onRegister = {},
-            onForgetPassword = {},
-            onAuth = {},
+            onRegister = { },
+            onForgetPassword = { },
+            navHostController = navController
         ) }
         composable(AppRoute.Settings.route) { SettingsScreen(
             onBack = { navController.popBackStack() }

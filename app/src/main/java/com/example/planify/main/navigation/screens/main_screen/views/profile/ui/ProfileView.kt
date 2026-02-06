@@ -39,6 +39,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
@@ -100,7 +101,8 @@ private fun ProfileView(
                     InfoView(
                         (uiState as UIState.ContentData).profile,
                         (uiState as UIState.ContentData).user,
-                        onEditClick = onEditClick
+                        onEditClick = onEditClick,
+                        onLogout = { viewModel.logout() }
                     )
                 }
 
@@ -114,7 +116,8 @@ private fun ProfileView(
 fun InfoView(
     profile: Profile,
     user: UserPrivate,
-    onEditClick: () -> Unit
+    onEditClick: () -> Unit,
+    onLogout: () -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
     val shape = Locals.shapes.mediumShape
@@ -275,7 +278,7 @@ fun InfoView(
     Spacer(Modifier.height(Locals.spacing.m))
 
     OutlinedButton(
-        onClick = { /* TODO: logout */ },
+        onClick = onLogout,
         modifier = Modifier
             .fillMaxWidth()
             .height(Locals.dimens.logOutButtonHeight),

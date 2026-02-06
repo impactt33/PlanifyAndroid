@@ -37,16 +37,17 @@ class InitScreenViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            async { authService.readSavedAuthInfo() }.await()
+            authService.readSavedAuthInfo()
 
             authService.authStateFlow.collect { state ->
                 when (state) {
                     is AuthState.Authenticated -> _navigation.emit(AppRoute.Main)
                     is AuthState.Unauthenticated -> {  // _navigation.emit(AppRoute.Auth)
-                        authService.login(
-                            email = "admin@example.com",
-                            password = "adminpass"
-                        )
+//                        authService.login(
+//                            email = "admin@example.com",
+//                            password = "adminpass"
+//                        )
+                        _navigation.emit(AppRoute.Auth)
                     }
 
                     is AuthState.Loading -> {}

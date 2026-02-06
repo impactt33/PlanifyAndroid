@@ -4,6 +4,7 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.main.common.entities.ThemeId
+import com.example.planify.main.features.auth.domain.services.AuthService
 import com.example.planify.main.features.settings.domain.services.SettingsService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -27,7 +28,6 @@ class SettingsViewModel @Inject constructor(
             _uiState.emit(UIState.Loading)
 
             settingsService.settingsFlow.collect { data ->
-                Log.d("VIEWMODEL", "SETTINGS CHANGED!!!")
                     _uiState.emit(
                         UIState.ContentData(settings = data)
                     )
