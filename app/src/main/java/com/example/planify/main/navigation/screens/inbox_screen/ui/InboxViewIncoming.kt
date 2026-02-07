@@ -94,8 +94,10 @@ private val fakeMeetingContext = MeetingContext(
         description = "Презентация и обсуждение концепции, сроков и ролей команды.",
         location = "Главный зал",
         startsAt = LocalDateTime.now().plusDays(2).withHour(15).withMinute(0).withSecond(0).withNano(0),
-        duration = 60
-    )
+        duration = 60,
+
+        ),
+    invitedUserProfiles = emptyList()
 )
 
 @Composable

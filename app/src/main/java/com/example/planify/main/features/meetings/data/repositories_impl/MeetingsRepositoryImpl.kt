@@ -37,14 +37,14 @@ class MeetingsRepositoryImpl @Inject constructor(
     private val patchMeetingPath = "$meetingsFeaturePath/%d"
     private val getMyDailyMeetingsPath = "$meetingsFeaturePath/my"
     private val getMyDailyMeetingsShortPath = "$meetingsFeaturePath/my/short"
+
     override suspend fun createMeeting(schema: CreateMeetingSchema): Result<Meeting> = withContext(Dispatchers.IO) {
         val requestDTO = CreateMeetingRequestDTO(
             name = schema.name,
             description = schema.description,
             location = schema.location,
             startsAt = schema.startsAt,
-            duration = schema.duration,
-            inviteUserIds = schema.inviteUserIds
+            duration = schema.duration
         )
 
         return@withContext runCatching {

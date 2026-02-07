@@ -31,19 +31,27 @@ import com.adamglin.phosphoricons.regular.CalendarBlank
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
+import com.example.planify.main.navigation.screens.create_meeting_screen.CreateMeetingDraft
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun CreateMeetingStep1() {
+fun CreateMeetingStep1(
+    draft: CreateMeetingDraft,
+    setName: (String) -> Unit,
+    setDesc: (String) -> Unit,
+    setLocation: (String) -> Unit,
+    setDate: (LocalDate) -> Unit,
+) {
     val colors = MaterialTheme.colorScheme
 
-    var title by remember { mutableStateOf("") }
-    var description by remember { mutableStateOf("") }
-    var placeOrLink by remember { mutableStateOf("") }
+//    var title by remember { mutableStateOf("") }
+//    var description by remember { mutableStateOf("") }
+//    var placeOrLink by remember { mutableStateOf("") }
 
     val formatter = remember {
         DateTimeFormatter.ofPattern("d MMMM yyyy", Locale("ru"))
@@ -68,20 +76,20 @@ fun CreateMeetingStep1() {
         )
         LabeledField(
             label = stringResource(R.string.step1_name_of_meeting),
-            value = title,
-            onValueChange = { title = it },
+            value = draft.name,
+            onValueChange = { setName(it) },
             placeholder = stringResource(R.string.step1_name_of_meeting_placeholder)
         )
         LabeledField(
             label = stringResource(R.string.step1_desc),
-            value = description,
-            onValueChange = { description = it },
+            value = draft.description,
+            onValueChange = { setDesc(it) },
             placeholder = stringResource(R.string.step1_desc_placeholder)
         )
         LabeledField(
             label = stringResource(R.string.step1_place),
-            value = placeOrLink,
-            onValueChange = { placeOrLink = it },
+            value = draft.location,
+            onValueChange = { setLocation(it) },
             placeholder = stringResource(R.string.step1_place_placeholder)
         )
         Text(
@@ -99,7 +107,7 @@ fun CreateMeetingStep1() {
                 ) { showDatePicker = true }
         ) {
             OutlinedTextField(
-                value = date.format(formatter),
+                value = draft.startsAtDate.format(formatter),
                 onValueChange = {},
                 readOnly = true,
                 singleLine = true,
@@ -120,6 +128,7 @@ fun CreateMeetingStep1() {
             initialDate = date,
             onDismiss = { showDatePicker = false },
             onConfirm = { picked ->
+                setDate(picked)
                 date = picked
                 showDatePicker = false
             },

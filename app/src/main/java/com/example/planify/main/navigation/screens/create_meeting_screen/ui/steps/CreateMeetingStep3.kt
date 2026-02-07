@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Checkbox
 import androidx.compose.material3.Divider
@@ -28,6 +29,8 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -45,6 +48,10 @@ import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.features.auth.domain.entities.UserPrivate
 import com.example.planify.main.features.meetings.domain.entities.Participant
 import com.example.planify.main.features.profiles.domain.entities.Profile
+import com.example.planify.main.navigation.screens.create_meeting_screen.ProfileSearchState
+import com.example.planify.main.navigation.screens.create_meeting_screen.ProfilesSearchState
+import com.example.planify.main.navigation.screens.create_meeting_screen.UIState
+import kotlinx.coroutines.delay
 
 private val participants123 = listOf(
     Participant(
@@ -219,27 +226,33 @@ private val participants123 = listOf(
 
 @Composable
 fun CreateMeetingStep3(
-    participants: List<Participant> = participants123,
-    onSelectedChanged: (List<Participant>) -> Unit,
-    selectedParticipants: Set<Participant>
+    search: ProfilesSearchState,
+    invitedIds: Set<Long>,
+    onQueryChange: (String) -> Unit,
+    onToggleInvite: (Long) -> Unit,
+    onRefresh: () -> Unit,
+    onLoadNext: () -> Unit,
 ) {
     val colors = MaterialTheme.colorScheme
+    val listState = rememberLazyListState()
 
-    var query by remember { mutableStateOf("") }
-
-    var selectedParticipants by remember { mutableStateOf(setOf<Participant>()) } // убрать потом
-
-    val filtered = remember(query, participants) {
-        val q = query.trim().lowercase()
-        if (q.isEmpty()) participants
-        else participants.filter {
-            val fullName = it.profile.firstName + it.profile.lastName
-            fullName.lowercase().contains(q)
-        }
+    LaunchedEffect(Unit) {
+        if (search.items.isEmpty() && !search.isLoading) onRefresh()
     }
 
-    val selected = remember(selectedParticipants, participants) {
-        participants.filter { it in selectedParticipants  }
+    LaunchedEffect(search.query) {
+        delay(350)
+        onRefresh()
+    }
+
+    val shouldLoadMore = remember {
+        derivedStateOf {
+            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
+            lastVisible >= search.items.size - 5
+        }
+    }
+    LaunchedEffect(shouldLoadMore.value) {
+        if (shouldLoadMore.value) onLoadNext()
     }
 
     Column(
@@ -260,7 +273,7 @@ fun CreateMeetingStep3(
             color = colors.onBackground
         )
 
-       Spacer(modifier = Modifier.height(Locals.spacing.s))
+        Spacer(modifier = Modifier.height(Locals.spacing.s))
 
         Text(
             text = stringResource(R.string.step3_chosen) + " ${selected.size}",

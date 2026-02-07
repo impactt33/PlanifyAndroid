@@ -11,8 +11,8 @@ import javax.inject.Singleton
 class MeetingInvitesServiceImpl @Inject constructor(
     private val meetingInvitesRepository: MeetingInvitesRepository
 ): MeetingInvitesService {
-    override suspend fun inviteUser(meetingId: Long, targetUserId: Long): Result<MeetingInvite> {
-        return meetingInvitesRepository.inviteUser(meetingId = meetingId, targetUserId = targetUserId)
+    override suspend fun inviteUser(meetingId: Long, targetId: Long): Result<MeetingInvite> {
+        return meetingInvitesRepository.inviteUser(meetingId = meetingId, targetUserId = targetId)
     }
 
     override suspend fun inviteRescheduleResponse(inviteUuid: String, shouldReschedule: Boolean): Result<Unit> {

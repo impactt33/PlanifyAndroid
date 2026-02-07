@@ -29,10 +29,13 @@ import androidx.compose.ui.unit.dp
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.features.meetings.domain.entities.TimeSlot
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
 @Composable
 fun CreateMeetingStep2(
     slots: List<TimeSlot> = getDefaultSlots(),
+    setTime: (LocalTime) -> Unit,
     selectedId: String,
     onSelected: (TimeSlot) -> Unit
 ) {
@@ -90,7 +93,10 @@ fun CreateMeetingStep2(
                     TimeSlotItem(
                         slot = slot,
                         selected = selected,
-                        onClick = onSelected
+                        onClick = {
+                            setTime(LocalTime.of(selectedId.toInt(), 0))
+                            onSelected(it)
+                        }
                     )
                 }
             }

@@ -1,5 +1,6 @@
 package com.example.planify.main.navigation.screens.meeting_info_screen
 
+import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -190,7 +191,7 @@ fun MeetingInfo(
                 Spacer(modifier = Modifier.height(Locals.spacing.l))
 
                 Text(
-                    text = "${stringResource(R.string.participants)} (${meetingInfo.participantProfiles.size})",
+                    text = "${stringResource(R.string.participants)} (${meetingInfo.participantProfiles.size}/${meetingInfo.invitedUserProfiles.size + 1})",
                     style = MaterialTheme.typography.labelLarge,
                     color = colors.onBackground
                 )
@@ -213,15 +214,29 @@ fun MeetingInfo(
                         modifier = Modifier
                             .fillMaxWidth()
                     ) {
-                        meetingInfo.participantProfiles.forEach { participant ->
+                        Log.d("participantProfiles", "entered")
+
+                        val owner = meetingInfo.participantProfiles.first {
+                            meetingInfo.meeting.ownerId == it.userId
+                        }
+
+                        InfoOwnerParticipantRow(
+                            modifier = Modifier.padding(Locals.spacing.m),
+                            profileUrl = owner.profileImageUrl,
+                            title = "${owner.firstName} ${owner.lastName}",
+                            desc = owner.position
+                        )
+
+                        meetingInfo.invitedUserProfiles.forEach { participant ->
+                            Log.d("participantProfiles", "participant ${participant.userId}")
                             InfoParticipantRow(
                                 modifier = Modifier.padding(Locals.spacing.m),
                                 profileUrl = participant.profileImageUrl,
                                 title = "${participant.firstName} ${participant.lastName}",
                                 desc = participant.position,
                                 isAccepted = meetingInfo.invites.firstOrNull {
-                                    it.targetId == participant.userId
-                                } ?.let { true } ?: false
+                                    it.targetId == participant.userId && it.status == MeetingInviteStatus.ACCEPTED
+                                }?.let { true } ?: false
                             )
                         }
                     }
@@ -295,6 +310,70 @@ fun InfoParticipantRow(
                 style = MaterialTheme.typography.bodySmall,
                 color = if (isAccepted) Color.Green.copy(alpha = 0.5f)
                     else colors.error
+            )
+        }
+    }
+}
+
+@Composable
+fun InfoOwnerParticipantRow(
+    modifier: Modifier = Modifier,
+    profileUrl: String,
+    title: String,
+    desc: String
+) {
+    val colors = MaterialTheme.colorScheme
+
+    Row(
+        modifier = modifier
+            .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Box(
+            modifier = Modifier
+                .size(Locals.icons.mediumLower)
+                .clip(CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            AsyncImage(
+                model = profileUrl,
+                contentDescription = null
+            )
+        }
+
+        Spacer(modifier = Modifier.width(Locals.spacing.m))
+
+        Column(
+            modifier = Modifier
+                .weight(1f),
+            verticalArrangement = Arrangement.spacedBy(Locals.spacing.xxs),
+            horizontalAlignment = Alignment.Start
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.labelLarge,
+                color = colors.onBackground
+            )
+            Text(
+                text = desc,
+                style = MaterialTheme.typography.bodyMedium,
+                color = Locals.extras.mutedForeground
+            )
+        }
+
+        Box(
+            modifier = Modifier
+                .withShapeBackground(
+                    color = colors.primaryContainer,
+                    shape = Locals.shapes.mediumShape
+                )
+        ) {
+            Text(
+                modifier = Modifier
+                    .padding(Locals.spacing.xxs),
+                text = stringResource(R.string.owner),
+                style = MaterialTheme.typography.bodySmall,
+                color = colors.primary
             )
         }
     }

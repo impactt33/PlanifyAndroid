@@ -4,7 +4,7 @@ import com.example.planify.main.features.meetings.domain.entities.MeetingInvite
 import java.time.LocalDateTime
 
 interface MeetingInvitesService {
-    suspend fun inviteUser(meetingId: Long, targetUserId: Long): Result<MeetingInvite>
+    suspend fun inviteUser(meetingId: Long, targetId: Long): Result<MeetingInvite>
 
     suspend fun inviteRescheduleResponse(inviteUuid: String, shouldReschedule: Boolean): Result<Unit>
 
