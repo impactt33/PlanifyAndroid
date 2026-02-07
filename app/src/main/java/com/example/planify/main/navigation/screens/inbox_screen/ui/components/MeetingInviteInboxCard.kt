@@ -1,7 +1,7 @@
-package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components
+package com.example.planify.main.navigation.screens.inbox_screen.ui.components
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,6 +14,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,6 +27,7 @@ import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
@@ -33,17 +36,18 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Clock
 import com.adamglin.phosphoricons.regular.MapPin
+import com.adamglin.phosphoricons.regular.User
 import com.adamglin.phosphoricons.regular.Users
+import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import java.time.format.DateTimeFormatter
 
 @Composable
-fun MeetingCard(
-    modifier: Modifier = Modifier,
+fun MeetingInviteInboxCard(
     meetingInfo: MeetingContext,
-    onClick: (Long) -> Unit = {}
+    modifier: Modifier = Modifier
 ) {
     val shape = Locals.shapes.mediumShape
     val colors = MaterialTheme.colorScheme
@@ -55,13 +59,10 @@ fun MeetingCard(
     Box(
         modifier = modifier
             .fillMaxWidth()
-            .height(Locals.dimens.meetingCardHeight)
+            .height(Locals.dimens.meetingInboxCardHeight)
             .padding(horizontal = Locals.spacing.m)
-            .clip(shape)
-            .clickable {
-                onClick(meetingInfo.meeting.id)
-            },
-        contentAlignment = Alignment.Center
+            .clip(shape),
+        contentAlignment = Alignment.Center,
     ) {
         Box(
             modifier = Modifier
@@ -71,7 +72,7 @@ fun MeetingCard(
                 modifier = Modifier
                     .fillMaxSize()
                     .withShapeBackground(
-                        color = glass.bgStrong,
+                        color = colors.surface,
                         shape = shape
                     )
                     .padding(
@@ -107,7 +108,7 @@ fun MeetingCard(
                         text = meeting.startsAt
                             .format(DateTimeFormatter.ofPattern("HH:mm"))
                                 + " - " + meeting.startsAt.plusHours(meeting.duration.toLong())
-                                    .format(DateTimeFormatter.ofPattern("HH:mm")),
+                            .format(DateTimeFormatter.ofPattern("HH:mm")),
                         iconColor = Locals.extras.primary,
                     )
                     InfoRow(
@@ -116,25 +117,72 @@ fun MeetingCard(
                         iconColor = colors.secondary,
                     )
                     InfoRow(
+                        icon = PhosphorIcons.Regular.User,
+                        text = meetingInfo.participantProfiles.first { participant ->
+                            participant.userId == meetingInfo.meeting.ownerId
+                        }.let { "${it.firstName} ${it.lastName}" },
+                        iconColor = Locals.extras.primary,
+                    )
+                    InfoRow(
                         icon = PhosphorIcons.Regular.Users,
                         text = meetingInfo.participantProfiles.size.toString(),
                         iconColor = Locals.extras.primary,
                     )
+                }
+
+                Spacer(modifier = Modifier.height(Locals.spacing.s))
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(Locals.dimens.buttonMeetingInboxCardHeight),
+                    horizontalArrangement = Arrangement.spacedBy(Locals.spacing.s)
+                ) {
+                    Button(
+                        modifier = Modifier
+                            .background(
+                                brush = Locals.gradients.blue,
+                                shape = Locals.shapes.smallShape
+                            )
+                            .fillMaxHeight()
+                            .weight(1f),
+                        onClick = {},
+                        shape = Locals.shapes.smallShape,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color.Transparent
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(R.string.accept),
+                            color = colors.onPrimary
+                        )
+                    }
+
+                    Button(
+                        modifier = Modifier
+                            .fillMaxHeight()
+                            .weight(1f)
+                            .shadow(
+                                elevation = 6.dp,
+                                shape = Locals.shapes.smallShape,
+                                ambientColor = Locals.extras.mutedForeground.copy(0.3f),
+                                spotColor = Locals.extras.mutedForeground.copy(0.3f)
+                            ),
+                        onClick = {},
+                        shape = Locals.shapes.smallShape,
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colors.surface
+                        )
+                    ) {
+                        Text(
+                            text = stringResource(R.string.decline),
+                            color = colors.onSurface
+                        )
+                    }
 
                 }
 
             }
-
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .width(Locals.spacing.xxs)
-                    .align(Alignment.CenterStart)
-                    .withShapeBackground(
-                        gradient = gradient.blue,
-                        shape = RectangleShape
-                    )
-            )
         }
 
     }

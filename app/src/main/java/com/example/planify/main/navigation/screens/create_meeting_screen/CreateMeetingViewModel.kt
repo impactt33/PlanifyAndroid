@@ -33,8 +33,8 @@ class CreateMeetingViewModel @Inject constructor(
     fun createMeeting(schema: CreateMeetingSchema) {
         viewModelScope.launch {
             meetingsService.createMeeting(schema = schema)
-                .onSuccess {
-                    _navigation.emit(AppRoute.MeetingInfoMenu)
+                .onSuccess { createdMeeting ->
+                    _navigation.emit(AppRoute.MeetingInfoMenu(createdMeeting.id))
                 }
                 .onFailure { error ->
                     _uiState.emit(UIState.Error(error.message ?: "Runtime error"))

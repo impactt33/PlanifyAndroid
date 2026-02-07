@@ -112,13 +112,14 @@
 
     <string name="incoming">Входящие</string>
     <string name="sent">Отправленные</string>
+    <string name="sent_one">Отправлено</string>
     <string name="waiting_for_response">Ожидают ответа</string>
     <string name="accept">Принять</string>
     <string name="decline">Отклонить</string>
     <string name="ok">ok</string>
-    <string name="CANCEL">CANCEL</string>
+    <string name="CANCEL">ОТМЕНА</string>
     <string name="OK">OK</string>
 
-    <string name="authentication_required">Log in required</string>
-    <string name="authenticate_again">Please log in again</string>
+    <string name="authentication_required">Требуется авторизация</string>
+    <string name="authenticate_again">Пожалуйста, авторизируйтесь снова</string>
 </resources>

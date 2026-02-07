@@ -42,7 +42,8 @@ fun HomeWeekView(
     initialPageBottom: Int,
     onDateSelected: (LocalDate) -> Unit,
     setMonthTitle: (String) -> Unit,
-    getMeetingsInfoByDate: (LocalDate) -> List<MeetingContext>
+    getMeetingsInfoByDate: (LocalDate) -> List<MeetingContext>,
+    onMeetingClick: (Long) -> Unit
 ) {
     val colors = MaterialTheme.colorScheme
 
@@ -137,7 +138,10 @@ fun HomeWeekView(
                             }
                         } else {
                             items(meetings) { info ->
-                                MeetingCard(meetingInfo = info)
+                                MeetingCard(
+                                    meetingInfo = info,
+                                    onClick = onMeetingClick
+                                )
                             }
                         }
                     }

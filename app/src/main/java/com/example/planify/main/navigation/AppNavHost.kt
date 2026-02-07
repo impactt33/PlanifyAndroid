@@ -1,5 +1,6 @@
 package com.example.planify.main.navigation
 
+import android.util.Log
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -9,9 +10,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.planify.core.ui.dialogs.AlertDialog
 import com.example.planify.main.navigation.components.AuthRequiredDialog
 import com.example.planify.main.navigation.screens.auth_screen.AuthScreen
@@ -40,16 +43,38 @@ private fun AppNavHost(
     LaunchedEffect(Unit) {
         viewModel.effects.collect { effect ->
             when (effect) {
-                is NavHostUIEffect.Navigate -> navController.navigate(effect.route.route)
-                is NavHostUIEffect.ShowDialog -> dialog = effect.dialog
+                is NavHostUIEffect.Navigate -> {
+                    Log.d("NavHostUIEffect", "Navigate: ${effect.route.route}")
+
+                    val target = effect.route.route
+
+                    navController.navigate(target) {
+                        launchSingleTop = true
+                        popUpTo(AppRoute.Init.route) { inclusive = true }
+                    }
+                }
+                is NavHostUIEffect.ShowDialog ->{
+                    dialog = effect.dialog
+                    Log.d("NavHostUIEffect", "Dialog: ${effect.dialog}")
+                }
             }
         }
     }
 
     dialog?.let { dialogInfo ->
         when (dialogInfo) {
-            is DialogType.AuthError -> AuthRequiredDialog { navController.navigate(AppRoute.Auth.route); dialog = null }
-            is DialogType.Generic -> AlertDialog(title = dialogInfo.title, message = dialogInfo.message, onDismiss = { dialog = null })
+            is DialogType.AuthError -> AuthRequiredDialog {
+                navController.navigate(AppRoute.Auth.route) {
+                    popUpTo(AppRoute.Main.route) { inclusive = true }
+                    launchSingleTop = true
+                }
+                dialog = null }
+            is DialogType.Generic -> AlertDialog(
+                title = dialogInfo.title,
+                message = dialogInfo.message,
+                onCancel = { dialog = null },
+                onDismiss = { dialog = null }
+            )
         }
     }
 
@@ -67,7 +92,8 @@ private fun AppNavHost(
             MainScreenBox(
                 onSettings = { navController.navigate(AppRoute.Settings.route) },
                 onCreateClick = { navController.navigate(AppRoute.CreateMeetingMenu.route) },
-                onEditProfileClick = { navController.navigate(AppRoute.EditProfile.route) }
+                onEditProfileClick = { navController.navigate(AppRoute.EditProfile.route) },
+                navController = navController
             )
         }
         composable(AppRoute.Auth.route) {
@@ -88,7 +114,10 @@ private fun AppNavHost(
                 navController = navController
             )
         }
-        composable(AppRoute.MeetingInfoMenu.route) {
+        composable(
+            route = AppRoute.MeetingInfoMenu.PATTERN,
+            arguments = listOf(navArgument(AppRoute.MeetingInfoMenu.ARG) {type = NavType.LongType} )
+        ) {
             MeetingInfoScreen(
                 onBack = {
                     navController.popBackStack(

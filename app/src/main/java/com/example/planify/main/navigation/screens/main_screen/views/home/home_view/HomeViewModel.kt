@@ -1,13 +1,17 @@
 package com.example.planify.main.navigation.screens.main_screen.views.home.home_view
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import com.example.planify.main.features.meetings.domain.services.MeetingsService
+import com.example.planify.main.navigation.AppRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -19,12 +23,22 @@ class HomeViewModel @Inject constructor(
     private val _uiState: MutableStateFlow<UIState> = MutableStateFlow(UIState.Loading)
     val uiState: StateFlow<UIState> = _uiState.asStateFlow()
 
+    private val _navigator = MutableSharedFlow<AppRoute>()
+
+    val navigator = _navigator.asSharedFlow()
+
     init {
         getMeetingsInfo()
     }
 
     private val _selectedDate = MutableStateFlow(LocalDate.now())
     val selectedDate: StateFlow<LocalDate> = _selectedDate.asStateFlow()
+
+    fun meetingClick(meetingId: Long) {
+        viewModelScope.launch {
+            _navigator.emit(AppRoute.MeetingInfoMenu(meetingId))
+        }
+    }
 
     fun getMeetingsInfo() {
         viewModelScope.launch {
@@ -37,6 +51,7 @@ class HomeViewModel @Inject constructor(
                     _uiState.emit(UIState.ContentData(map))
                 }
                 .onFailure { error ->
+                    Log.e("ERROR PIZDA SERVERY", "ERROR", error)
                     _uiState.value = UIState.Error(error.message ?: "Runtime error")
                 }
         }

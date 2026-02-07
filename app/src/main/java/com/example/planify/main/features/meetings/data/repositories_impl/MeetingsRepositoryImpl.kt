@@ -4,6 +4,7 @@ import com.example.planify.main.features.auth.domain.utils.network.Authenticated
 import com.example.planify.main.features.meetings.data.dto.create_meeting.CreateMeetingRequestDTO
 import com.example.planify.main.features.meetings.data.dto.create_meeting.CreateMeetingResponseDTO
 import com.example.planify.main.features.meetings.data.dto.get_meeting.GetMeetingResponseDTO
+import com.example.planify.main.features.meetings.data.dto.get_meeting_context.GetMeetingContextResponseDTO
 import com.example.planify.main.features.meetings.data.dto.get_my_daily_meetings.GetMyDailyMeetingsDTO
 import com.example.planify.main.features.meetings.data.dto.get_my_daily_meetings_short.GetMyDailyMeetingsShortDTO
 import com.example.planify.main.features.meetings.data.dto.patch_meeting.PatchMeetingRequestDTO
@@ -30,12 +31,12 @@ class MeetingsRepositoryImpl @Inject constructor(
 ) : MeetingsRepository {
     private val meetingsFeaturePath = "/meetings"
 
+    private val getMeetingContextPath = "$meetingsFeaturePath/%d/context"
     private val createMeetingPath = meetingsFeaturePath
     private val getMeetingPath = "$meetingsFeaturePath/%d"
     private val patchMeetingPath = "$meetingsFeaturePath/%d"
     private val getMyDailyMeetingsPath = "$meetingsFeaturePath/my"
     private val getMyDailyMeetingsShortPath = "$meetingsFeaturePath/my/short"
-
     override suspend fun createMeeting(schema: CreateMeetingSchema): Result<Meeting> = withContext(Dispatchers.IO) {
         val requestDTO = CreateMeetingRequestDTO(
             name = schema.name,
@@ -54,6 +55,17 @@ class MeetingsRepositoryImpl @Inject constructor(
             }
 
             response.meeting.toEntity()
+        }
+    }
+
+    override suspend fun fetchMeetingContext(meetingId: Long): Result<MeetingContext> = withContext(Dispatchers.IO) {
+        return@withContext runCatching {
+            val response = authenticatedApiClient.requestNotNull<GetMeetingContextResponseDTO> {
+                method = HttpMethod.Get
+                url { path(getMeetingContextPath.format(meetingId)) }
+            }
+
+            response.meetingContext.toEntity()
         }
     }
 
