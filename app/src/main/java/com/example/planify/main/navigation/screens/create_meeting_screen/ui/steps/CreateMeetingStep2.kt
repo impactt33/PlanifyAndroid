@@ -164,6 +164,7 @@ fun CreateMeetingStep2(viewModel: CreateMeetingViewModel) {
                 is ResourceState.Loading -> {}
                 is ResourceState.Success<Map<Int, Boolean>> -> {
                     val state = userSchedule as ResourceState.Success<Map<Int, Boolean>>
+                    fun isSelectable(i: Int) = state.data[i] == true
 
                     (0 until 24).forEach { slot ->
                         Row(
@@ -172,16 +173,30 @@ fun CreateMeetingStep2(viewModel: CreateMeetingViewModel) {
                         ) {
                             TimeSlotItem(
                                 slot = slot,
-                                isBusy = state.data[slot] ?: false,
+                                isBusy = !isSelectable(slot),
                                 selected = draftState.selectedTimeSlots.contains(slot),
                                 onClick = {
-                                    if (draftState.selectedTimeSlots.size == 1 && slot != draftState.selectedTimeSlots[0] + 1) {
-                                        viewModel.replaceTimeSlot(draftState.selectedTimeSlots[0], slot)
-                                    }
+                                    val selectedItems = draftState.selectedTimeSlots
 
-                                    if (draftState.selectedTimeSlots.isEmpty() || draftState.selectedTimeSlots.contains(slot - 1)) {
-                                        viewModel.toggleTimeSlot(slot)
-                                    }
+                                    viewModel.setSelectedTimeSlots(
+                                        when {
+                                            selectedItems.size == 1 && slot > selectedItems.last() -> {
+                                                val newSelection = mutableListOf<Int>()
+
+                                                for (i in selectedItems.first()..slot) {
+                                                    if (!isSelectable(i)) {
+                                                        newSelection.clear()
+                                                        continue
+                                                    }
+
+                                                    newSelection.add(i)
+                                                }
+
+                                                newSelection
+                                            }
+                                            else -> if (isSelectable(slot)) listOf(slot) else listOf()
+                                        }
+                                    )
                                 }
                             )
                         }

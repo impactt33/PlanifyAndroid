@@ -4,13 +4,13 @@ import com.example.planify.main.features.auth.domain.utils.network.Authenticated
 import com.example.planify.main.features.profiles.data.dto.fetch_my_profile.FetchMyProfileRequestDTO
 import com.example.planify.main.features.profiles.data.dto.get_my_profile.GetMyProfileResponseDTO
 import com.example.planify.main.features.profiles.data.dto.put_my_profile.PutMyProfileRequestDTO
-import com.example.planify.main.features.profiles.data.dto.search.SearchProfileRequestDTO
 import com.example.planify.main.features.profiles.data.dto.search.SearchProfileResponseDTO
 import com.example.planify.main.features.profiles.domain.entities.Page
-import com.example.planify.main.features.profiles.domain.repositories.ProfilesRepository
 import com.example.planify.main.features.profiles.domain.entities.Profile
+import com.example.planify.main.features.profiles.domain.repositories.ProfilesRepository
 import com.example.planify.main.features.profiles.domain.schemas.PatchMyProfileSchema
 import com.example.planify.main.features.profiles.domain.schemas.PutMyProfileSchema
+import io.ktor.client.request.parameter
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpMethod
 import io.ktor.http.path
@@ -28,9 +28,7 @@ class ProfilesRepositoryImpl @Inject constructor(
     val fetchMyProfilePath = "$profileFeaturePath/my"
     val patchMyProfilePath = "$profileFeaturePath/my"
     val putMyProfilePath = "$profileFeaturePath/my"
-    val searchProfilePath = "$profileFeaturePath/my"
-
-
+    val searchProfilePath = "$profileFeaturePath/search"
 
     override suspend fun fetchMyProfile(): Result<Profile> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
@@ -60,7 +58,7 @@ class ProfilesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun putMyProfile(shema: PutMyProfileSchema): Result<Unit> = withContext(Dispatchers.IO){
+    override suspend fun putMyProfile(shema: PutMyProfileSchema): Result<Unit> = withContext(Dispatchers.IO) {
         val requestDTO = PutMyProfileRequestDTO(
             firstName = shema.firstName,
             lastName = shema.lastName,
@@ -78,18 +76,16 @@ class ProfilesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun searchProfile(page: Int, size: Int, sort: List<String>, query: String): Result<Page> = withContext(Dispatchers.IO) {
-        val requestDTO = SearchProfileRequestDTO(
-            page = page,
-            size = size,
-            sort = sort
-        )
-
+    override suspend fun searchProfile(query: String, page: Int?, size: Int?, sort: List<String>?): Result<Page> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
             val response = authenticatedApiClient.requestNotNull<SearchProfileResponseDTO> {
                 method = HttpMethod.Get
                 url { path(searchProfilePath) }
-                setBody(requestDTO)
+                parameter("query", query)
+
+                page?.let { parameter("page", page) }
+                size?.let { parameter("size", size) }
+                sort?.let { parameter("sort", sort) }
             }
 
             response.result.toEntity()

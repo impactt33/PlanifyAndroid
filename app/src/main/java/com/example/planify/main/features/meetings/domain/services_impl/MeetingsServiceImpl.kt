@@ -45,9 +45,16 @@ class MeetingsServiceImpl @Inject constructor(
 
     override suspend fun fetchUserSchedule(forDate: LocalDate): Result<Map<Int, Boolean>> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
-            val meetings = fetchMyDailyMeetings(forDate, forDate).getOrThrow()[forDate]!!
+            val meetings = fetchMyDailyMeetings(forDate, forDate).getOrThrow()
+            val todayMeetings = meetings[forDate] ?: return@runCatching (0 until 24).associateWith { true }
 
-            (1 until 24).associateWith { slot -> (meetings.firstOrNull { it.meeting.startsAt.hour == slot } == null) }
+            val schedule = (0 until 24).associateWith { true }.toMutableMap()
+
+            todayMeetings.forEach { context ->  // TODO: Refactor
+                (context.meeting.startsAt.hour until context.meeting.startsAt.hour + context.meeting.duration).forEach { schedule[it] = false }
+            }
+
+            schedule
         }
     }
 }

@@ -1,10 +1,11 @@
 package com.example.planify.main.features.profiles.domain.repositories
 
-import androidx.room.RawQuery
 import com.example.planify.main.features.profiles.domain.entities.Page
 import com.example.planify.main.features.profiles.domain.entities.Profile
 import com.example.planify.main.features.profiles.domain.schemas.PatchMyProfileSchema
 import com.example.planify.main.features.profiles.domain.schemas.PutMyProfileSchema
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 interface ProfilesRepository {
     suspend fun fetchMyProfile(): Result<Profile>
@@ -13,5 +14,5 @@ interface ProfilesRepository {
 
     suspend fun putMyProfile(shema: PutMyProfileSchema): Result<Unit>
 
-    suspend fun searchProfile(page: Int, size: Int, sort: List<String>, query: String): Result<Page>
+    suspend fun searchProfile(query: String, page: Int? = null, size: Int? = null, sort: List<String>? = null): Result<Page>
 }

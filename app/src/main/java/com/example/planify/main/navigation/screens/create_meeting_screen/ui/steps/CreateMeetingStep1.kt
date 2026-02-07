@@ -1,6 +1,6 @@
 package com.example.planify.main.navigation.screens.create_meeting_screen.ui.steps
 
-import DatePickerDialog
+import com.example.planify.main.navigation.screens.create_meeting_screen.components.DatePickerDialog
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
@@ -137,7 +137,7 @@ fun CreateMeetingStep1(
                 ) { showDatePicker = true }
         ) {
             OutlinedTextField(
-                value = draftState.startsAtDate?.format(dateTimeFormatter) ?: "",
+                value = draftState.startsAtDate.format(dateTimeFormatter) ?: "",
                 onValueChange = {},
                 readOnly = true,
                 singleLine = true,
@@ -155,7 +155,7 @@ fun CreateMeetingStep1(
         }
         DatePickerDialog(
             opened = showDatePicker,
-            initialDate = draftState.startsAtDate ?: LocalDate.now(),
+            initialDate = draftState.startsAtDate,
             onDismiss = { showDatePicker = false },
             onConfirm = { picked ->
                 viewModel.setStartsAtDate(picked)

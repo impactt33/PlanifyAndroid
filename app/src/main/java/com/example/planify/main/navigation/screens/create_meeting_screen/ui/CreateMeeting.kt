@@ -15,7 +15,7 @@ import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
 import com.example.planify.main.navigation.screens.create_meeting_screen.CreateMeetingRoute
 import com.example.planify.main.navigation.screens.create_meeting_screen.CreateMeetingViewModel
-import com.example.planify.main.navigation.screens.create_meeting_screen.UIEvent
+import com.example.planify.main.navigation.screens.create_meeting_screen.UIEffect
 import com.example.planify.main.navigation.screens.create_meeting_screen.components.BottomBar
 import com.example.planify.main.navigation.screens.create_meeting_screen.components.TopBar
 import com.example.planify.main.navigation.screens.create_meeting_screen.ui.steps.CreateMeetingStep1
@@ -41,14 +41,14 @@ private fun CreateMeeting(
     onBack: () -> Unit
 ) {
     LaunchedEffect(Unit) {
-        viewModel.events.collect { event ->
+        viewModel.effects.collect { event ->
             when (event) {
-                is UIEvent.Navigate -> navController.navigate(event.route.route)
+                is UIEffect.Navigate -> navController.navigate(event.route.route)
             }
         }
     }
 
-    val router = rememberPagerRouterScreenState(
+    val pagerRouterState = rememberPagerRouterScreenState(
         routes = CreateMeetingRoute.routes,
         startRoute = CreateMeetingRoute.Info
     )
@@ -61,15 +61,13 @@ private fun CreateMeeting(
         containerColor = colors.background,
         bottomBar = {
             BottomBar(
-                currentPage = router.currentRouteIndex,
-                onBackButton = { router.navigateTo(router.currentRouteIndex - 1) },
-                onButtonClick = { router.navigateTo(router.currentRouteIndex + 1) },
-                onCreate = { viewModel.runCreateMeeting() }
+                navigator = pagerRouterState,
+                viewModel = viewModel
             )
         },
         topBar = {
             TopBar(
-                currentPage = router.currentRouteIndex,
+                currentPage = pagerRouterState.currentRouteIndex,
                 onBack = onBack
             )
         }
@@ -80,7 +78,7 @@ private fun CreateMeeting(
                 .wrapContentHeight()
                 .animateContentSize(),
             userScrollEnabled = false,
-            state = router
+            state = pagerRouterState
         ) {
             screen(CreateMeetingRoute.Info) {
                 CreateMeetingStep1(viewModel)

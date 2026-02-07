@@ -1,7 +1,5 @@
 package com.example.planify.main.navigation
 
-import com.example.planify.main.features.meetings.domain.entities.Meeting
-
 sealed class AppRoute(val route: String) {
     object Main : AppRoute("main")
     object Auth : AppRoute("auth")
@@ -14,5 +12,6 @@ sealed class AppRoute(val route: String) {
             const val PATTERN = "meeting_info/{$ARG}"
         }
     }
+
     object EditProfile : AppRoute("edit_profile")
 }

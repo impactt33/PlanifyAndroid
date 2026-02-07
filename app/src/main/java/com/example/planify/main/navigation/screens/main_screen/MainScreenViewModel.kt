@@ -15,9 +15,9 @@ class MainScreenViewModel @Inject constructor(
     private val actionsService: ActionsService
 ) : ViewModel() {
     init {
-        viewModelScope.launch {
-            actionsService.actionsFlow.collect(::onAction)
-        }
+//        viewModelScope.launch {
+//            actionsService.actionsFlow.collect(::onAction)
+//        }
     }
 
     @Suppress("UNCHECKED_CAST")

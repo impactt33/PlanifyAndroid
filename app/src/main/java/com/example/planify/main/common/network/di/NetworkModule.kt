@@ -52,7 +52,6 @@ object NetworkModule {
                 url { protocol = URLProtocol.HTTP }
                 headers {
                     set(HttpHeaders.ContentType, "application/json")
-                    set(HttpHeaders.Connection, "close")
                 }
             }
         }

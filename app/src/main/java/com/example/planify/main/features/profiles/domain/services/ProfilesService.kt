@@ -12,5 +12,5 @@ interface ProfilesService {
 
     suspend fun putMyProfile(shema: PutMyProfileSchema): Result<Unit>
 
-    suspend fun searchProfile(page: Int, size: Int, sort: List<String>, query: String): Result<Page>
+    suspend fun searchProfile(query: String, page: Int? = null, size: Int? = null, sort: List<String>? = null): Result<Page>
 }
