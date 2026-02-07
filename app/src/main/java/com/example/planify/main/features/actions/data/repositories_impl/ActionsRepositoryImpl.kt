@@ -21,7 +21,8 @@ class ActionsRepositoryImpl @Inject constructor(
     override val actionsFlow: SharedFlow<Action<*>> = actionsReader.actionsFlow
 
     override suspend fun fetchActions(): Result<List<Action<*>>> {
-        return remoteDataSource.fetchActions().map { actions -> actions.map { it.toEntity(actionDataParser) } }
+        val lastSeen = localDataSource.getLastSeenActionId()
+        return remoteDataSource.fetchActions(lastSeen).map { actions -> actions.map { it.toEntity(actionDataParser) } }
     }
 
     override suspend fun deleteAction(actionId: String): Result<Unit> = runCatching {
@@ -34,6 +35,8 @@ class ActionsRepositoryImpl @Inject constructor(
     }
 
     override suspend fun <T : Any> saveActionToLocalDB(action: Action<T>, serializer: KSerializer<T>): Result<Unit> {
-        return localDataSource.saveAction(action, serializer).map { }
+        return localDataSource.saveAction(action, serializer)
+            .onSuccess { localDataSource.setLastSeenActionId(action.id) }
+            .map { }
     }
 }

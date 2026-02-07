@@ -19,9 +19,11 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.path
 import jakarta.inject.Inject
+import jakarta.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+@Singleton
 class AuthRemoteDataSourceImpl @Inject constructor(
     private val apiClient: ApiClient,
 ) : AuthRemoteDataSource {
