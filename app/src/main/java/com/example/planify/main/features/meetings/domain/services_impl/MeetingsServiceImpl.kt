@@ -6,6 +6,8 @@ import com.example.planify.main.features.meetings.domain.repositories.MeetingsRe
 import com.example.planify.main.features.meetings.domain.schemas.CreateMeetingSchema
 import com.example.planify.main.features.meetings.domain.schemas.PatchMeetingSchema
 import com.example.planify.main.features.meetings.domain.services.MeetingsService
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 import java.time.LocalDate
 import javax.inject.Inject
 import javax.inject.Singleton
@@ -39,5 +41,13 @@ class MeetingsServiceImpl @Inject constructor(
 
     override suspend fun fetchMyDailyMeetingsShort(startDate: LocalDate, endDate: LocalDate): Result<Map<LocalDate, Int>> {
         return meetingsRepository.fetchMyDailyMeetingsShort(startDate, endDate)
+    }
+
+    override suspend fun fetchUserSchedule(forDate: LocalDate): Result<Map<Int, Boolean>> = withContext(Dispatchers.IO) {
+        return@withContext runCatching {
+            val meetings = fetchMyDailyMeetings(forDate, forDate).getOrThrow()[forDate]!!
+
+            (1 until 24).associateWith { slot -> (meetings.firstOrNull { it.meeting.startsAt.hour == slot } == null) }
+        }
     }
 }

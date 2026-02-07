@@ -14,4 +14,6 @@ interface MeetingsService {
 
     suspend fun fetchMyDailyMeetings(startDate: LocalDate, endDate: LocalDate): Result<Map<LocalDate, List<MeetingContext>>>
     suspend fun fetchMyDailyMeetingsShort(startDate: LocalDate, endDate: LocalDate): Result<Map<LocalDate, Int>>
+
+    suspend fun fetchUserSchedule(forDate: LocalDate): Result<Map<Int, Boolean>>
 }

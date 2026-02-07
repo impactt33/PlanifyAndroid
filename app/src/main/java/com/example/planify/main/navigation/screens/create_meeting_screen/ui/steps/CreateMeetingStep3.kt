@@ -30,11 +30,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -44,304 +43,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil3.compose.AsyncImage
 import com.example.planify.R
+import com.example.planify.core.ui.state.ResourceState
 import com.example.planify.main.common.themes.Locals
-import com.example.planify.main.features.auth.domain.entities.UserPrivate
-import com.example.planify.main.features.meetings.domain.entities.Participant
 import com.example.planify.main.features.profiles.domain.entities.Profile
-import com.example.planify.main.navigation.screens.create_meeting_screen.ProfileSearchState
-import com.example.planify.main.navigation.screens.create_meeting_screen.ProfilesSearchState
-import com.example.planify.main.navigation.screens.create_meeting_screen.UIState
-import kotlinx.coroutines.delay
-
-private val participants123 = listOf(
-    Participant(
-        user = UserPrivate(
-            id = 1L,
-            email = "pidrila@mail.ru",
-            username = "sdfsdf"
-        ),
-        profile = Profile(
-            firstName = "Олег",
-            lastName = "Тиньков",
-            position = "Иноагент",
-            department = "Италия",
-            profileImageUrl = "https://preview.redd.it/spider-man-v0-t0qia4bou9qf1.jpg?width=640&crop=smart&auto=webp&s=8bb14c332040b37fd9964b8fb8d5ffc4aefef9ac"
-        )
-    ),
-    Participant(
-        user = UserPrivate(
-            id = 2L,
-            email = "kamilla.akhmetova@planify.ru",
-            username = "kamilla_pm"
-        ),
-        profile = Profile(
-            firstName = "Камилла",
-            lastName = "Ахметова",
-            position = "Product Manager",
-            department = "Продукт",
-            profileImageUrl = "https://preview.redd.it/spider-man-v0-t0qia4bou9qf1.jpg?width=640&crop=smart&auto=webp&s=8bb14c332040b37fd9964b8fb8d5ffc4aefef9ac"
-        )
-    ),
-    Participant(
-        user = UserPrivate(
-            id = 3L,
-            email = "andrey.petrov@planify.ru",
-            username = "andrey_design"
-        ),
-        profile = Profile(
-            firstName = "Андрей",
-            lastName = "Петров",
-            position = "Дизайнер",
-            department = "Дизайн",
-            profileImageUrl = "https://preview.redd.it/spider-man-v0-t0qia4bou9qf1.jpg?width=640&crop=smart&auto=webp&s=8bb14c332040b37fd9964b8fb8d5ffc4aefef9ac"
-        )
-    ),
-    Participant(
-        user = UserPrivate(
-            id = 4L,
-            email = "elena.ivanova@planify.ru",
-            username = "elena_hr"
-        ),
-        profile = Profile(
-            firstName = "Елена",
-            lastName = "Иванова",
-            position = "HR Manager",
-            department = "HR",
-            profileImageUrl = "https://preview.redd.it/spider-man-v0-t0qia4bou9qf1.jpg?width=640&crop=smart&auto=webp&s=8bb14c332040b37fd9964b8fb8d5ffc4aefef9ac"
-        )
-    ),
-    Participant(
-        user = UserPrivate(
-            id = 5L,
-            email = "dmitry.kozlov@planify.ru",
-            username = "dmitry_dev"
-        ),
-        profile = Profile(
-            firstName = "Дмитрий",
-            lastName = "Козлов",
-            position = "Android Developer",
-            department = "IT",
-            profileImageUrl = "https://preview.redd.it/spider-man-v0-t0qia4bou9qf1.jpg?width=640&crop=smart&auto=webp&s=8bb14c332040b37fd9964b8fb8d5ffc4aefef9ac"
-        )
-    ),
-    Participant(
-        user = UserPrivate(
-            id = 6L,
-            email = "natalia.sokolova@planify.ru",
-            username = "natalia_qa"
-        ),
-        profile = Profile(
-            firstName = "Наталья",
-            lastName = "Соколова",
-            position = "QA Engineer",
-            department = "IT",
-            profileImageUrl = "https://preview.redd.it/spider-man-v0-t0qia4bou9qf1.jpg?width=640&crop=smart&auto=webp&s=8bb14c332040b37fd9964b8fb8d5ffc4aefef9ac"
-        )
-    ),
-    Participant(
-        user = UserPrivate(
-            id = 7L,
-            email = "maxim.volkov@planify.ru",
-            username = "max_volkov"
-        ),
-        profile = Profile(
-            firstName = "Максим",
-            lastName = "Волков",
-            position = "Backend Developer",
-            department = "IT",
-            profileImageUrl = "https://preview.redd.it/spider-man-v0-t0qia4bou9qf1.jpg?width=640&crop=smart&auto=webp&s=8bb14c332040b37fd9964b8fb8d5ffc4aefef9ac"
-        )
-    ),
-    Participant(
-        user = UserPrivate(
-            id = 8L,
-            email = "alisa.fedorova@planify.ru",
-            username = "alisa_analytics"
-        ),
-        profile = Profile(
-            firstName = "Алиса",
-            lastName = "Фёдорова",
-            position = "Data Analyst",
-            department = "Аналитика",
-            profileImageUrl = "https://preview.redd.it/spider-man-v0-t0qia4bou9qf1.jpg?width=640&crop=smart&auto=webp&s=8bb14c332040b37fd9964b8fb8d5ffc4aefef9ac"
-        )
-    ),
-    Participant(
-        user = UserPrivate(
-            id = 9L,
-            email = "kirill.morozov@planify.ru",
-            username = "kirill_ops"
-        ),
-        profile = Profile(
-            firstName = "Кирилл",
-            lastName = "Морозов",
-            position = "DevOps Engineer",
-            department = "Инфраструктура",
-            profileImageUrl = "https://preview.redd.it/spider-man-v0-t0qia4bou9qf1.jpg?width=640&crop=smart&auto=webp&s=8bb14c332040b37fd9964b8fb8d5ffc4aefef9ac"
-        )
-    ),
-    Participant(
-        user = UserPrivate(
-            id = 10L,
-            email = "sofia.orlova@planify.ru",
-            username = "sofia_front"
-        ),
-        profile = Profile(
-            firstName = "София",
-            lastName = "Орлова",
-            position = "Frontend Developer",
-            department = "Веб",
-            profileImageUrl = "https://preview.redd.it/spider-man-v0-t0qia4bou9qf1.jpg?width=640&crop=smart&auto=webp&s=8bb14c332040b37fd9964b8fb8d5ffc4aefef9ac"
-        )
-    ),
-    Participant(
-        user = UserPrivate(
-            id = 11L,
-            email = "ivan.kuznetsov@planify.ru",
-            username = "ivan_sales"
-        ),
-        profile = Profile(
-            firstName = "Иван",
-            lastName = "Кузнецов",
-            position = "Account Manager",
-            department = "Продажи",
-            profileImageUrl = "https://preview.redd.it/spider-man-v0-t0qia4bou9qf1.jpg?width=640&crop=smart&auto=webp&s=8bb14c332040b37fd9964b8fb8d5ffc4aefef9ac"
-        )
-    ),
-    Participant(
-        user = UserPrivate(
-            id = 12L,
-            email = "polina.belova@planify.ru",
-            username = "polina_support"
-        ),
-        profile = Profile(
-            firstName = "Полина",
-            lastName = "Белова",
-            position = "Support Specialist",
-            department = "Поддержка",
-            profileImageUrl = "https://preview.redd.it/spider-man-v0-t0qia4bou9qf1.jpg?width=640&crop=smart&auto=webp&s=8bb14c332040b37fd9964b8fb8d5ffc4aefef9ac"
-        )
-    )
-)
-
-@Composable
-fun CreateMeetingStep3(
-    search: ProfilesSearchState,
-    invitedIds: Set<Long>,
-    onQueryChange: (String) -> Unit,
-    onToggleInvite: (Long) -> Unit,
-    onRefresh: () -> Unit,
-    onLoadNext: () -> Unit,
-) {
-    val colors = MaterialTheme.colorScheme
-    val listState = rememberLazyListState()
-
-    LaunchedEffect(Unit) {
-        if (search.items.isEmpty() && !search.isLoading) onRefresh()
-    }
-
-    LaunchedEffect(search.query) {
-        delay(350)
-        onRefresh()
-    }
-
-    val shouldLoadMore = remember {
-        derivedStateOf {
-            val lastVisible = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index ?: 0
-            lastVisible >= search.items.size - 5
-        }
-    }
-    LaunchedEffect(shouldLoadMore.value) {
-        if (shouldLoadMore.value) onLoadNext()
-    }
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(
-                PaddingValues(
-                    top = Locals.spacing.m,
-                    start = Locals.spacing.m,
-                    end = Locals.spacing.m,
-                )
-            )
-    ) {
-        Text(
-            text = stringResource(R.string.step3_inviting),
-            style = MaterialTheme.typography.titleLarge,
-            fontWeight = FontWeight.Bold,
-            color = colors.onBackground
-        )
-
-        Spacer(modifier = Modifier.height(Locals.spacing.s))
-
-        Text(
-            text = stringResource(R.string.step3_chosen) + " ${selected.size}",
-            style = MaterialTheme.typography.bodySmall,
-            color = Locals.extras.mutedForeground.copy(alpha = 0.75f)
-        )
-
-        Spacer(modifier = Modifier.height(Locals.spacing.s))
-
-        ChipRow(
-            participants = selectedParticipants.toList(),
-            onRemove = {
-                selectedParticipants = selectedParticipants - it
-                onSelectedChanged(participants.filter { it in participants })
-            }
-        )
-
-        Spacer(modifier = Modifier.height(Locals.spacing.s))
-
-        OutlinedTextField(
-            value = query,
-            onValueChange = { query = it },
-            singleLine = true,
-            placeholder = { Text(stringResource(R.string.step3_search_placeholder)) },
-            shape = Locals.shapes.mediumShape,
-            colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = Locals.extras.border,
-                unfocusedBorderColor = Locals.extras.border,
-                focusedContainerColor = colors.surface,
-                unfocusedContainerColor = colors.surface,
-                cursorColor = colors.primary
-            ),
-            modifier = Modifier.fillMaxWidth()
-        )
-
-        Spacer(modifier = Modifier.height(Locals.spacing.s))
-
-        Divider(color = Locals.extras.border)
-
-        LazyColumn(
-            modifier = Modifier
-                .fillMaxHeight(),
-            verticalArrangement = Arrangement.spacedBy(Locals.spacing.s)
-        ) {
-            item {
-                Spacer(modifier = Modifier.height(0.dp))
-            }
-            items(filtered, key = { it.user.id }) { participant ->
-                val checked = participant in selectedParticipants
-                ParticipantRow(
-                    participant = participant,
-                    checked = checked
-                ) {
-                    selectedParticipants = if (checked) selectedParticipants - participant
-                        else selectedParticipants + participant
-                    onSelectedChanged(participants.filter { it in selectedParticipants })
-                }
-            }
-            item {
-                Spacer(modifier = Modifier.height(0.dp))
-            }
-        }
-    }
-}
+import com.example.planify.main.navigation.screens.create_meeting_screen.CreateMeetingViewModel
 
 @Composable
 fun ParticipantRow(
-    participant: Participant,
+    profile: Profile,
     checked: Boolean,
     onToggle: () -> Unit
 ) {
@@ -387,7 +96,7 @@ fun ParticipantRow(
                 contentAlignment = Alignment.Center
             ) {
                 AsyncImage(
-                    model = participant.profile.profileImageUrl,
+                    model = profile.profileImageUrl,
                     contentDescription = null
                 )
             }
@@ -399,13 +108,13 @@ fun ParticipantRow(
                     .fillMaxWidth()
             ) {
                 Text(
-                    text = "${participant.profile.firstName} ${participant.profile.lastName}",
+                    text = "${profile.firstName} ${profile.lastName}",
                     style = MaterialTheme.typography.bodyMedium,
                     fontWeight = if (checked) FontWeight.SemiBold else FontWeight.Medium,
                     color = colors.onBackground
                 )
                 Text(
-                    text = participant.profile.department,
+                    text = profile.department,
                     style = MaterialTheme.typography.bodySmall,
                     color = Locals.extras.mutedForeground.copy(alpha = 0.75f)
                 )
@@ -466,19 +175,142 @@ private fun Chip(
 
 @Composable
 fun ChipRow(
-    participants: List<Participant>,
-    onRemove: (Participant) -> Unit
+    profiles: List<Profile>,
+    onRemove: (Profile) -> Unit
 ) {
     LazyRow(
         modifier = Modifier
             .fillMaxWidth(),
         horizontalArrangement = Arrangement.spacedBy(Locals.spacing.xs)
     ) {
-        items(participants) { participant ->
+        items(profiles) { profile ->
             Chip(
-                text = "${participant.profile.firstName} ${participant.profile.lastName}",
-                onRemove = { onRemove(participant) }
+                text = "${profile.firstName} ${profile.lastName}",
+                onRemove = { onRemove(profile) }
             )
+        }
+    }
+}
+
+@Composable
+fun CreateMeetingStep3(
+    viewModel: CreateMeetingViewModel,
+) {
+    val colors = MaterialTheme.colorScheme
+    val listState = rememberLazyListState()
+
+    val draftState by viewModel.meetingDraftState.collectAsState()
+    val searchState by viewModel.profilesSearchState.collectAsState()
+    val searchResultState by viewModel.profilesSearchResultState.collectAsState()
+
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+            val totalItems = listState.layoutInfo.totalItemsCount
+
+            lastVisibleItem != null && lastVisibleItem >= totalItems - 1
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore) {
+        if (shouldLoadMore) viewModel.fetchProfiles()
+    }
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(
+                PaddingValues(
+                    top = Locals.spacing.m,
+                    start = Locals.spacing.m,
+                    end = Locals.spacing.m,
+                )
+            )
+    ) {
+        Text(
+            text = stringResource(R.string.step3_inviting),
+            style = MaterialTheme.typography.titleLarge,
+            fontWeight = FontWeight.Bold,
+            color = colors.onBackground
+        )
+
+        Spacer(modifier = Modifier.height(Locals.spacing.s))
+
+        Text(
+            text = stringResource(R.string.step3_chosen) + " ${draftState.inviteUsersIds.size}",
+            style = MaterialTheme.typography.bodySmall,
+            color = Locals.extras.mutedForeground.copy(alpha = 0.75f)
+        )
+
+        Spacer(modifier = Modifier.height(Locals.spacing.s))
+
+        when (searchResultState) {
+            is ResourceState.Error -> {}
+            is ResourceState.Idle -> {}
+            is ResourceState.Loading -> {}
+            is ResourceState.Success<Map<Long, Profile>> -> {
+                val state = searchResultState as ResourceState.Success<Map<Long, Profile>>
+
+                ChipRow(
+                    profiles = state.data.values.filter { draftState.inviteUsersIds.contains(it.userId) },
+                    onRemove = { profile -> viewModel.removeInvite(profile.userId) }
+                )
+            }
+        }
+
+        Spacer(modifier = Modifier.height(Locals.spacing.s))
+
+        OutlinedTextField(
+            value = searchState.query,
+            onValueChange = { viewModel.setProfilesQuery(it) },
+            singleLine = true,
+            placeholder = { Text(stringResource(R.string.step3_search_placeholder)) },
+            shape = Locals.shapes.mediumShape,
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Locals.extras.border,
+                unfocusedBorderColor = Locals.extras.border,
+                focusedContainerColor = colors.surface,
+                unfocusedContainerColor = colors.surface,
+                cursorColor = colors.primary
+            ),
+            modifier = Modifier.fillMaxWidth()
+        )
+
+        Spacer(modifier = Modifier.height(Locals.spacing.s))
+
+        Divider(color = Locals.extras.border)
+
+        LazyColumn(
+            modifier = Modifier
+                .fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(Locals.spacing.s),
+            state = listState
+        ) {
+            item {
+                Spacer(modifier = Modifier.height(0.dp))
+            }
+
+            when(searchResultState) {
+                is ResourceState.Error -> {}
+                is ResourceState.Idle -> {}
+                is ResourceState.Loading -> {}
+                is ResourceState.Success<*> -> {
+                    val state = searchResultState as ResourceState.Success<Map<Long, Profile>>
+
+                    items(state.data.values.toList(), key = { it.userId }) { profile ->
+                        ParticipantRow(
+                            profile = profile,
+                            checked = draftState.inviteUsersIds.contains(profile.userId)
+                        ) {
+                            viewModel.toggleInvite(profile.userId)
+                        }
+                    }
+                }
+            }
+
+            item {
+                Spacer(modifier = Modifier.height(0.dp))
+            }
         }
     }
 }
