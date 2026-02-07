@@ -41,4 +41,6 @@ data class Dimens(
     val meetingInboxCardHeight: Dp = 280.dp,
     val buttonMeetingInboxCardHeight: Dp = 44.dp,
     val meetingInboxCardHeightShort: Dp = 160.dp,
+    val dotCalendarSize: Dp = 4.dp,
+    val notificationCardHeight: Dp = 100.dp
 )

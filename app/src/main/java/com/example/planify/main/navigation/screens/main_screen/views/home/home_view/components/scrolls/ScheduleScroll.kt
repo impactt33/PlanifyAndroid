@@ -1,4 +1,4 @@
-package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components
+package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.scrolls
 
 import android.util.Log
 import androidx.compose.foundation.pager.HorizontalPager

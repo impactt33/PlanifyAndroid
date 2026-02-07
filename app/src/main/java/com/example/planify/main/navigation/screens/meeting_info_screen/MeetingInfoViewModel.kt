@@ -24,11 +24,6 @@ class MeetingInfoViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<UIState>(UIState.Loading)
     val uiState = _uiState.asStateFlow()
 
-
-    init {
-        fetchMeetingContext(meetingId)
-    }
-
     fun fetchMeetingContext(meetingId: Long) {
         viewModelScope.launch {
             _uiState.emit(UIState.Loading)
@@ -42,5 +37,9 @@ class MeetingInfoViewModel @Inject constructor(
                     _uiState.emit(UIState.Error(error.message ?: "Runtime error"))
                 }
         }
+    }
+
+    init {
+        fetchMeetingContext(meetingId)
     }
 }

@@ -1,4 +1,4 @@
-package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components
+package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.day_view
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -30,10 +30,10 @@ import com.example.planify.main.common.ui.withShapeBackground
 import com.example.planify.main.common.utils.dateForPage
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.UIState
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.MeetingCard
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.ScheduleScroll
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.skeleton_meeting_card.MeetingCard
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.scrolls.ScheduleScroll
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.ScrollableDateRow
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.SkeletonMeetingCard
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.skeleton_meeting_card.SkeletonMeetingCard
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.LocalTime

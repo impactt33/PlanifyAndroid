@@ -1,4 +1,4 @@
-package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components
+package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.week_view
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -14,25 +14,29 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.TextEmptyMeetings
 import com.example.planify.main.common.utils.dateForPage
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.UIState
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.ScheduleScroll
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.MeetingCard
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.scrolls.ScheduleScroll
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.skeleton_meeting_card.MeetingCard
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.WeeklySchedule
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.SkeletonMeetingCard
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.skeleton_meeting_card.SkeletonMeetingCard
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ofPattern
 import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
+
 
 @Composable
 fun HomeWeekView(
@@ -45,6 +49,33 @@ fun HomeWeekView(
     getMeetingsInfoByDate: (LocalDate) -> List<MeetingContext>,
     onMeetingClick: (Long) -> Unit
 ) {
+    HomeWeekView(
+        viewModel = hiltViewModel(),
+        selectedDate = selectedDate,
+        uiState = uiState,
+        scrollPagerState = scrollPagerState,
+        initialPageBottom = initialPageBottom,
+        onDateSelected = onDateSelected,
+        setMonthTitle = setMonthTitle,
+        getMeetingsInfoByDate = getMeetingsInfoByDate,
+        onMeetingClick = onMeetingClick
+    )
+}
+
+@Composable
+private fun HomeWeekView(
+    viewModel: HomeWeekViewModel,
+    selectedDate: LocalDate,
+    uiState: UIState,
+    scrollPagerState: PagerState,
+    initialPageBottom: Int,
+    onDateSelected: (LocalDate) -> Unit,
+    setMonthTitle: (String) -> Unit,
+    getMeetingsInfoByDate: (LocalDate) -> List<MeetingContext>,
+    onMeetingClick: (Long) -> Unit
+) {
+    val weekUiState by viewModel.uiState.collectAsState()
+
     val colors = MaterialTheme.colorScheme
 
     val initialPageTop = 500
@@ -81,6 +112,7 @@ fun HomeWeekView(
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         WeeklySchedule(
+            weekUiState = weekUiState,
             selectedDate = selectedDate,
             onDateSelected = onDateSelected,
             initialPage = initialPageTop,

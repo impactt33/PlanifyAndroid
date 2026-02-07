@@ -43,6 +43,7 @@ fun MainScreenBox(
     onSettings: () -> Unit,
     onCreateClick: () -> Unit,
     onEditProfileClick: () -> Unit,
+    onNotifications: () -> Unit,
     navController: NavController
 ) {
     val colors = MaterialTheme.colorScheme
@@ -58,6 +59,7 @@ fun MainScreenBox(
             onOpen = { opened = true },
             viewModel = hiltViewModel(),
             onEditProfileClick = onEditProfileClick,
+            onNotifications = onNotifications,
             navController = navController
         )
 
@@ -107,6 +109,7 @@ private fun MainScreen(
     onSettings: () -> Unit,
     onOpen: () -> Unit,
     onEditProfileClick: () -> Unit,
+    onNotifications: () -> Unit,
     navController: NavController,
     viewModel: MainScreenViewModel
 ) {
@@ -123,7 +126,8 @@ private fun MainScreen(
             TopBar(
                 pagerRouter = router,
                 monthTitle = monthTitle,
-                onSettings = onSettings
+                onSettings = onSettings,
+                onNotifications = onNotifications
             )
         },
         bottomBar = {

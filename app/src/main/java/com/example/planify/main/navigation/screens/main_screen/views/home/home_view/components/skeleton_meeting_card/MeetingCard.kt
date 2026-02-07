@@ -1,4 +1,4 @@
-package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components
+package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.skeleton_meeting_card
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable

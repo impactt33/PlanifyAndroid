@@ -9,10 +9,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
@@ -20,9 +18,9 @@ import com.example.planify.main.common.utils.pageForDate
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewModel
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewRoute
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.TopNavBar
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.HomeDayView
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.HomeMonthView
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.HomeWeekView
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.day_view.HomeDayView
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.month_view.HomeMonthView
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.week_view.HomeWeekView
 
 @Composable
 private fun HomeView(

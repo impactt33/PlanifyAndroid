@@ -123,4 +123,16 @@
     <string name="authentication_required">Требуется авторизация</string>
     <string name="authenticate_again">Пожалуйста, авторизируйтесь снова</string>
 
+
+    <string name="smn_invited_you_to_meeting">пригласил(а) вас на встречу</string>
+    <string name="smn_accepted_your_invite">принял приглашение на встречу</string>
+    <string name="was_updated">была обновлена</string>
+    <string name="meeting">Встреча</string>
+    <string name="suggest_reschedule_meeting">предлагает перенести встречу</string>
+
+    <string name="welcome">Добро пожаловать</string>
+    <string name="register_to_start">Зарегистрируйтесь для начала работы</string>
+
+
+
 </resources>

@@ -1,12 +1,5 @@
-package com.example.planify.main.navigation.screens.auth_screen
+package com.example.planify.main.navigation.screens.registration
 
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.RepeatMode
-import androidx.compose.animation.core.animateFloat
-import androidx.compose.animation.core.infiniteRepeatable
-import androidx.compose.animation.core.rememberInfiniteTransition
-import androidx.compose.animation.core.tween
-import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -23,7 +16,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonColors
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -40,16 +32,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.geometry.CornerRadius
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.geometry.Size
-import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
@@ -62,54 +47,39 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretRight
 import com.adamglin.phosphoricons.regular.Eye
-import com.adamglin.phosphoricons.regular.Star
 import com.adamglin.phosphoricons.regular.StarFour
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
-import com.example.planify.main.navigation.AppRoute
 import com.example.planify.main.navigation.screens.backgrounds.CloudyBackground
-import kotlin.math.max
 
 @Composable
-fun AuthScreen(
-    onRegister: () -> Unit,
-    onForgetPassword: () -> Unit,
+fun RegistrationScreen(
     navHostController: NavHostController
 ) {
-    AuthScreen(
+    RegistrationScreen(
         viewModel = hiltViewModel(),
-        onRegister = onRegister,
-        onForgetPassword = onForgetPassword,
-        navHostController = navHostController
+        navHostController = navHostController,
     )
 }
 
 @Composable
-private fun AuthScreen(
-    viewModel: AuthViewModel,
-    onRegister: () -> Unit,
-    onForgetPassword: () -> Unit,
+private fun RegistrationScreen(
+    viewModel: RegistrationViewModel,
     navHostController: NavHostController
 ) {
-    val colors = MaterialTheme.colorScheme
-
     val uiState by viewModel.uiState.collectAsState()
 
-    var emailQuery by remember { mutableStateOf("") }
-    var passwordQuery by remember { mutableStateOf("") }
-
-    LaunchedEffect(uiState) {
+    LaunchedEffect(Unit) {
         viewModel.navigation.collect { route ->
-            navHostController.navigate(route.route) {
-                popUpTo(AppRoute.Auth.route) { inclusive = true }
-            }
+            navHostController.navigate(route.route)
         }
     }
 
-    LaunchedEffect(emailQuery, passwordQuery) {
-        viewModel.resetFocusedColor()
-    }
+    val colors = MaterialTheme.colorScheme
+
+    var emailQuery by remember { mutableStateOf("") }
+    var passwordQuery by remember { mutableStateOf("") }
 
     CloudyBackground(
         modifier = Modifier.fillMaxSize(),
@@ -134,7 +104,7 @@ private fun AuthScreen(
                 verticalArrangement = Arrangement.Center
             ) {
                 Text(
-                    text = stringResource(R.string.welcome_back),
+                    text = stringResource(R.string.welcome),
                     style = MaterialTheme.typography.displayLarge,
                     color = colors.onBackground
                 )
@@ -158,7 +128,7 @@ private fun AuthScreen(
                     Spacer(modifier = Modifier.width(Locals.spacing.xs))
 
                     Text(
-                        text = stringResource(R.string.log_in_to_continue),
+                        text = stringResource(R.string.register_to_start),
                         style = MaterialTheme.typography.bodyMedium,
                         color = colors.onBackground
                     )
@@ -187,42 +157,8 @@ private fun AuthScreen(
 
                 Spacer(modifier = Modifier.height(Locals.spacing.m))
 
-                Text(
-                    modifier = Modifier
-                        .clickable(
-                            onClick = onForgetPassword
-                        )
-                        .align(Alignment.End),
-                    text = stringResource(R.string.forget_password),
-                    style = MaterialTheme.typography.bodyMedium,
-                    color = colors.secondary
-                )
-
                 Spacer(modifier = Modifier.height(Locals.spacing.xl))
 
-                Row(
-                    modifier = Modifier,
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Text(
-                        text = stringResource(R.string.have_not_account),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = colors.onBackground
-                    )
-
-                    Spacer(modifier = Modifier.width(Locals.spacing.xs))
-
-                    Text(
-                        modifier = Modifier
-                            .clickable(
-                                onClick = onRegister
-                            ),
-                        text = stringResource(R.string.sign_in),
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = colors.secondary
-                    )
-                }
             }
             Button(
                 modifier = Modifier
@@ -236,7 +172,8 @@ private fun AuthScreen(
                     .align(Alignment.BottomCenter),
                 shape = Locals.shapes.mediumShape,
                 onClick = {
-                    viewModel.authorize(
+                    viewModel.register(
+                        username = "yaica",
                         email = emailQuery,
                         password = passwordQuery
                     )
@@ -274,6 +211,8 @@ private fun AuthScreen(
     }
 }
 
+
+
 @Composable
 private fun LabeledTextField(
     label: String,
@@ -309,9 +248,9 @@ private fun LabeledTextField(
                 unfocusedContainerColor = colors.surface,
                 cursorColor = colors.primary,
                 focusedIndicatorColor = if (uiState == UIState.DATA_INCORRECT) colors.error
-                    else colors.primary,
+                else colors.primary,
                 unfocusedIndicatorColor = if (uiState == UIState.DATA_INCORRECT) colors.error
-                    else colors.surface
+                else colors.surface
             ),
             shape = shape,
             singleLine = true,
@@ -358,9 +297,9 @@ private fun LabeledTextField(
                 unfocusedContainerColor = colors.surface,
                 cursorColor = colors.primary,
                 focusedIndicatorColor = if (uiState == UIState.DATA_INCORRECT) colors.error
-                    else colors.primary,
+                else colors.primary,
                 unfocusedIndicatorColor = if (uiState == UIState.DATA_INCORRECT) colors.error
-                    else colors.surface
+                else colors.surface
             ),
             shape = shape,
             singleLine = true,
@@ -386,7 +325,7 @@ private fun LabeledTextField(
                 )
             },
             visualTransformation = if (isVisible) VisualTransformation.None
-                else PasswordVisualTransformation()
+            else PasswordVisualTransformation()
         )
     }
 }
