@@ -7,10 +7,13 @@ import com.example.planify.main.features.auth.domain.entities.UserPrivate
 import com.example.planify.main.features.auth.domain.services.AuthService
 import com.example.planify.main.features.profiles.domain.entities.Profile
 import com.example.planify.main.features.profiles.domain.services.ProfilesService
+import com.example.planify.main.navigation.AppRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject

@@ -7,6 +7,7 @@ import com.example.planify.main.features.meetings.domain.schemas.PatchMeetingSch
 import java.time.LocalDate
 
 interface MeetingsService {
+    suspend fun fetchMeetingContext(meetingId: Long): Result<MeetingContext>
     suspend fun createMeeting(schema: CreateMeetingSchema): Result<Meeting>
     suspend fun fetchMeeting(meetingId: Long): Result<Meeting>
     suspend fun patchMeeting(meetingId: Long, patch: PatchMeetingSchema): Result<Unit>

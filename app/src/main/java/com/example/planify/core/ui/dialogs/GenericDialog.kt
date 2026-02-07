@@ -5,6 +5,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -19,6 +20,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import com.example.planify.R
+import com.example.planify.main.common.themes.Locals
 
 
 @Composable
@@ -39,18 +41,18 @@ fun GenericDialog(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .background(colors.surface, shape = RoundedCornerShape(8.dp))
-                .padding(16.dp)
+                .background(colors.surface, shape = Locals.shapes.smallShape)
+                .padding(Locals.spacing.m)
                 .testTag("generic_dialog"),
             contentAlignment = Alignment.Center
         ) {
             Column(
-                verticalArrangement = Arrangement.spacedBy(16.dp)
+                verticalArrangement = Arrangement.spacedBy(Locals.spacing.m)
             ) {
                 // Title
                 Row(
                     modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.Center
+                    horizontalArrangement = Arrangement.Start
                 ) {
                     Text(
                         text = title,
@@ -58,8 +60,14 @@ fun GenericDialog(
                     )
                 }
 
-                // Content
-                content()
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    // Content
+                    content()
+                }
 
                 // Action button
                 Row(

@@ -6,10 +6,13 @@ import com.example.planify.R
 import com.example.planify.core.ui.dialogs.AlertDialog
 
 @Composable
-fun AuthRequiredDialog(onDismiss: () -> Unit) {
+fun AuthRequiredDialog(
+    onDismiss: () -> Unit
+) {
     AlertDialog(
         title = stringResource(R.string.authentication_required),
         message = stringResource(R.string.authenticate_again),
-        onDismiss = onDismiss
+        onDismiss = onDismiss,
+        onCancel = { }
     )
 }

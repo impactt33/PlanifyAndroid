@@ -23,6 +23,8 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -31,6 +33,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
@@ -47,6 +51,7 @@ import com.example.planify.main.features.meetings.domain.entities.MeetingInvite
 import com.example.planify.main.features.meetings.domain.entities.MeetingInviteStatus
 import com.example.planify.main.navigation.screens.meeting_info_screen.components.TopBar
 import com.example.planify.main.features.profiles.domain.entities.Profile
+import com.example.planify.main.navigation.screens.fixed_screens.ErrorScreen
 
 
 import java.time.LocalDateTime
@@ -54,165 +59,43 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
 
-val fakeMeetingContext = MeetingContext(
-    participantProfiles = listOf(
-        Profile(
-            userId = 11L,
-            firstName = "Олег",
-            lastName = "Смирнов",
-            position = "Тимлид",
-            department = "IT",
-            profileImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbvV68QAxZyU7MB8_CMvoOlEbI-yo_LmnmBA&s"
-        ),
-        Profile(
-            userId = 12L,
-            firstName = "Тимофей",
-            lastName = "Голицын",
-            position = "Android Developer",
-            department = "IT",
-            profileImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbvV68QAxZyU7MB8_CMvoOlEbI-yo_LmnmBA&s"
-        ),
-        Profile(
-            userId = 13L,
-            firstName = "Камилла",
-            lastName = "Ахметова",
-            position = "Product Manager",
-            department = "Продукт",
-            profileImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbvV68QAxZyU7MB8_CMvoOlEbI-yo_LmnmBA&s"
-        ),
-        Profile(
-            userId = 14L,
-            firstName = "Дмитрий",
-            lastName = "Козлов",
-            position = "Backend Developer",
-            department = "IT",
-            profileImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbvV68QAxZyU7MB8_CMvoOlEbI-yo_LmnmBA&s"
-        ),
-        Profile(
-            userId = 15L,
-            firstName = "Дмитрий",
-            lastName = "Козлов",
-            position = "Backend Developer",
-            department = "IT",
-            profileImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbvV68QAxZyU7MB8_CMvoOlEbI-yo_LmnmBA&s"
-        ),
-        Profile(
-            userId = 16L,
-            firstName = "Дмитрий",
-            lastName = "Козлов",
-            position = "Backend Developer",
-            department = "IT",
-            profileImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbvV68QAxZyU7MB8_CMvoOlEbI-yo_LmnmBA&s"
-        ),
-        Profile(
-            userId = 17L,
-            firstName = "Дмитрий",
-            lastName = "Козлов",
-            position = "Backend Developer",
-            department = "IT",
-            profileImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbvV68QAxZyU7MB8_CMvoOlEbI-yo_LmnmBA&s"
-        ),
-        Profile(
-            userId = 18L,
-            firstName = "Дмитрий",
-            lastName = "Козлов",
-            position = "Backend Developer",
-            department = "IT",
-            profileImageUrl = "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQbvV68QAxZyU7MB8_CMvoOlEbI-yo_LmnmBA&s"
-        )
-    ),
-    invites = listOf(
-        MeetingInvite(
-            uuid = "e24f2c1e-2a1a-4f61-9b7b-3b3e2b0f7f0k",
-            meetingId = 1001L,
-            senderId = 11L,
-            targetUserId = 11L,
-            status = MeetingInviteStatus.ACCEPTED,
-            createdAt = LocalDateTime.of(2026, 1, 18, 12, 11, 0),
-            updatedAt = LocalDateTime.of(2026, 1, 18, 12, 40, 0)
-        ),
-        MeetingInvite(
-            uuid = "e24f2c1e-2a1a-4f61-9b7b-3b3e2b0f7f02",
-            meetingId = 1001L,
-            senderId = 11L,
-            targetUserId = 12L,
-            status = MeetingInviteStatus.ACCEPTED,
-            createdAt = LocalDateTime.of(2026, 1, 18, 12, 11, 0),
-            updatedAt = LocalDateTime.of(2026, 1, 18, 12, 40, 0)
-        ),
-        MeetingInvite(
-            uuid = "a9b1c4d8-0d3f-4c2b-9b54-9b7e6a3a1c9f",
-            meetingId = 1001L,
-            senderId = 11L,
-            targetUserId = 13L,
-            status = MeetingInviteStatus.PENDING,
-            createdAt = LocalDateTime.of(2026, 1, 18, 12, 12, 0),
-            updatedAt = LocalDateTime.of(2026, 1, 18, 12, 12, 0)
-        ),
-        MeetingInvite(
-            uuid = "c0f3f88c-2f5a-4b5b-9c3d-0bbd4aa1c2de",
-            meetingId = 1001L,
-            senderId = 11L,
-            targetUserId = 14L,
-            status = MeetingInviteStatus.ACCEPTED,
-            createdAt = LocalDateTime.of(2026, 1, 18, 12, 13, 0),
-            updatedAt = LocalDateTime.of(2026, 1, 18, 13, 5, 0)
-        ),
-        MeetingInvite(
-            uuid = "c0f3f88c-2f5a-4b5b-9c3d-0bbd4aa1c2de",
-            meetingId = 1001L,
-            senderId = 11L,
-            targetUserId = 15L,
-            status = MeetingInviteStatus.ACCEPTED,
-            createdAt = LocalDateTime.of(2026, 1, 18, 12, 13, 0),
-            updatedAt = LocalDateTime.of(2026, 1, 18, 13, 5, 0)
-        ),
-        MeetingInvite(
-            uuid = "c0f3f88c-2f5a-4b5b-9c3d-0bbd4aa1c2de",
-            meetingId = 1001L,
-            senderId = 11L,
-            targetUserId = 16L,
-            status = MeetingInviteStatus.ACCEPTED,
-            createdAt = LocalDateTime.of(2026, 1, 18, 12, 13, 0),
-            updatedAt = LocalDateTime.of(2026, 1, 18, 13, 5, 0)
-        ),
-        MeetingInvite(
-            uuid = "c0f3f88c-2f5a-4b5b-9c3d-0bbd4aa1c2de",
-            meetingId = 1001L,
-            senderId = 11L,
-            targetUserId = 17L,
-            status = MeetingInviteStatus.ACCEPTED,
-            createdAt = LocalDateTime.of(2026, 1, 18, 12, 13, 0),
-            updatedAt = LocalDateTime.of(2026, 1, 18, 13, 5, 0)
-        ),
-        MeetingInvite(
-            uuid = "c0f3f88c-2f5a-4b5b-9c3d-0bbd4aa1c2de",
-            meetingId = 1001L,
-            senderId = 11L,
-            targetUserId = 18L,
-            status = MeetingInviteStatus.ACCEPTED,
-            createdAt = LocalDateTime.of(2026, 1, 18, 12, 13, 0),
-            updatedAt = LocalDateTime.of(2026, 1, 18, 13, 5, 0)
-        )
-    ),
-    meeting = Meeting(
-        id = 1001L,
-        ownerId = 11L,
-        name = "Daily Sync",
-        description = "Ежедневная синхронизация команды разработки",
-        location = "Конференц-зал A / Zoom",
-        startsAt = LocalDateTime.of(2026, 1, 22, 9, 0, 0),
-        duration = 60
-    )
-)
-
 
 @Composable
 fun MeetingInfoScreen(
-    meetingInfo: MeetingContext = fakeMeetingContext,
     onBack: () -> Unit
 ) {
+    MeetingInfoScreen(
+        viewModel = hiltViewModel(),
+        onBack = onBack
+    )
+}
 
+@Composable
+private fun MeetingInfoScreen(
+    onBack: () -> Unit,
+    viewModel: MeetingInfoViewModel
+) {
+    val uiState by viewModel.uiState.collectAsState(UIState.Loading)
+
+    when(uiState) {
+        is UIState.Loading -> {} // TODO: Skeletons
+        is UIState.Error -> {
+            ErrorScreen((uiState as UIState.Error).message)
+        }
+        is UIState.ContentData -> {
+            MeetingInfo(
+                onBack = onBack,
+                meetingInfo = (uiState as UIState.ContentData).meetingContext
+            )
+        }
+    }
+}
+
+@Composable
+fun MeetingInfo(
+    onBack: () -> Unit,
+    meetingInfo: MeetingContext
+) {
     val colors = MaterialTheme.colorScheme
     val shape = Locals.shapes.mediumShape
 
@@ -337,7 +220,7 @@ fun MeetingInfoScreen(
                                 title = "${participant.firstName} ${participant.lastName}",
                                 desc = participant.position,
                                 isAccepted = meetingInfo.invites.firstOrNull {
-                                    it.targetUserId == participant.userId
+                                    it.targetId == participant.userId
                                 } ?.let { true } ?: false
                             )
                         }

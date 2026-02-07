@@ -67,6 +67,7 @@ import com.adamglin.phosphoricons.regular.StarFour
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
+import com.example.planify.main.navigation.AppRoute
 import kotlin.math.max
 
 @Composable
@@ -99,7 +100,9 @@ private fun AuthScreen(
 
     LaunchedEffect(uiState) {
         viewModel.navigation.collect { route ->
-            navHostController.navigate(route.route)
+            navHostController.navigate(route.route) {
+                popUpTo(AppRoute.Auth.route) { inclusive = true }
+            }
         }
     }
 

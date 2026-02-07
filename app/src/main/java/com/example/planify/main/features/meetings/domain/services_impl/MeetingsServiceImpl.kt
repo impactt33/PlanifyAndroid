@@ -38,6 +38,10 @@ class MeetingsServiceImpl @Inject constructor(
         actionDataParser.registerSchema<UserActionInviteStatusUpdatedSchema>("meetings:invite_status_updated")
     }
 
+    override suspend fun fetchMeetingContext(meetingId: Long): Result<MeetingContext> {
+        return meetingsRepository.fetchMeetingContext(meetingId)
+    }
+
     override suspend fun createMeeting(schema: CreateMeetingSchema): Result<Meeting> {
         return meetingsRepository.createMeeting(schema)
     }

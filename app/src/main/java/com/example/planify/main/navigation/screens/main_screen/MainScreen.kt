@@ -28,6 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
 import com.example.planify.main.navigation.screens.create_meeting_screen.components.create_meeting_floating_dialog.CreateMeetingDialog
@@ -41,7 +42,8 @@ import com.example.planify.main.navigation.screens.main_screen.views.profile.ui.
 fun MainScreenBox(
     onSettings: () -> Unit,
     onCreateClick: () -> Unit,
-    onEditProfileClick: () -> Unit
+    onEditProfileClick: () -> Unit,
+    navController: NavController
 ) {
     val colors = MaterialTheme.colorScheme
 
@@ -55,7 +57,8 @@ fun MainScreenBox(
             onSettings = onSettings,
             onOpen = { opened = true },
             viewModel = hiltViewModel(),
-            onEditProfileClick = onEditProfileClick
+            onEditProfileClick = onEditProfileClick,
+            navController = navController
         )
 
         AnimatedVisibility(
@@ -104,11 +107,12 @@ private fun MainScreen(
     onSettings: () -> Unit,
     onOpen: () -> Unit,
     onEditProfileClick: () -> Unit,
+    navController: NavController,
     viewModel: MainScreenViewModel
 ) {
     val router = rememberPagerRouterScreenState(
         routes = MainScreenRoute.routes,
-        startRoute = MainScreenRoute.Inbox // <-------
+        startRoute = MainScreenRoute.Home // <-------
     )
     val colors = MaterialTheme.colorScheme
 
@@ -136,6 +140,7 @@ private fun MainScreen(
         ) {
             screen(MainScreenRoute.Home) {
                 HomeView(
+                    navController = navController,
                     scaffoldPadding = padding,
                     setMonthTitle = { monthTitle = it }
                 )
@@ -147,7 +152,8 @@ private fun MainScreen(
             screen(MainScreenRoute.Profile) {
                 ProfileView(
                     scaffoldPadding = padding,
-                    onEditClick = onEditProfileClick
+                    onEditClick = onEditProfileClick,
+                    navController = navController
                 )
             }
         }

@@ -13,6 +13,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
 import com.example.planify.main.common.utils.pageForDate
@@ -27,8 +28,15 @@ import com.example.planify.main.navigation.screens.main_screen.views.home.home_v
 private fun HomeView(
     viewModel: HomeViewModel,
     scaffoldPadding: PaddingValues,
+    navController: NavController,
     setMonthTitle: (String) -> Unit
 ) {
+    LaunchedEffect(Unit) {
+        viewModel.navigator.collect { route ->
+            navController.navigate(route.route)
+        }
+    }
+
     val router = rememberPagerRouterScreenState(
         routes = HomeViewRoute.routes,
         startRoute = HomeViewRoute.Week
@@ -103,6 +111,7 @@ private fun HomeView(
             screen(HomeViewRoute.Week) { HomeWeekView(
                 selectedDate = selectedDate,
                 uiState = uiState,
+                onMeetingClick = { viewModel.meetingClick(it) },
                 scrollPagerState = scrollPagerState,
                 initialPageBottom = initialScrollPage,
                 onDateSelected = { viewModel.onDateSelected(it) },
@@ -127,12 +136,14 @@ private fun HomeView(
 
 @Composable
 fun HomeView(
+    navController: NavController,
     scaffoldPadding: PaddingValues,
     setMonthTitle: (String) -> Unit
 ) {
     HomeView(
         viewModel = hiltViewModel(),
         scaffoldPadding = scaffoldPadding,
-        setMonthTitle = setMonthTitle
+        setMonthTitle = setMonthTitle,
+        navController = navController
     )
 }
