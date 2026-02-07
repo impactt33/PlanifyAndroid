@@ -28,9 +28,8 @@ object ActionsFeatureModule {
     @Provides
     @Singleton
     fun provideActionsRemoteDataSource(
-        authenticatedApiClient: AuthenticatedApiClient,
-        actionDataParser: ActionDataParser
-    ): ActionsRemoteDataSource = ActionsRemoteDataSource(authenticatedApiClient, actionDataParser)
+        authenticatedApiClient: AuthenticatedApiClient
+    ): ActionsRemoteDataSource = ActionsRemoteDataSource(authenticatedApiClient)
 
     @Provides
     @Singleton

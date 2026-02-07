@@ -1,12 +1,12 @@
-package com.example.planify.main.features.auth.data.local
+package com.example.planify.main.features.auth.data.sources_impl.local
 
 import android.content.Context
 import android.util.Base64
 import android.util.Log
 import androidx.datastore.preferences.core.edit
 import com.example.planify.core.data.serializers.jsonCore
-import com.example.planify.main.features.auth.data.local.preferences.AuthDataStoreInfo.INFO_KEY
-import com.example.planify.main.features.auth.data.local.preferences.authSecuredDatastore
+import com.example.planify.main.features.auth.data.sources.AuthLocalDataSource
+import com.example.planify.main.features.auth.data.sources_impl.local.AuthDataStoreInfo.INFO_KEY
 import com.example.planify.main.features.auth.domain.schemas.AuthLocalInfoSchema
 import com.google.crypto.tink.Aead
 import kotlinx.coroutines.flow.Flow
@@ -15,11 +15,11 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SecuredAuthInfoStorage @Inject constructor(
+class AuthLocalDataSourceImpl @Inject constructor(
     private val context: Context,
     private val aead: Aead
-) {
-    val authInfoFlow: Flow<AuthLocalInfoSchema?> = context.authSecuredDatastore.data.map { prefs ->
+) : AuthLocalDataSource {
+    override val authInfoFlow: Flow<AuthLocalInfoSchema?> = context.authSecuredDatastore.data.map { prefs ->
         val b64 = prefs[INFO_KEY] ?: return@map null
 
         try {
@@ -32,7 +32,7 @@ class SecuredAuthInfoStorage @Inject constructor(
         }
     }
 
-    suspend fun saveAuthInfo(info: AuthLocalInfoSchema) {
+    override suspend fun saveAuthInfo(info: AuthLocalInfoSchema) {
         val json = jsonCore.encodeToString(info)
         val encrypted = aead.encrypt(json.toByteArray(), null)
         val b64 = Base64.encodeToString(encrypted, Base64.NO_WRAP)
@@ -42,7 +42,7 @@ class SecuredAuthInfoStorage @Inject constructor(
         }
     }
 
-    suspend fun clearAuthInfo() {
+    override suspend fun clearAuthInfo() {
         context.authSecuredDatastore.edit {
             it.remove(INFO_KEY)
         }

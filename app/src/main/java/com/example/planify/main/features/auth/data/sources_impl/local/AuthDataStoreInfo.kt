@@ -1,4 +1,4 @@
-package com.example.planify.main.features.auth.data.local.preferences
+package com.example.planify.main.features.auth.data.sources_impl.local
 
 import android.content.Context
 import androidx.datastore.preferences.core.stringPreferencesKey
