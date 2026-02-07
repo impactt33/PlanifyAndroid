@@ -23,6 +23,8 @@ import com.example.planify.main.navigation.screens.init_screen.ui.InitScreen
 import com.example.planify.main.navigation.screens.main_screen.MainScreenBox
 import com.example.planify.main.navigation.screens.main_screen.views.profile.ui.edit_profile.EditProfile
 import com.example.planify.main.navigation.screens.meeting_info_screen.MeetingInfoScreen
+import com.example.planify.main.navigation.screens.notifications_screen.NotificationsScreen
+import com.example.planify.main.navigation.screens.registration.RegistrationScreen
 import com.example.planify.main.navigation.screens.settings_screen.ui.SettingsScreen
 
 @Composable
@@ -93,12 +95,13 @@ private fun AppNavHost(
                 onSettings = { navController.navigate(AppRoute.Settings.route) },
                 onCreateClick = { navController.navigate(AppRoute.CreateMeetingMenu.route) },
                 onEditProfileClick = { navController.navigate(AppRoute.EditProfile.route) },
-                navController = navController
+                navController = navController,
+                onNotifications = { navController.navigate(AppRoute.Notifications.route) }
             )
         }
         composable(AppRoute.Auth.route) {
             AuthScreen(
-                onRegister = { },
+                onRegister = { navController.navigate(AppRoute.Registration.route) },
                 onForgetPassword = { },
                 navHostController = navController
             )
@@ -133,6 +136,18 @@ private fun AppNavHost(
                 onCancel = { navController.popBackStack() },
                 onSave = { navController.popBackStack() },
                 onCameraClick = { }
+            )
+        }
+
+        composable(AppRoute.Notifications.route) {
+            NotificationsScreen(
+                navController = navController
+            )
+        }
+
+        composable(AppRoute.Registration.route) {
+            RegistrationScreen(
+                navHostController = navController
             )
         }
     }

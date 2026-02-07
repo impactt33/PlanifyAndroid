@@ -17,12 +17,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.getWeekDays
 import com.example.planify.main.common.themes.Locals
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.UIState
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.week_view.WeekUIState
 import kotlinx.coroutines.flow.distinctUntilChanged
 import java.time.LocalDate
 
 
 @Composable
 fun WeeklySchedule(
+    weekUiState: WeekUIState,
     selectedDate: LocalDate,
     pagerState: PagerState,
     initialPage: Int,
@@ -65,6 +68,7 @@ fun WeeklySchedule(
                             modifier = Modifier
                                 .weight(1f)
                                 .height(Locals.dimens.dayCardHeight),
+                            weekUiState = weekUiState,
                             day = day,
                             isSelected = day.date == selectedDate,
                             onClick = { onDateSelected(day.date) }

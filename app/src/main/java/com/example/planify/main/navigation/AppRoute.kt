@@ -14,4 +14,8 @@ sealed class AppRoute(val route: String) {
     }
 
     object EditProfile : AppRoute("edit_profile")
+
+    object Notifications : AppRoute("notifications")
+
+    object Registration : AppRoute("registration")
 }
