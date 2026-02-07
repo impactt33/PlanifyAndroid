@@ -1,5 +1,6 @@
 package com.example.planify.main.features.auth.data.repositories_impl
 
+import android.os.Build
 import com.example.planify.main.common.network.api_client.ApiClient
 import com.example.planify.main.features.auth.data.dto.get_actual_auth_context.GetActualAuthContextDTO
 import com.example.planify.main.features.auth.data.dto.login.LoginRequestDTO
@@ -22,6 +23,7 @@ import jakarta.inject.Singleton
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 
+
 @Singleton
 class AuthRepositoryImpl @Inject constructor(
     private val apiClient: ApiClient
@@ -33,11 +35,14 @@ class AuthRepositoryImpl @Inject constructor(
     private val refreshPath = "$authFeaturePath/refresh"
     private val fetchActualAuthContextPath = "$authFeaturePath/context"
 
+    private fun getDefaultClientName(): String = "${Build.MANUFACTURER}-${Build.MODEL}"
+
     override suspend fun register(username: String, email: String, password: String): Result<LoginResult> = withContext(Dispatchers.IO) {
         val requestDto = RegisterRequestDTO(
             username = username,
             email = email,
-            password = password
+            password = password,
+            clientName = getDefaultClientName()
         )
 
         return@withContext runCatching {
@@ -61,7 +66,8 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun login(email: String, password: String): Result<LoginResult> = withContext(Dispatchers.IO) {
         val requestDto = LoginRequestDTO(
             email = email,
-            password = password
+            password = password,
+            clientName = getDefaultClientName()
         )
 
         return@withContext runCatching {

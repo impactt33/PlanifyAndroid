@@ -12,5 +12,8 @@ data class RegisterRequestDTO(
     val email: String,
 
     @SerialName("password")
-    val password: String
+    val password: String,
+
+    @SerialName("clientName")
+    val clientName: String
 )
