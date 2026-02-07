@@ -44,13 +44,20 @@ class ActionsLocalDataSourceImpl @Inject constructor(
         return@withContext runCatching {
             val model = ActionModel(
                 id = action.id,
-                checked = action.checked,
                 type = action.type,
                 data = action.data?.let { jsonCore.encodeToString(serializer, action.data) }
             )
 
             actionModelDAO.insert(model)
 
+            model
+        }
+    }
+
+    override suspend fun saveAction(id: String, type: String, data: String?): Result<ActionModel> = withContext(Dispatchers.IO) {
+        return@withContext runCatching {
+            val model = ActionModel(id, type, data)
+            actionModelDAO.insert(model)
             model
         }
     }

@@ -1,21 +1,10 @@
 package com.example.planify.main.features.meetings.domain.services_impl
 
-import com.example.planify.main.features.actions.domain.utils.ActionDataParser
-import com.example.planify.main.features.actions.domain.utils.registerSchema
 import com.example.planify.main.features.meetings.domain.entities.Meeting
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import com.example.planify.main.features.meetings.domain.repositories.MeetingsRepository
 import com.example.planify.main.features.meetings.domain.schemas.CreateMeetingSchema
 import com.example.planify.main.features.meetings.domain.schemas.PatchMeetingSchema
-import com.example.planify.main.features.meetings.domain.schemas.actions.MeetingActionInviteRescheduleRequestedSchema
-import com.example.planify.main.features.meetings.domain.schemas.actions.MeetingActionInviteRescheduleRespondedSchema
-import com.example.planify.main.features.meetings.domain.schemas.actions.MeetingActionInviteStatusUpdatedSchema
-import com.example.planify.main.features.meetings.domain.schemas.actions.MeetingActionNewParticipantSchema
-import com.example.planify.main.features.meetings.domain.schemas.actions.MeetingActionUserInvitedSchema
-import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInviteRescheduleRequestedSchema
-import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInviteRescheduleRespondedSchema
-import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInviteStatusUpdatedSchema
-import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInvitedToMeetingSchema
 import com.example.planify.main.features.meetings.domain.services.MeetingsService
 import java.time.LocalDate
 import javax.inject.Inject
@@ -23,21 +12,8 @@ import javax.inject.Singleton
 
 @Singleton
 class MeetingsServiceImpl @Inject constructor(
-    private val meetingsRepository: MeetingsRepository,
-    actionDataParser: ActionDataParser
+    private val meetingsRepository: MeetingsRepository
 ) : MeetingsService {
-    init {
-        actionDataParser.registerSchema<MeetingActionInviteRescheduleRequestedSchema>("meetings:invite_reschedule_requested")
-        actionDataParser.registerSchema<MeetingActionInviteRescheduleRespondedSchema>("meetings:invite_reschedule_responded")
-        actionDataParser.registerSchema<MeetingActionInviteStatusUpdatedSchema>("meetings:invite_status_updated")
-        actionDataParser.registerSchema<MeetingActionNewParticipantSchema>("meetings:new_participant")
-        actionDataParser.registerSchema<MeetingActionUserInvitedSchema>("meetings:invited")
-        actionDataParser.registerSchema<UserActionInvitedToMeetingSchema>("meetings:invited")
-        actionDataParser.registerSchema<UserActionInviteRescheduleRequestedSchema>("meetings:invite_reschedule_requested")
-        actionDataParser.registerSchema<UserActionInviteRescheduleRespondedSchema>("meetings:invite_reschedule_responded")
-        actionDataParser.registerSchema<UserActionInviteStatusUpdatedSchema>("meetings:invite_status_updated")
-    }
-
     override suspend fun fetchMeetingContext(meetingId: Long): Result<MeetingContext> {
         return meetingsRepository.fetchMeetingContext(meetingId)
     }

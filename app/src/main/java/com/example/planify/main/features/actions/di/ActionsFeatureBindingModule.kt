@@ -23,10 +23,6 @@ abstract class ActionsFeatureBindingModule {
 
     @Binds
     @Singleton
-    abstract fun bindActionsLocalDataSource(impl: ActionsLocalDataSourceImpl): ActionsLocalDataSource
-
-    @Binds
-    @Singleton
     abstract fun bindActionsRepository(impl: ActionsRepositoryImpl): ActionsRepository
 
     @Binds

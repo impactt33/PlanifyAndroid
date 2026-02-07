@@ -14,16 +14,12 @@ data class ActionDTO(
     @SerialName("type")
     val type: String,
 
-    @SerialName("checked")
-    val checked: Boolean,
-
     @SerialName("data")
     val data: JsonElement?
 ) {
     fun toEntity(actionDataParser: ActionDataParser): Action<*> = Action(
         id = id,
         type = type,
-        checked = checked,
         data = data?.let { actionDataParser.deserialize(data, type) }
     )
 }

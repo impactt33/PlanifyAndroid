@@ -1,7 +1,8 @@
 package com.example.planify.main.features.actions.domain.entities
 
 data class ActionsLocalInfo(
-    val lastSeenActionId: String
+    val lastSeenActionId: String,
+    val a: Int = 0
 ) {
     constructor(
         lastSeenActionId: String? = null

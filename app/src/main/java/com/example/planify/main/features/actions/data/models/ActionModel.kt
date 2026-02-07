@@ -12,9 +12,6 @@ data class ActionModel(
     @ColumnInfo(name = "id")
     val id: String,
 
-    @ColumnInfo(name = "checked")
-    val checked: Boolean,
-
     @ColumnInfo(name = "type")
     val type: String,
 
@@ -24,7 +21,6 @@ data class ActionModel(
     fun toEntity(actionDataParser: ActionDataParser): Action<*> = Action(
         id = id,
         type = type,
-        checked = checked,
         data = data?.let { actionDataParser.deserialize(data, type) }
     )
 }

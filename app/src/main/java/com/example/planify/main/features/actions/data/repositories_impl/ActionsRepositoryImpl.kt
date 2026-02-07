@@ -20,9 +20,20 @@ class ActionsRepositoryImpl @Inject constructor(
 
     override val actionsFlow: SharedFlow<Action<*>> = actionsReader.actionsFlow
 
-    override suspend fun fetchActions(): Result<List<Action<*>>> {
+    @Suppress("UNCHECKED_CAST")
+    override suspend fun fetchActions(): Result<List<Action<*>>> {  // TODO: Check if i lastSeenActionId is valid
         val lastSeen = localDataSource.getLastSeenActionId()
-        return remoteDataSource.fetchActions(lastSeen).map { actions -> actions.map { it.toEntity(actionDataParser) } }
+        return remoteDataSource.fetchActions(lastSeen)
+            .onSuccess { actionDTOs ->
+                actionDTOs.forEach { action ->
+                    saveActionToLocalDB(
+                        id = action.id,
+                        type = action.type,
+                        data = action.data?.let { actionDataParser.serializeJsonElement(it) }
+                    )
+                }
+            }
+            .map { actions -> actions.map { it.toEntity(actionDataParser) } }
     }
 
     override suspend fun deleteAction(actionId: String): Result<Unit> = runCatching {
@@ -37,6 +48,12 @@ class ActionsRepositoryImpl @Inject constructor(
     override suspend fun <T : Any> saveActionToLocalDB(action: Action<T>, serializer: KSerializer<T>): Result<Unit> {
         return localDataSource.saveAction(action, serializer)
             .onSuccess { localDataSource.setLastSeenActionId(action.id) }
+            .map { }
+    }
+
+    override suspend fun saveActionToLocalDB(id: String, type: String, data: String?): Result<Unit> {
+        return localDataSource.saveAction(id, type, data)
+            .onSuccess { localDataSource.setLastSeenActionId(id) }
             .map { }
     }
 }

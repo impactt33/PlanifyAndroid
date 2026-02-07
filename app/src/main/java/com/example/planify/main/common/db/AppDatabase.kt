@@ -9,7 +9,7 @@ import javax.inject.Singleton
 @Singleton
 @Database(
     entities = [ActionModel::class],
-    version = 1
+    version = 2
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun actionModelDAO(): ActionModelDAO

@@ -14,4 +14,6 @@ interface ActionsRepository {
     suspend fun getAllActionLocal(): Result<List<Action<*>>>
 
     suspend fun <T : Any> saveActionToLocalDB(action: Action<T>, serializer: KSerializer<T>): Result<Unit>
+
+    suspend fun saveActionToLocalDB(id: String, type: String, data: String?): Result<Unit>
 }
