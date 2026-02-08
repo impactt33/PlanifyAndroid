@@ -32,6 +32,7 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.CaretLeft
 import com.example.planify.R
+import com.example.planify.core.ui.dialogs.AlertDialog
 import com.example.planify.core.ui.pager_router_screen.PagerRouterNavigator
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
@@ -45,7 +46,18 @@ fun BottomBar(
 ) {
     val colors = MaterialTheme.colorScheme
 
+    val showDialog by viewModel.showDialog.collectAsState()
+
     val draftState by viewModel.meetingDraftState.collectAsState()
+
+    if (showDialog) {
+        AlertDialog(
+            title = stringResource(R.string.cant_create),
+            message = stringResource(R.string.cant_create_placeholder),
+            onDismiss = { viewModel.closeDialog() },
+            onCancel = { viewModel.closeDialog() }
+        )
+    }
 
     Column(
         modifier = Modifier

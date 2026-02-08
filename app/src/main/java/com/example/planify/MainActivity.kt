@@ -27,12 +27,12 @@ class MainActivity : ComponentActivity() {
             val settingsViewModel: SettingsViewModel = hiltViewModel()
             val settings by settingsViewModel.settingsService.settingsFlow.collectAsStateWithLifecycle(
                 initialValue = LocalSettings(
-                    theme = ThemeId.SYSTEM,
+                    theme = ThemeId.LIGHT,
                     notifications = true
                 )
             )
 
-            val darkTheme = when(settings.theme as ThemeId) {
+            val darkTheme = when(settings.theme) {
                 ThemeId.DARK -> true
                 ThemeId.LIGHT -> false
                 ThemeId.SYSTEM -> isSystemInDarkTheme()

@@ -33,7 +33,10 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -203,6 +206,8 @@ fun CreateMeetingStep3(
     val searchState by viewModel.profilesSearchState.collectAsState()
     val searchResultState by viewModel.profilesSearchResultState.collectAsState()
 
+    var chipRowState by remember { mutableStateOf( listOf<Profile>() ) }
+
     val shouldLoadMore by remember {
         derivedStateOf {
             val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
@@ -252,8 +257,11 @@ fun CreateMeetingStep3(
                 val state = searchResultState as ResourceState.Success<Map<Long, Profile>>
 
                 ChipRow(
-                    profiles = state.data.values.filter { draftState.inviteUsersIds.contains(it.userId) },
-                    onRemove = { profile -> viewModel.removeInvite(profile.userId) }
+                    profiles = chipRowState,  //state.data.values.filter { draftState.inviteUsersIds.contains(it.userId) },
+                    onRemove = { profile ->
+                        viewModel.removeInvite(profile.userId)
+                        chipRowState -= profile
+                    }
                 )
             }
         }
@@ -298,11 +306,17 @@ fun CreateMeetingStep3(
                     val state = searchResultState as ResourceState.Success<Map<Long, Profile>>
 
                     items(state.data.values.toList(), key = { it.userId }) { profile ->
+                        val checked = draftState.inviteUsersIds.contains(profile.userId)
                         ParticipantRow(
                             profile = profile,
-                            checked = draftState.inviteUsersIds.contains(profile.userId)
+                            checked = checked
                         ) {
                             viewModel.toggleInvite(profile.userId)
+                            if (checked) {
+                                chipRowState -= profile
+                            } else {
+                                chipRowState += profile
+                            }
                         }
                     }
                 }

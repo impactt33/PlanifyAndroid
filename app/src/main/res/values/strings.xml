@@ -149,5 +149,7 @@
     <string name="repeat_password">Подтвердите пароль</string>
     <string name="repeat_password_placeholder">Повторите пароль</string>
 
+    <string name="cant_create">Невозжно создать встречу</string>
+    <string name="cant_create_placeholder">Выберите время в настоящем</string>
 
 </resources>

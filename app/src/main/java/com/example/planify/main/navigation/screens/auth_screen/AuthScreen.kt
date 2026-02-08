@@ -298,7 +298,7 @@ private fun LabeledTextField(
             modifier = Modifier
                 .fillMaxWidth()
                 .withShapeBackground(
-                    color = colors.background,
+                    color = colors.primaryContainer,
                     shape = shape
                 ),
             value = value,
