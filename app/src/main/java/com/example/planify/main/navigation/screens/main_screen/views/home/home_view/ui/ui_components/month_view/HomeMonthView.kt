@@ -1,6 +1,7 @@
 package com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.month_view
 
 import androidx.compose.animation.animateContentSize
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,10 +12,13 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
@@ -27,9 +31,11 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.objectClickable
@@ -242,7 +248,7 @@ fun CalendarCell(
             modifier = Modifier
                 .fillMaxWidth()
                 .align(Alignment.BottomCenter)
-                .padding(Locals.spacing.xs),
+                .padding(Locals.spacing.xxs),
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -255,13 +261,38 @@ fun CalendarCell(
                     }
                 }
                 is MonthUIState.ContentData -> {
-                    repeat(monthUiState.meetingsInfoShort[date.date] ?: 0) {
-                        Dot(
-                            modifier = Modifier.padding(Locals.spacing.xxxxs),
-                            color = if (isSelected) colors.onPrimary
-                            else colors.primary,
-                            size = Locals.dimens.dotCalendarSize
-                        )
+                    val dotCount = monthUiState.meetingsInfoShort[date.date] ?: 0
+                    if (dotCount < 7) {
+                        repeat(dotCount) {
+                            Dot(
+                                modifier = Modifier.padding(Locals.spacing.xxxxs),
+                                color = if (isSelected) colors.onPrimary
+                                else colors.primary,
+                                size = Locals.dimens.dotCalendarSize
+                            )
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .size(Locals.dimens.dotCalendarContainerSize)
+                                .clip(CircleShape)
+                                .background(
+                                    color = if (isSelected) colors.onPrimary
+                                        else colors.primary
+                                ),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .padding(Locals.spacing.xxxs),
+                                text = dotCount.toString(),
+                                style = MaterialTheme.typography.bodySmall.copy(
+                                    fontSize = 8.sp
+                                ),
+                                color = if (isSelected) colors.primary
+                                    else colors.onPrimary
+                            )
+                        }
                     }
                 }
                 is MonthUIState.Error -> { }
