@@ -10,8 +10,9 @@ object KtorResponseLoggerPlugin {
         onResponse { response ->
             val body = response.bodyAsText()
             val url = response.request.url
+            val method = response.request.method
 
-            Log.d("ktorResponseLoggerPlugin", "RESPONSE $url; Body: $body")
+            Log.d("ktorResponseLoggerPlugin", "RESPONSE $method $url; Body: $body")
         }
     }
 }

@@ -48,7 +48,7 @@ class ActionsLocalDataSourceImpl @Inject constructor(
                 data = action.data?.let { jsonCore.encodeToString(serializer, action.data) }
             )
 
-            actionModelDAO.insert(model)
+            actionModelDAO.upsert(model)
 
             model
         }
@@ -57,7 +57,7 @@ class ActionsLocalDataSourceImpl @Inject constructor(
     override suspend fun saveAction(id: String, type: String, data: String?): Result<ActionModel> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
             val model = ActionModel(id, type, data)
-            actionModelDAO.insert(model)
+            actionModelDAO.upsert(model)
             model
         }
     }

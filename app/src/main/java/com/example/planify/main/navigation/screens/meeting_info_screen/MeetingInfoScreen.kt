@@ -19,10 +19,13 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -45,6 +48,7 @@ import com.adamglin.phosphoricons.regular.MapPin
 import com.adamglin.phosphoricons.regular.User
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
+import com.example.planify.main.common.ui.shimmer
 import com.example.planify.main.common.ui.withShapeBackground
 import com.example.planify.main.features.meetings.domain.entities.Meeting
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
@@ -76,32 +80,27 @@ private fun MeetingInfoScreen(
     onBack: () -> Unit,
     viewModel: MeetingInfoViewModel
 ) {
-    val uiState by viewModel.uiState.collectAsState(UIState.Loading)
-
-    when(uiState) {
-        is UIState.Loading -> {} // TODO: Skeletons
-        is UIState.Error -> {
-            ErrorScreen((uiState as UIState.Error).message)
-        }
-        is UIState.ContentData -> {
-            MeetingInfo(
-                onBack = onBack,
-                meetingInfo = (uiState as UIState.ContentData).meetingContext
-            )
-        }
-    }
+    MeetingInfo(
+        onBack = onBack,
+        viewModel = viewModel
+    )
 }
 
 @Composable
+@OptIn(ExperimentalMaterial3Api::class)
 fun MeetingInfo(
     onBack: () -> Unit,
-    meetingInfo: MeetingContext
+    viewModel: MeetingInfoViewModel
 ) {
     val colors = MaterialTheme.colorScheme
     val shape = Locals.shapes.mediumShape
 
     val formatter1 = DateTimeFormatter.ofPattern("dd MMMM yyyy", Locale("ru"))
     val formatter2 = DateTimeFormatter.ofPattern("HH:mm", Locale("ru"))
+
+    val pullRefreshState = rememberPullToRefreshState()
+
+    val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
         topBar = { TopBar(
@@ -111,139 +110,156 @@ fun MeetingInfo(
             .fillMaxSize(),
         containerColor = colors.background
     ) { padding ->
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .verticalScroll(
-                    state = rememberScrollState()
-                )
+        PullToRefreshBox(
+            isRefreshing = uiState is UIState.Refreshing,
+            onRefresh = {
+                if (uiState is UIState.ContentData) {
+                    viewModel.runFetchMeetingContext((uiState as UIState.ContentData).meetingContext.meeting.id, refresh = true)
+                }
+            },
+            state = pullRefreshState
         ) {
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .padding(
-                        PaddingValues(
-                            top = padding.calculateTopPadding() + Locals.spacing.s,
-                            bottom = padding.calculateBottomPadding(),
-                            start = Locals.spacing.m,
-                            end = Locals.spacing.m
-                        )
+                    .fillMaxWidth()
+                    .verticalScroll(
+                        state = rememberScrollState()
                     )
             ) {
-                Text(
-                    text = meetingInfo.meeting.name,
-                    style = MaterialTheme.typography.displaySmall.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
-                    color = colors.onBackground
-                )
-
-                Spacer(modifier = Modifier.height(Locals.spacing.xs))
-
-                Text(
-                    text = meetingInfo.meeting.description,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = colors.onBackground
-                )
-
-                Spacer(modifier = Modifier.height(Locals.spacing.xs))
-
-                Card(
+                Column(
                     modifier = Modifier
-                        .fillMaxWidth(),
-                    shape = shape,
-                    border = BorderStroke(
-                        color = Locals.extras.border,
-                        width = 1.dp
-                    ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = colors.surface
-                    )
-                ) {
-                    InfoMeetingRow(
-                        modifier = Modifier.padding(Locals.spacing.m),
-                        icon = PhosphorIcons.Regular.CalendarBlank,
-                        title = stringResource(R.string.date),
-                        desc = "${meetingInfo.meeting.startsAt.format(formatter1)}, ${meetingInfo.meeting.startsAt.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("ru"))}"
-                    )
-                    InfoMeetingRow(
-                        modifier = Modifier.padding(Locals.spacing.m),
-                        icon = PhosphorIcons.Regular.Clock,
-                        title = stringResource(R.string.time),
-                        desc = "${meetingInfo.meeting.startsAt.format(formatter2)} - ${meetingInfo.meeting.startsAt.plusHours(meetingInfo.meeting.duration.toLong()).format(formatter2)}"
-                    )
-                    InfoMeetingRow(
-                        modifier = Modifier.padding(Locals.spacing.m),
-                        icon = PhosphorIcons.Regular.MapPin,
-                        title = stringResource(R.string.place),
-                        desc = meetingInfo.meeting.location
-                    )
-                    InfoMeetingRow(
-                        modifier = Modifier.padding(Locals.spacing.m),
-                        icon = PhosphorIcons.Regular.User,
-                        title = stringResource(R.string.owner),
-                        desc = meetingInfo.participantProfiles
-                            .first { it.userId == meetingInfo.meeting.ownerId }
-                            .let { "${it.firstName} ${it.lastName}" }
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(Locals.spacing.l))
-
-                Text(
-                    text = "${stringResource(R.string.participants)} (${meetingInfo.participantProfiles.size}/${meetingInfo.invitedUserProfiles.size + 1})",
-                    style = MaterialTheme.typography.labelLarge,
-                    color = colors.onBackground
-                )
-
-                Spacer(modifier = Modifier.height(Locals.spacing.s))
-
-                Card(
-                    modifier = Modifier
-                        .fillMaxWidth(),
-                    shape = shape,
-                    border = BorderStroke(
-                        color = Locals.extras.border,
-                        width = 1.dp
-                    ),
-                    colors = CardDefaults.cardColors(
-                        containerColor = colors.surface
-                    )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                    ) {
-                        Log.d("participantProfiles", "entered")
-
-                        val owner = meetingInfo.participantProfiles.first {
-                            meetingInfo.meeting.ownerId == it.userId
-                        }
-
-                        InfoOwnerParticipantRow(
-                            modifier = Modifier.padding(Locals.spacing.m),
-                            profileUrl = owner.profileImageUrl,
-                            title = "${owner.firstName} ${owner.lastName}",
-                            desc = owner.position
-                        )
-
-                        meetingInfo.invitedUserProfiles.forEach { participant ->
-                            Log.d("participantProfiles", "participant ${participant.userId}")
-                            InfoParticipantRow(
-                                modifier = Modifier.padding(Locals.spacing.m),
-                                profileUrl = participant.profileImageUrl,
-                                title = "${participant.firstName} ${participant.lastName}",
-                                desc = participant.position,
-                                isAccepted = meetingInfo.invites.firstOrNull {
-                                    it.targetId == participant.userId && it.status == MeetingInviteStatus.ACCEPTED
-                                }?.let { true } ?: false
+                        .fillMaxSize()
+                        .padding(
+                            PaddingValues(
+                                top = padding.calculateTopPadding() + Locals.spacing.s,
+                                bottom = padding.calculateBottomPadding(),
+                                start = Locals.spacing.m,
+                                end = Locals.spacing.m
                             )
+                        )
+                ) {
+                    when (uiState) {
+                        is UIState.Loading, is UIState.Refreshing -> {}
+                        is UIState.Error -> ErrorScreen((uiState as UIState.Error).message)
+                        is UIState.ContentData -> {
+                            val meetingInfo = (uiState as UIState.ContentData).meetingContext
+
+                            Text(
+                                text = meetingInfo.meeting.name,
+                                style = MaterialTheme.typography.displaySmall.copy(
+                                    fontWeight = FontWeight.Bold
+                                ),
+                                color = colors.onBackground
+                            )
+
+                            Spacer(modifier = Modifier.height(Locals.spacing.xs))
+
+                            Text(
+                                text = meetingInfo.meeting.description,
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = colors.onBackground
+                            )
+
+                            Spacer(modifier = Modifier.height(Locals.spacing.xs))
+
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                shape = shape,
+                                border = BorderStroke(
+                                    color = Locals.extras.border,
+                                    width = 1.dp
+                                ),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = colors.surface
+                                )
+                            ) {
+                                InfoMeetingRow(
+                                    modifier = Modifier.padding(Locals.spacing.m),
+                                    icon = PhosphorIcons.Regular.CalendarBlank,
+                                    title = stringResource(R.string.date),
+                                    desc = "${meetingInfo.meeting.startsAt.format(formatter1)}, ${meetingInfo.meeting.startsAt.dayOfWeek.getDisplayName(TextStyle.FULL, Locale("ru"))}"
+                                )
+                                InfoMeetingRow(
+                                    modifier = Modifier.padding(Locals.spacing.m),
+                                    icon = PhosphorIcons.Regular.Clock,
+                                    title = stringResource(R.string.time),
+                                    desc = "${meetingInfo.meeting.startsAt.format(formatter2)} - ${meetingInfo.meeting.startsAt.plusHours(meetingInfo.meeting.duration.toLong()).format(formatter2)}"
+                                )
+                                InfoMeetingRow(
+                                    modifier = Modifier.padding(Locals.spacing.m),
+                                    icon = PhosphorIcons.Regular.MapPin,
+                                    title = stringResource(R.string.place),
+                                    desc = meetingInfo.meeting.location
+                                )
+                                InfoMeetingRow(
+                                    modifier = Modifier.padding(Locals.spacing.m),
+                                    icon = PhosphorIcons.Regular.User,
+                                    title = stringResource(R.string.owner),
+                                    desc = meetingInfo.participantProfiles
+                                        .first { it.userId == meetingInfo.meeting.ownerId }
+                                        .let { "${it.firstName} ${it.lastName}" }
+                                )
+                            }
+
+                            Spacer(modifier = Modifier.height(Locals.spacing.l))
+
+                            Text(
+                                text = "${stringResource(R.string.participants)} (${meetingInfo.participantProfiles.size}/${meetingInfo.invitedUserProfiles.size + 1})",
+                                style = MaterialTheme.typography.labelLarge,
+                                color = colors.onBackground
+                            )
+
+                            Spacer(modifier = Modifier.height(Locals.spacing.s))
+
+                            Card(
+                                modifier = Modifier
+                                    .fillMaxWidth(),
+                                shape = shape,
+                                border = BorderStroke(
+                                    color = Locals.extras.border,
+                                    width = 1.dp
+                                ),
+                                colors = CardDefaults.cardColors(
+                                    containerColor = colors.surface
+                                )
+                            ) {
+                                Column(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                ) {
+                                    Log.d("participantProfiles", "entered")
+
+                                    val owner = meetingInfo.participantProfiles.first {
+                                        meetingInfo.meeting.ownerId == it.userId
+                                    }
+
+                                    InfoOwnerParticipantRow(
+                                        modifier = Modifier.padding(Locals.spacing.m),
+                                        profileUrl = owner.profileImageUrl,
+                                        title = "${owner.firstName} ${owner.lastName}",
+                                        desc = owner.position
+                                    )
+
+                                    meetingInfo.invitedUserProfiles.forEach { participant ->
+                                        Log.d("participantProfiles", "participant ${participant.userId}")
+                                        InfoParticipantRow(
+                                            modifier = Modifier.padding(Locals.spacing.m),
+                                            profileUrl = participant.profileImageUrl,
+                                            title = "${participant.firstName} ${participant.lastName}",
+                                            desc = participant.position,
+                                            isAccepted = meetingInfo.invites.firstOrNull {
+                                                it.targetId == participant.userId && it.status == MeetingInviteStatus.ACCEPTED
+                                            }?.let { true } ?: false
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
             }
         }
-
     }
 }
 

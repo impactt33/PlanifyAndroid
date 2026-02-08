@@ -24,7 +24,7 @@ class InboxViewModel @Inject constructor(
     private val meetingInvitesService: MeetingInvitesService
 ): ViewModel() {
 
-    private val _uiState = MutableStateFlow<InboxState>(InboxState.empty())
+    private val _uiState = MutableStateFlow(InboxState.empty())
     val uiState = _uiState.asStateFlow()
 
     private val _actions = MutableStateFlow<List<Action<*>>>(emptyList())
@@ -51,6 +51,7 @@ class InboxViewModel @Inject constructor(
         _uiState.update { it.copy(actions = it.actions.plus(
             action.id to ResourceState.Loading
         )) }
+
         fetchMeetingContext(action.data!!.meetingId)
             .onSuccess { context ->
                 _uiState.update { it.copy(actions = it.actions.plus(

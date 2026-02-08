@@ -20,7 +20,7 @@ class ActionsRemoteDataSourceImpl @Inject constructor(
     private val actionsFeaturePath = "/actions"
 
     private val getMyIncomingActionsPath = "$actionsFeaturePath/my/incoming"
-    private val patchActionPath = "$actionsFeaturePath/%s/checked"
+    private val deleteActionPath = "$actionsFeaturePath/my/%s"
 
     override suspend fun fetchActions(lastSeen: String): Result<List<ActionDTO>> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
@@ -44,8 +44,8 @@ class ActionsRemoteDataSourceImpl @Inject constructor(
     override suspend fun deleteAction(actionId: String): Result<Unit> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
             authenticatedApiClient.requestUnit {
-                method = HttpMethod.Patch
-                url { path(patchActionPath.format(actionId)) }
+                method = HttpMethod.Delete
+                url { path(deleteActionPath.format(actionId)) }
             }
         }
     }

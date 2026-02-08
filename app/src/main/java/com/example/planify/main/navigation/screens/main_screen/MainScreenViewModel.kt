@@ -14,14 +14,14 @@ import javax.inject.Inject
 class MainScreenViewModel @Inject constructor(
     private val actionsService: ActionsService
 ) : ViewModel() {
-    init {
+//    init {
 //        viewModelScope.launch {
 //            actionsService.actionsFlow.collect(::onAction)
 //        }
-    }
-
-    @Suppress("UNCHECKED_CAST")
-    fun onAction(action: Action<*>) {
-        Log.i("Actions", "${action.type}: ${action.id}")
-    }
+//    }
+//
+//    @Suppress("UNCHECKED_CAST")
+//    fun onAction(action: Action<*>) {
+//        Log.i("Actions", "${action.type}: ${action.id}")
+//    }
 }
