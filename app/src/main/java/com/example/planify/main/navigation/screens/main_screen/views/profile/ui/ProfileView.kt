@@ -82,6 +82,8 @@ private fun ProfileView(
 ) {
     val colors = MaterialTheme.colorScheme
 
+    val myProfile by viewModel.myProfile.collectAsState()
+
     val uiState by viewModel.uiState.collectAsState()
 
     Surface(

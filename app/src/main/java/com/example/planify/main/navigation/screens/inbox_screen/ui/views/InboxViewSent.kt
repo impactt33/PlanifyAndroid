@@ -1,6 +1,5 @@
-package com.example.planify.main.navigation.screens.inbox_screen.ui
+package com.example.planify.main.navigation.screens.inbox_screen.ui.views
 
-import androidx.compose.foundation.gestures.scrollable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -8,19 +7,18 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import com.example.planify.R
+import coil3.target.ViewTarget
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.features.meetings.domain.entities.Meeting
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import com.example.planify.main.features.meetings.domain.entities.MeetingInvite
 import com.example.planify.main.features.meetings.domain.entities.MeetingInviteStatus
 import com.example.planify.main.features.profiles.domain.entities.Profile
-import com.example.planify.main.navigation.screens.inbox_screen.ui.components.MeetingInviteInboxCard
+import com.example.planify.main.navigation.screens.inbox_screen.InboxViewModel
+import com.example.planify.main.navigation.screens.inbox_screen.ui.components.MeetingInviteInboxCardShort
 import java.time.LocalDateTime
 
 private val fakeMeetingContext = MeetingContext(
@@ -31,7 +29,7 @@ private val fakeMeetingContext = MeetingContext(
             lastName = "Ахметова",
             position = "Project Manager",
             department = "Product",
-            profileImageUrl = "https://picsum.photos/id/64/300/300"
+            profileImageUrl = ""
         ),
         Profile(
             userId = 102L,
@@ -39,7 +37,7 @@ private val fakeMeetingContext = MeetingContext(
             lastName = "Козлов",
             position = "Senior Android Developer",
             department = "Mobile",
-            profileImageUrl = "https://picsum.photos/id/91/300/300"
+            profileImageUrl = ""
         ),
         Profile(
             userId = 103L,
@@ -47,7 +45,7 @@ private val fakeMeetingContext = MeetingContext(
             lastName = "Смирнов",
             position = "Backend Developer",
             department = "Platform",
-            profileImageUrl = "https://picsum.photos/id/12/300/300"
+            profileImageUrl = ""
         ),
         Profile(
             userId = 104L,
@@ -55,7 +53,7 @@ private val fakeMeetingContext = MeetingContext(
             lastName = "Петрова",
             position = "UX/UI Designer",
             department = "Design",
-            profileImageUrl = "https://picsum.photos/id/32/300/300"
+            profileImageUrl = ""
         )
     ),
     invites = listOf(
@@ -90,18 +88,19 @@ private val fakeMeetingContext = MeetingContext(
     meeting = Meeting(
         id = 5001L,
         ownerId = 101L,
-        name = "Обсуждение нового проекта",
+        name = "Обсуждение UI/UX",
         description = "Презентация и обсуждение концепции, сроков и ролей команды.",
         location = "Главный зал",
         startsAt = LocalDateTime.now().plusDays(2).withHour(15).withMinute(0).withSecond(0).withNano(0),
-        duration = 60,
-
-        ),
+        duration = 60
+    ),
     invitedUserProfiles = emptyList()
 )
 
 @Composable
-fun InboxViewIncoming() {
+fun InboxViewSent(
+    viewModel: InboxViewModel
+) {
     val colors = MaterialTheme.colorScheme
 
     Column(
@@ -127,7 +126,7 @@ fun InboxViewIncoming() {
                 verticalArrangement = Arrangement.spacedBy(Locals.spacing.m)
             ) {
                 repeat(7) {
-                    MeetingInviteInboxCard(
+                    MeetingInviteInboxCardShort(
                         meetingInfo = fakeMeetingContext
                     )
                 }

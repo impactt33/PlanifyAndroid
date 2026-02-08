@@ -35,19 +35,6 @@ class EditProfileViewModel @Inject constructor(
 
     val editProfileDraftState = _editProfileDraftState.asStateFlow()
 
-
-    private fun fetchMe() = viewModelScope.launch {
-        _uiState.value = UIState.Loading
-        authService.fetchMe()
-            .onSuccess { me ->
-                _user.value = me
-                _uiState.value = UIState.Idle
-            }
-            .onFailure { error ->
-                _uiState.value = UIState.Error(error.message ?: "Fetching user error")
-            }
-    }
-
     private fun fetchMyUserAndProfile() = viewModelScope.launch {
         _uiState.value = UIState.Loading
 
@@ -103,7 +90,15 @@ class EditProfileViewModel @Inject constructor(
 
         profilesService.patchMyProfile(shema)
             .onSuccess {
-                _uiState.value = UIState.Saved
+                profilesService.fetchMyProfile()
+                    .onSuccess { new ->
+                        _originalProfile.value = new
+                        _editProfileDraftState.value = EditProfileDraftState.fromProfile(new)
+                        _uiState.value = UIState.Saved
+                    }
+                    .onFailure { error ->
+                        _uiState.value = UIState.Error(error.message ?: "Updating error")
+                    }
             }
             .onFailure { error ->
                 _uiState.value = UIState.Error(error.message ?: "Saving changes error")

@@ -13,6 +13,8 @@ import javax.inject.Singleton
 class ProfilesServiceImpl @Inject constructor(
     val profilesRepository: ProfilesRepository
 ) : ProfilesService {
+    override val myProfile = profilesRepository.myProfile
+
     override suspend fun fetchMyProfile(): Result<Profile> {
         return profilesRepository.fetchMyProfile()
     }

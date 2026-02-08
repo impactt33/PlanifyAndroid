@@ -17,12 +17,17 @@ import io.ktor.http.path
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.withContext
 
 @Singleton
 class ProfilesRepositoryImpl @Inject constructor(
     private val authenticatedApiClient: AuthenticatedApiClient
 ) : ProfilesRepository {
+    private val _myProfile = MutableStateFlow<Profile?>(null)
+    override val myProfile = _myProfile.asStateFlow()
 
     val profileFeaturePath = "/profiles"
     val fetchMyProfilePath = "$profileFeaturePath/my"
@@ -38,6 +43,9 @@ class ProfilesRepositoryImpl @Inject constructor(
             }
             response.profile.toEntity()
         }
+            .onSuccess { profile ->
+                _myProfile.value = profile
+            }
     }
 
     override suspend fun patchMyProfile(shema: PatchMyProfileSchema): Result<Unit> = withContext(Dispatchers.IO) {
@@ -56,6 +64,17 @@ class ProfilesRepositoryImpl @Inject constructor(
                 setBody(requestDTO)
             }
         }
+            .onSuccess {
+                _myProfile.update {
+                    it?.copy(
+                        firstName = shema.firstName ?: it.firstName,
+                        lastName = shema.lastName ?: it.lastName,
+                        position = shema.position ?: it.position,
+                        department = shema.department ?: it.department,
+                        profileImageUrl = shema.profileImageUrl ?: it.profileImageUrl
+                    )
+                }
+            }
     }
 
     override suspend fun putMyProfile(shema: PutMyProfileSchema): Result<Unit> = withContext(Dispatchers.IO) {

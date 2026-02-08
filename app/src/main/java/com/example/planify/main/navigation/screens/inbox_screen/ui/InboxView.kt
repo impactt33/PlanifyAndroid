@@ -2,7 +2,6 @@ package com.example.planify.main.navigation.screens.inbox_screen.ui
 
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.FastOutSlowInEasing
-import androidx.compose.animation.core.animate
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,17 +18,17 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.planify.R
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.PagerRouterState
@@ -37,17 +36,31 @@ import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreen
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
 import com.example.planify.main.navigation.screens.inbox_screen.InboxRoute
+import com.example.planify.main.navigation.screens.inbox_screen.InboxViewModel
+import com.example.planify.main.navigation.screens.inbox_screen.ui.views.InboxViewIncoming
+import com.example.planify.main.navigation.screens.inbox_screen.ui.views.InboxViewSent
 
 @Composable
 fun InboxView(
     scaffoldPadding: PaddingValues
 ) {
+    InboxView(
+        viewModel = hiltViewModel(),
+        scaffoldPadding = scaffoldPadding
+    )
+}
+
+@Composable
+private fun InboxView(
+    viewModel: InboxViewModel,
+    scaffoldPadding: PaddingValues
+) {
+
+
     val pagerState = rememberPagerRouterScreenState(
         routes = InboxRoute.routes,
         startRoute = InboxRoute.Incoming
     )
-
-    val colors = MaterialTheme.colorScheme
 
     Box(
         modifier = Modifier
@@ -65,10 +78,10 @@ fun InboxView(
                 state = pagerState
             ) {
                 screen(InboxRoute.Incoming) {
-                    InboxViewIncoming()
+                    InboxViewIncoming(viewModel)
                 }
                 screen(InboxRoute.Sent) {
-                    InboxViewSent()
+                    InboxViewSent(viewModel)
                 }
             }
         }

@@ -42,17 +42,18 @@ import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
+import kotlinx.coroutines.withContext
 import java.time.format.DateTimeFormatter
 
 @Composable
 fun MeetingInviteInboxCard(
     meetingInfo: MeetingContext,
+    onAccept: () -> Unit,
+    onReject: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     val shape = Locals.shapes.mediumShape
     val colors = MaterialTheme.colorScheme
-    val gradient = Locals.gradients
-    val glass = Locals.extras.glass
 
     val meeting = meetingInfo.meeting
 
@@ -146,7 +147,7 @@ fun MeetingInviteInboxCard(
                             )
                             .fillMaxHeight()
                             .weight(1f),
-                        onClick = {},
+                        onClick = onAccept,
                         shape = Locals.shapes.smallShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Color.Transparent
@@ -160,19 +161,19 @@ fun MeetingInviteInboxCard(
 
                     Button(
                         modifier = Modifier
-                            .fillMaxHeight()
-                            .weight(1f)
-                            .shadow(
-                                elevation = 6.dp,
+                            .border(
+                                color = Locals.extras.border,
                                 shape = Locals.shapes.smallShape,
-                                ambientColor = Locals.extras.mutedForeground.copy(0.3f),
-                                spotColor = Locals.extras.mutedForeground.copy(0.3f)
-                            ),
-                        onClick = {},
+                                width = 1.dp
+                            )
+                            .fillMaxHeight()
+                            .weight(1f),
+                        onClick = onReject,
                         shape = Locals.shapes.smallShape,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colors.surface
                         )
+
                     ) {
                         Text(
                             text = stringResource(R.string.decline),
