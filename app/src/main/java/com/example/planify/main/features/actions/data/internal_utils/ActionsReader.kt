@@ -49,12 +49,9 @@ class ActionsReader(
     }
 
     private fun pollingFlow(): Flow<Action<*>> = callbackFlow {
-        var attempts = 0
-
         while (currentCoroutineContext().isActive) {
             try {
                 val actions = fetcher().getOrThrow()
-                attempts = 0
                 actions.forEach { trySend(it) }
             } catch (error: CancellationException) {
                 throw error
@@ -62,15 +59,8 @@ class ActionsReader(
                 Log.w(this::class.simpleName, "Failed to fetch actions: ${error::class.simpleName}: ${error.message}, stopping reader")
                 break
             } catch (error: Exception) {
-                attempts += 1
-
-                if (attempts > maxAttempts) {
-                    Log.e(this::class.simpleName, "Failed to fetch actions $maxAttempts times, stopping reader")
-                    break
-                }
-
                 Log.w(this::class.simpleName, "Failed to fetch actions (retrying in 2s...): ${error.message}")
-                delay(2000)
+                break
             }
         }
 
