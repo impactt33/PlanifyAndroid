@@ -31,6 +31,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
+import com.example.planify.main.navigation.screens.chat_screen.ChatScreen
 import com.example.planify.main.navigation.screens.create_meeting_screen.components.create_meeting_floating_dialog.CreateMeetingDialog
 import com.example.planify.main.navigation.screens.inbox_screen.ui.InboxView
 import com.example.planify.main.navigation.screens.main_screen.components.BottomNavBar
@@ -149,7 +150,11 @@ private fun MainScreen(
                     setMonthTitle = { monthTitle = it }
                 )
             }
-            screen(MainScreenRoute.Chat) { Screen() }
+            screen(MainScreenRoute.Chat) {
+                ChatScreen(
+                    scaffoldPadding = padding
+                )
+            }
             screen(MainScreenRoute.Inbox) { InboxView(
                 scaffoldPadding = padding
             ) }
