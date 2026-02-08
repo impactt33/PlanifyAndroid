@@ -3,6 +3,7 @@ package com.example.planify.main.navigation.screens.registration
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.main.common.themes.AppTypography
+import com.example.planify.main.features.auth.domain.schemas.RegisterUserSchema
 import com.example.planify.main.features.auth.domain.services.AuthService
 import com.example.planify.main.features.settings.domain.services.SettingsService
 import com.example.planify.main.navigation.AppRoute
@@ -26,17 +27,9 @@ class RegistrationViewModel @Inject constructor(
     private val _navigation = MutableSharedFlow<AppRoute>()
     val navigation = _navigation.asSharedFlow()
 
-    fun register(
-        username: String,
-        email: String,
-        password: String
-    ) {
+    fun register(shema: RegisterUserSchema) {
         viewModelScope.launch {
-            authService.register(
-                username = username,
-                email = email,
-                password = password
-            )
+            authService.register(shema)
                 .onSuccess {
                     settingsService.setIsFirstStart(false)
                     _navigation.emit(AppRoute.Main)
@@ -45,6 +38,18 @@ class RegistrationViewModel @Inject constructor(
                 .onFailure {
                     _uiState.emit(UIState.DATA_INCORRECT)
                 }
+        }
+    }
+
+    fun onIncorrectPassword() {
+        viewModelScope.launch {
+            _uiState.emit(UIState.INCORRECT_PASSWORD)
+        }
+    }
+
+    fun resetFocusedColor() {
+        viewModelScope.launch {
+            _uiState.emit(UIState.LOADING)
         }
     }
 }

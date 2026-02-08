@@ -13,6 +13,7 @@ import com.example.planify.main.features.auth.data.sources.AuthRemoteDataSource
 import com.example.planify.main.features.auth.domain.entities.AuthContext
 import com.example.planify.main.features.auth.domain.entities.AuthTokenPair
 import com.example.planify.main.features.auth.domain.entities.LoginResult
+import com.example.planify.main.features.auth.domain.schemas.RegisterUserSchema
 import io.ktor.client.request.headers
 import io.ktor.client.request.setBody
 import io.ktor.http.HttpHeaders
@@ -36,11 +37,13 @@ class AuthRemoteDataSourceImpl @Inject constructor(
 
     private fun getDefaultClientName(): String = "${Build.MANUFACTURER}-${Build.MODEL}"
 
-    override suspend fun register(username: String, email: String, password: String): Result<LoginResult> = withContext(Dispatchers.IO) {
+    override suspend fun register(shema: RegisterUserSchema): Result<LoginResult> = withContext(Dispatchers.IO) {
         val requestDto = RegisterRequestDTO(
-            username = username,
-            email = email,
-            password = password,
+            firstName = shema.firstName,
+            lastName = shema.lastName,
+            username = shema.username,
+            email = shema.email,
+            password = shema.password,
             clientName = getDefaultClientName()
         )
 

@@ -21,7 +21,7 @@ import com.example.planify.main.navigation.screens.auth_screen.AuthScreen
 import com.example.planify.main.navigation.screens.create_meeting_screen.ui.CreateMeeting
 import com.example.planify.main.navigation.screens.init_screen.ui.InitScreen
 import com.example.planify.main.navigation.screens.main_screen.MainScreenBox
-import com.example.planify.main.navigation.screens.main_screen.views.profile.ui.edit_profile.EditProfile
+import com.example.planify.main.navigation.screens.main_screen.views.profile.ui.edit_profile.EditProfileScreen
 import com.example.planify.main.navigation.screens.meeting_info_screen.MeetingInfoScreen
 import com.example.planify.main.navigation.screens.notifications_screen.NotificationsScreen
 import com.example.planify.main.navigation.screens.registration.RegistrationScreen
@@ -131,7 +131,7 @@ private fun AppNavHost(
             )
         }
         composable(AppRoute.EditProfile.route) {
-            EditProfile(
+            EditProfileScreen(
                 onBack = { navController.popBackStack() },
                 onCancel = { navController.popBackStack() },
                 onSave = { navController.popBackStack() },

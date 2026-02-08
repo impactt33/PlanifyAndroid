@@ -12,6 +12,7 @@ import com.example.planify.main.features.auth.domain.entities.UserPrivate
 import com.example.planify.main.features.auth.domain.repositories.AuthRepository
 import com.example.planify.main.features.auth.domain.repositories.SessionsRepository
 import com.example.planify.main.features.auth.domain.repositories.UsersRepository
+import com.example.planify.main.features.auth.domain.schemas.RegisterUserSchema
 import com.example.planify.main.features.auth.domain.services.AuthService
 import jakarta.inject.Inject
 import jakarta.inject.Provider
@@ -81,8 +82,8 @@ class AuthServiceImpl @Inject constructor(
         return authRepository.fetchActualAuthContext(accessToken)
     }
 
-    override suspend fun register(username: String, email: String, password: String): Result<LoginResult> {
-        return authRepository.register(username, email, password).onSuccess { result ->
+    override suspend fun register(shema: RegisterUserSchema): Result<LoginResult> {
+        return authRepository.register(shema).onSuccess { result ->
             authRepository.setAuthState(
                 AuthState.Authenticated(
                     context = result.authContext,

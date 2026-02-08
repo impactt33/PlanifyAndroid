@@ -1,5 +1,6 @@
 package com.example.planify.main.navigation.screens.create_meeting_screen
 
+import com.example.planify.main.features.profiles.domain.entities.Profile
 import java.time.LocalDate
 
 

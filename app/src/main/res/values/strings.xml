@@ -133,6 +133,21 @@
     <string name="welcome">Добро пожаловать</string>
     <string name="register_to_start">Зарегистрируйтесь для начала работы</string>
 
+    <string name="register">Начать</string>
+
+    <string name="firstName">Имя</string>
+    <string name="firstName_placeholder">Введите имя</string>
+
+    <string name="lastName">Фамилия</string>
+    <string name="lastName_placeholder">Введите фалимию</string>
+
+    <string name="position_placeholder">Введите должность</string>
+
+    <string name="username_reg">Имя пользователя</string>
+    <string name="username_placeholder">Введите имя пользователя</string>
+
+    <string name="repeat_password">Подтвердите пароль</string>
+    <string name="repeat_password_placeholder">Повторите пароль</string>
 
 
 </resources>

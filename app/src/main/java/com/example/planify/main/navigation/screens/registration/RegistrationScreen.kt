@@ -51,6 +51,7 @@ import com.adamglin.phosphoricons.regular.StarFour
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
+import com.example.planify.main.features.auth.domain.schemas.RegisterUserSchema
 import com.example.planify.main.navigation.screens.backgrounds.CloudyBackground
 
 @Composable
@@ -78,13 +79,21 @@ private fun RegistrationScreen(
 
     val colors = MaterialTheme.colorScheme
 
+    var firstNameQuery by remember { mutableStateOf("") }
+    var lastNameQuery by remember { mutableStateOf("") }
+    var usernameQuery by remember { mutableStateOf("") }
     var emailQuery by remember { mutableStateOf("") }
     var passwordQuery by remember { mutableStateOf("") }
+    var repeatPasswordQuery by remember { mutableStateOf("") }
 
     CloudyBackground(
         modifier = Modifier.fillMaxSize(),
         animate = true
     )
+
+    LaunchedEffect(passwordQuery, repeatPasswordQuery) {
+        viewModel.resetFocusedColor()
+    }
 
     Surface(
         modifier = Modifier
@@ -137,6 +146,36 @@ private fun RegistrationScreen(
                 Spacer(modifier = Modifier.height(Locals.spacing.m))
 
                 LabeledTextField(
+                    label = stringResource(R.string.firstName),
+                    value = firstNameQuery,
+                    uiState = uiState,
+                    onValueChange = { firstNameQuery = it },
+                    placeholder = stringResource(R.string.firstName_placeholder)
+                )
+
+                Spacer(modifier = Modifier.height(Locals.spacing.m))
+
+                LabeledTextField(
+                    label = stringResource(R.string.lastName),
+                    value = lastNameQuery,
+                    uiState = uiState,
+                    onValueChange = { lastNameQuery = it },
+                    placeholder = stringResource(R.string.lastName_placeholder)
+                )
+
+                Spacer(modifier = Modifier.height(Locals.spacing.m))
+
+                LabeledTextField(
+                    label = stringResource(R.string.username_reg),
+                    value = usernameQuery,
+                    uiState = uiState,
+                    onValueChange = { usernameQuery = it },
+                    placeholder = stringResource(R.string.username_placeholder)
+                )
+
+                Spacer(modifier = Modifier.height(Locals.spacing.m))
+
+                LabeledTextField(
                     label = stringResource(R.string.email),
                     value = emailQuery,
                     uiState = uiState,
@@ -157,6 +196,18 @@ private fun RegistrationScreen(
 
                 Spacer(modifier = Modifier.height(Locals.spacing.m))
 
+                LabeledTextField(
+                    label = stringResource(R.string.repeat_password),
+                    value = repeatPasswordQuery,
+                    uiState = uiState,
+                    onValueChange = { repeatPasswordQuery = it },
+                    placeholder = stringResource(R.string.repeat_password_placeholder),
+                    icon = PhosphorIcons.Regular.Eye
+                )
+
+
+                Spacer(modifier = Modifier.height(Locals.spacing.m))
+
                 Spacer(modifier = Modifier.height(Locals.spacing.xl))
 
             }
@@ -172,11 +223,20 @@ private fun RegistrationScreen(
                     .align(Alignment.BottomCenter),
                 shape = Locals.shapes.mediumShape,
                 onClick = {
-                    viewModel.register(
-                        username = "yaica",
-                        email = emailQuery,
-                        password = passwordQuery
-                    )
+                    if(passwordQuery != repeatPasswordQuery) {
+                        viewModel.onIncorrectPassword()
+                    } else {
+                        val shema = RegisterUserSchema(
+                            firstName = firstNameQuery,
+                            lastName = lastNameQuery,
+                            username = usernameQuery,
+                            email = emailQuery,
+                            password = passwordQuery
+                        )
+
+                        viewModel.register(shema)
+                    }
+
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Transparent
@@ -190,7 +250,7 @@ private fun RegistrationScreen(
                     horizontalArrangement = Arrangement.Center
                 ) {
                     Text(
-                        text = stringResource(R.string.enter),
+                        text = stringResource(R.string.register),
                         style = MaterialTheme.typography.displaySmall,
                         color = colors.onPrimary
                     )
@@ -271,7 +331,7 @@ private fun LabeledTextField(
     val colors = MaterialTheme.colorScheme
     val shape = Locals.shapes.mediumShape
 
-    var isVisible by remember { mutableStateOf(true) }
+    var isVisible by remember { mutableStateOf(false) }
 
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
 
@@ -296,9 +356,9 @@ private fun LabeledTextField(
                 focusedContainerColor = colors.surface,
                 unfocusedContainerColor = colors.surface,
                 cursorColor = colors.primary,
-                focusedIndicatorColor = if (uiState == UIState.DATA_INCORRECT) colors.error
+                focusedIndicatorColor = if (uiState == UIState.INCORRECT_PASSWORD) colors.error
                 else colors.primary,
-                unfocusedIndicatorColor = if (uiState == UIState.DATA_INCORRECT) colors.error
+                unfocusedIndicatorColor = if (uiState == UIState.INCORRECT_PASSWORD) colors.error
                 else colors.surface
             ),
             shape = shape,
