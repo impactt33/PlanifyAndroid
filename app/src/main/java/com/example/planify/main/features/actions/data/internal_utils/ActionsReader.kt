@@ -10,7 +10,6 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.currentCoroutineContext
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,7 +27,6 @@ class ActionsReader(
     private val fetcher: ActionsFetcher,
     private val initializer: ActionsInitializer
 ) {
-    private val maxAttempts = 5
     private val readerJob = SupervisorJob()
     private val readerCoroutineScope = CoroutineScope(dispatcher + readerJob)
 
@@ -56,10 +54,10 @@ class ActionsReader(
             } catch (error: CancellationException) {
                 throw error
             } catch (error: UnauthenticatedAppError) {
-                Log.w(this::class.simpleName, "Failed to fetch actions: ${error::class.simpleName}: ${error.message}, stopping reader")
+                Log.w(this::class.simpleName, "Failed to fetch actions (Unauthenticated): ${error::class.simpleName}: ${error.message}, stopping reader")
                 break
             } catch (error: Exception) {
-                Log.w(this::class.simpleName, "Failed to fetch actions (retrying in 2s...): ${error.message}")
+                Log.w(this::class.simpleName, "Failed to fetch actions: ${error::class.simpleName}: ${error.message}, stopping reader")
                 break
             }
         }
