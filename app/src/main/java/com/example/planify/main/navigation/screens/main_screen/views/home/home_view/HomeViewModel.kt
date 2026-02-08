@@ -51,7 +51,7 @@ class HomeViewModel @Inject constructor(
                 _uiState.update { it.copy(meetingsInfo = ResourceState.Success(if (reset) fetched else currentData + fetched)) }
             }
             .onFailure { error ->
-                Log.e("ERROR PIZDA SERVERY", "ERROR", error)
+                Log.e("ERROR", "ERROR", error)
                 _uiState.update { it.copy(meetingsInfo = ResourceState.Error(error)) }
             }
     }

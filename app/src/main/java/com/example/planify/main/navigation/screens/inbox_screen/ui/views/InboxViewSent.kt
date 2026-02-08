@@ -29,7 +29,7 @@ private val fakeMeetingContext = MeetingContext(
             lastName = "Ахметова",
             position = "Project Manager",
             department = "Product",
-            profileImageUrl = ""
+            profileImageUrl = "https://cs13.pikabu.ru/post_img/big/2019/02/08/4/1549604155132231693.jpg"
         ),
         Profile(
             userId = 102L,
@@ -37,7 +37,8 @@ private val fakeMeetingContext = MeetingContext(
             lastName = "Козлов",
             position = "Senior Android Developer",
             department = "Mobile",
-            profileImageUrl = ""
+            profileImageUrl = "https://avatars.mds.yandex.net/get-shedevrum/9283310/acd3cc60b3a411ee8422feda328ae3aa/orig"
+
         ),
         Profile(
             userId = 103L,
@@ -45,7 +46,7 @@ private val fakeMeetingContext = MeetingContext(
             lastName = "Смирнов",
             position = "Backend Developer",
             department = "Platform",
-            profileImageUrl = ""
+            profileImageUrl = "https://lh6.googleusercontent.com/proxy/udvC3WoJ1QQyTauRYMnaAKKMg80Ka__Qk9AACBTizR_pBlfZKa3xuwqd97mfvy5zKcxbSA"
         ),
         Profile(
             userId = 104L,
@@ -53,7 +54,7 @@ private val fakeMeetingContext = MeetingContext(
             lastName = "Петрова",
             position = "UX/UI Designer",
             department = "Design",
-            profileImageUrl = ""
+            profileImageUrl = "https://cs13.pikabu.ru/post_img/big/2019/02/08/4/1549604155132231693.jpg"
         )
     ),
     invites = listOf(

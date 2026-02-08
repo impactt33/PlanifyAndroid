@@ -27,7 +27,7 @@ class MainActivity : ComponentActivity() {
             val settingsViewModel: SettingsViewModel = hiltViewModel()
             val settings by settingsViewModel.settingsService.settingsFlow.collectAsStateWithLifecycle(
                 initialValue = LocalSettings(
-                    theme = ThemeId.LIGHT,
+                    theme = ThemeId.SYSTEM,
                     notifications = true
                 )
             )
