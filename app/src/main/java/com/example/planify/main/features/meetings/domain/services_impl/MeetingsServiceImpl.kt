@@ -1,5 +1,6 @@
 package com.example.planify.main.features.meetings.domain.services_impl
 
+import com.example.planify.core.utils.until
 import com.example.planify.main.features.meetings.domain.entities.Meeting
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import com.example.planify.main.features.meetings.domain.repositories.MeetingsRepository
@@ -36,11 +37,27 @@ class MeetingsServiceImpl @Inject constructor(
         startDate: LocalDate,
         endDate: LocalDate
     ): Result<Map<LocalDate, List<MeetingContext>>> {
-        return meetingsRepository.fetchMyDailyMeetings(startDate, endDate)
+        return meetingsRepository.fetchMyDailyMeetings(startDate, endDate).map { meetings ->
+            val result = mutableMapOf<LocalDate, List<MeetingContext>>()
+
+            (startDate until endDate).forEach { date ->
+                result[date] = meetings[date] ?: emptyList()
+            }
+
+            result
+        }
     }
 
     override suspend fun fetchMyDailyMeetingsShort(startDate: LocalDate, endDate: LocalDate): Result<Map<LocalDate, Int>> {
-        return meetingsRepository.fetchMyDailyMeetingsShort(startDate, endDate)
+        return meetingsRepository.fetchMyDailyMeetingsShort(startDate, endDate).map { meetings ->
+            val result = mutableMapOf<LocalDate, Int>()
+
+            (startDate until endDate).forEach { date ->
+                result[date] = meetings[date] ?: 0
+            }
+
+            result
+        }
     }
 
     override suspend fun fetchUserSchedule(forDate: LocalDate): Result<Map<Int, Boolean>> = withContext(Dispatchers.IO) {

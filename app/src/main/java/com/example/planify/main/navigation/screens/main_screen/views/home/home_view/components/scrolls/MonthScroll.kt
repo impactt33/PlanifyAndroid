@@ -51,7 +51,7 @@ fun MonthScroll(
         state = pagerState,
         modifier = modifier,
         beyondViewportPageCount = 1
-    ) { page ->
+    ) { page ->  // TODO: Load dots when switching month
         pageContent(page)
     }
 }

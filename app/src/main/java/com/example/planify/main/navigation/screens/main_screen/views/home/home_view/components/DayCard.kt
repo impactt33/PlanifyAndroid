@@ -15,31 +15,32 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.RectangleShape
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.CalendarDay
+import com.example.planify.core.ui.state.ResourceState
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.objectClickable
-import com.example.planify.main.navigation.screens.fixed_screens.ErrorScreen
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewModel
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.dot.Dot
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.dot.SkeletonDot
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.ui.ui_components.week_view.WeekUIState
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.CalendarDay
 import java.time.format.TextStyle
 import java.util.Locale
 
 @Composable
 fun DayCard(
     modifier: Modifier = Modifier,
-    weekUiState: WeekUIState,
     day: CalendarDay,
     isSelected: Boolean,
-    onClick: () -> Unit
+    onClick: () -> Unit,
+    viewModel: HomeViewModel
 ) {
     val colors = MaterialTheme.colorScheme
     val extras = Locals.extras
@@ -51,6 +52,8 @@ fun DayCard(
 
     val contentColor = if (isSelected)
         colors.primary else colors.onSurface.copy(alpha = 0.9f)
+
+    val uiState by viewModel.uiState.collectAsState()
 
     Column(
         modifier = modifier
@@ -104,17 +107,20 @@ fun DayCard(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            when (weekUiState) {
-                is WeekUIState.Loading -> {
+            when (uiState.meetingsInfoShort) {
+                is ResourceState.Loading, is ResourceState.Refreshing, is ResourceState.Idle -> {
                     repeat(3) {
                         SkeletonDot(
                             modifier = Modifier.padding(Locals.spacing.xxxxs)
                         )
                     }
                 }
-                is WeekUIState.ContentData -> {
-                    val dotCount = weekUiState.meetingsInfoShort[day.date] ?: 0
-                    if (dotCount < 7) {
+
+                is ResourceState.Success -> {
+                    val state = uiState.meetingsInfoShort as ResourceState.Success
+                    val dotCount = state.data[day.date] ?: 0
+
+                    if (dotCount < 6) {
                         repeat(dotCount) {
                             Dot(
                                 modifier = Modifier.padding(Locals.spacing.xxxxs),
@@ -140,7 +146,9 @@ fun DayCard(
                         }
                     }
                 }
-                is WeekUIState.Error -> {
+
+                is ResourceState.Error -> {
+                    // TODO
                 }
             }
         }

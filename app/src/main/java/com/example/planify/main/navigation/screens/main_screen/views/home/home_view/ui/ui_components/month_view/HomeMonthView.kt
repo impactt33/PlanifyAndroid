@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -24,73 +23,51 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.planify.core.ui.state.ResourceState
+import com.example.planify.core.utils.weekBounds
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.objectClickable
 import com.example.planify.main.common.ui.withShapeBackground
 import com.example.planify.main.common.utils.monthForPage
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.UIState
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewModel
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.dot.Dot
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.skeleton_meeting_card.MeetingCard
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.CalendarDay
-import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.scrolls.MonthScroll
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.dot.SkeletonDot
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.CalendarDay
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.ScrollableDateRow
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.entities.getMonthDays
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.scrolls.MonthScroll
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.skeleton_meeting_card.MeetingCard
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter.ofPattern
 import java.time.format.TextStyle
 import java.util.Locale
-import kotlin.collections.emptyList
+
 
 @Composable
 fun HomeMonthView(
+    viewModel: HomeViewModel,
     onDateSelected: (LocalDate) -> Unit,
     selectedDate: LocalDate,
     pagerState: PagerState,
     initialPage: Int,
     getMeetingsInfoByDate: (LocalDate) -> List<MeetingContext>,
-    uiState: UIState,
     scaffoldPadding: PaddingValues
 ) {
-    HomeMonthView(
-        viewModel = hiltViewModel(),
-        onDateSelected = onDateSelected,
-        selectedDate = selectedDate,
-        pagerState = pagerState,
-        initialPage = initialPage,
-        getMeetingsInfoByDate = getMeetingsInfoByDate,
-        uiState = uiState,
-        scaffoldPadding = scaffoldPadding
-    )
-}
-
-@Composable
-private fun HomeMonthView(
-    viewModel: HomeMonthViewModel,
-    onDateSelected: (LocalDate) -> Unit,
-    selectedDate: LocalDate,
-    pagerState: PagerState,
-    initialPage: Int,
-    getMeetingsInfoByDate: (LocalDate) -> List<MeetingContext>,
-    uiState: UIState,
-    scaffoldPadding: PaddingValues
-) {
-    val monthUiState by viewModel.monthUiState.collectAsState()
+    val uiState by viewModel.uiState.collectAsState()
 
     val scope = rememberCoroutineScope()
 
@@ -103,8 +80,16 @@ private fun HomeMonthView(
     val scrollState = rememberScrollState()
 
     val meetings = remember(selectedDate, uiState) {
-        if (uiState is UIState.ContentData) getMeetingsInfoByDate(selectedDate)
-        else emptyList()
+        if (uiState.meetingsInfo is ResourceState.Success) {
+            getMeetingsInfoByDate(selectedDate)
+        } else emptyList()
+    }
+
+    LaunchedEffect(selectedDate) {
+        if ((uiState.meetingsInfo as? ResourceState.Success)?.data?.contains(selectedDate) != true) {
+            val (start, end) = selectedDate.weekBounds()
+            viewModel.runFetchMeetingsInfo(start.toLocalDate(), end.toLocalDate())
+        }
     }
 
     Column(
@@ -152,7 +137,7 @@ private fun HomeMonthView(
                         days = monthDays,
                         selectedDate = selectedDate,
                         onDateSelected = onDateSelected,
-                        monthUiState = monthUiState
+                        viewModel = viewModel
                     )
                 }
                 Spacer(modifier = Modifier.height(Locals.spacing.m))
@@ -206,9 +191,9 @@ fun WeekDaysRow() {
 
 @Composable
 fun CalendarCell(
+    viewModel: HomeViewModel,
     modifier: Modifier = Modifier,
     date: CalendarDay,
-    monthUiState: MonthUIState,
     isSelected: Boolean = false,
     onClick: () -> Unit
 ) {
@@ -220,12 +205,14 @@ fun CalendarCell(
         else -> colors.onSurfaceVariant.copy(alpha = 0.4f)
     }
 
+    val uiState by viewModel.uiState.collectAsState()
+
     Box(
         modifier = modifier
             .withShapeBackground(
                 shape = Locals.shapes.mediumShape,
                 color = if (isSelected) colors.primary
-                    else Color.Transparent
+                else Color.Transparent
             )
             .objectClickable(
                 onClick = onClick
@@ -252,17 +239,19 @@ fun CalendarCell(
             horizontalArrangement = Arrangement.Center,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            when(monthUiState) {
-                is MonthUIState.Loading -> {
+            when (uiState.meetingsInfoShort) {
+                is ResourceState.Loading, is ResourceState.Refreshing, is ResourceState.Idle -> {
                     repeat(3) {
                         SkeletonDot(
                             modifier = Modifier.padding(Locals.spacing.xxxxs)
                         )
                     }
                 }
-                is MonthUIState.ContentData -> {
-                    val dotCount = monthUiState.meetingsInfoShort[date.date] ?: 0
-                    if (dotCount < 7) {
+
+                is ResourceState.Success -> {
+                    val state = uiState.meetingsInfoShort as ResourceState.Success
+                    val dotCount = state.data[date.date] ?: 0
+                    if (dotCount < 6) {
                         repeat(dotCount) {
                             Dot(
                                 modifier = Modifier.padding(Locals.spacing.xxxxs),
@@ -278,7 +267,7 @@ fun CalendarCell(
                                 .clip(CircleShape)
                                 .background(
                                     color = if (isSelected) colors.onPrimary
-                                        else colors.primary
+                                    else colors.primary
                                 ),
                             contentAlignment = Alignment.Center
                         ) {
@@ -290,12 +279,15 @@ fun CalendarCell(
                                     fontSize = 8.sp
                                 ),
                                 color = if (isSelected) colors.primary
-                                    else colors.onPrimary
+                                else colors.onPrimary
                             )
                         }
                     }
                 }
-                is MonthUIState.Error -> { }
+
+                is ResourceState.Error -> {
+                    // TODO
+                }
             }
         }
     }
@@ -307,7 +299,7 @@ fun MonthCalendarGrid(
     selectedDate: LocalDate,
     onDateSelected: (LocalDate) -> Unit,
     modifier: Modifier = Modifier,
-    monthUiState: MonthUIState
+    viewModel: HomeViewModel
 ) {
     val cellSize = Locals.dimens.calendarCellSize
 
@@ -334,7 +326,7 @@ fun MonthCalendarGrid(
                             onClick = { onDateSelected(day.date) },
                             isSelected = day.date == selectedDate,
                             date = day,
-                            monthUiState = monthUiState
+                            viewModel = viewModel
                         )
                     } else {
                         Box(

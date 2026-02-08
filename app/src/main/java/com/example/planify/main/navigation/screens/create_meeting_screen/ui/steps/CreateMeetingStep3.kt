@@ -247,7 +247,7 @@ fun CreateMeetingStep3(
         when (searchResultState) {
             is ResourceState.Error -> {}
             is ResourceState.Idle -> {}
-            is ResourceState.Loading -> {}
+            is ResourceState.Loading, is ResourceState.Refreshing -> {}
             is ResourceState.Success<Map<Long, Profile>> -> {
                 val state = searchResultState as ResourceState.Success<Map<Long, Profile>>
 
@@ -293,7 +293,7 @@ fun CreateMeetingStep3(
             when(searchResultState) {
                 is ResourceState.Error -> {}
                 is ResourceState.Idle -> {}
-                is ResourceState.Loading -> {}
+                is ResourceState.Loading, is ResourceState.Refreshing -> {}
                 is ResourceState.Success<*> -> {
                     val state = searchResultState as ResourceState.Success<Map<Long, Profile>>
 

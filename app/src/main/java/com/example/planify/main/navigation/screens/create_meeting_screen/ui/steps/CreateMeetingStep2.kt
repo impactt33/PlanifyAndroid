@@ -161,7 +161,7 @@ fun CreateMeetingStep2(viewModel: CreateMeetingViewModel) {
             when (userSchedule) {
                 is ResourceState.Error -> {}
                 is ResourceState.Idle -> {}
-                is ResourceState.Loading -> {}
+                is ResourceState.Loading, is ResourceState.Refreshing -> {}
                 is ResourceState.Success<Map<Int, Boolean>> -> {
                     val state = userSchedule as ResourceState.Success<Map<Int, Boolean>>
                     fun isSelectable(i: Int) = state.data[i] == true

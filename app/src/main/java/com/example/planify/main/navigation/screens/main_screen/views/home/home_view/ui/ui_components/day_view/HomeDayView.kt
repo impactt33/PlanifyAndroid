@@ -17,6 +17,9 @@ import androidx.compose.foundation.pager.PagerState
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
@@ -25,10 +28,13 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.example.planify.R
+import com.example.planify.core.ui.state.ResourceState
+import com.example.planify.core.utils.weekBounds
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
 import com.example.planify.main.common.utils.dateForPage
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
+import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.HomeViewModel
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.UIState
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.skeleton_meeting_card.MeetingCard
 import com.example.planify.main.navigation.screens.main_screen.views.home.home_view.components.scrolls.ScheduleScroll
@@ -42,10 +48,10 @@ import java.util.Locale
 
 @Composable
 fun HomeDayView(
+    viewModel: HomeViewModel,
     selectedDate: LocalDate,
     scrollPagerState: PagerState,
     initialPage: Int,
-    uiState: UIState,
     onDateSelected: (LocalDate) -> Unit,
     getMeetingsInfoByDate: (LocalDate) -> List<MeetingContext>
 ) {
@@ -53,6 +59,15 @@ fun HomeDayView(
     val textFormat = selectedDate.format(ofPattern("EEEE, d MMMM", Locale("ru")))
 
     val scope = rememberCoroutineScope()
+
+    val uiState by viewModel.uiState.collectAsState()
+
+    LaunchedEffect(selectedDate) {
+        if ((uiState.meetingsInfo as? ResourceState.Success)?.data?.contains(selectedDate) != true) {
+            val (start, end) = selectedDate.weekBounds()
+            viewModel.runFetchMeetingsInfo(start.toLocalDate(), end.toLocalDate())
+        }
+    }
 
     Column(
         modifier = Modifier
@@ -81,8 +96,9 @@ fun HomeDayView(
             }
 
             val meetings = remember(pageDate, uiState) {
-                if (uiState is UIState.ContentData) getMeetingsInfoByDate(pageDate)
-                    else emptyList()
+                if (uiState.meetingsInfo is ResourceState.Success) {
+                    getMeetingsInfoByDate(pageDate)
+                } else emptyList()
             }
 
             val meetingsByStart = remember(pageDate) {
@@ -99,16 +115,16 @@ fun HomeDayView(
                 verticalArrangement = Arrangement.spacedBy(Locals.spacing.xs),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                when (uiState) {
-                    is UIState.Loading -> {
+                when (uiState.meetingsInfo) {
+                    is ResourceState.Loading, is ResourceState.Refreshing, is ResourceState.Idle -> {
                         items(3) { SkeletonMeetingCard() }
                     }
-                    is UIState.Error -> {
+                    is ResourceState.Error -> {
                         item {
                             Text("Runtime error")
                         }
                     }
-                    is UIState.ContentData -> {
+                    is ResourceState.Success -> {
                         items(
                             items = timeSlots,
                             key = { it }
