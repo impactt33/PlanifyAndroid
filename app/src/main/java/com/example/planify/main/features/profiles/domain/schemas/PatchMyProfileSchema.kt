@@ -1,7 +1,6 @@
 package com.example.planify.main.features.profiles.domain.schemas
 
 data class PatchMyProfileSchema (
-    val userId: Long?,
     val firstName: String?,
     val lastName: String?,
     val position: String?,

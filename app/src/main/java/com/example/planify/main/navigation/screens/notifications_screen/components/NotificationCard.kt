@@ -75,7 +75,7 @@ fun NotificationCard(
                         Icon(
                             modifier = Modifier
                                 .size(Locals.icons.smallPlus)
-                                .align(Alignment.Top),
+                                .align(Alignment.CenterVertically),
                             imageVector = PhosphorIcons.Regular.CalendarBlank,
                             contentDescription = null,
                             tint = colors.primary
@@ -106,7 +106,7 @@ fun NotificationCard(
                         Icon(
                             modifier = Modifier
                                 .size(Locals.icons.smallPlus)
-                                .align(Alignment.Top),
+                                .align(Alignment.CenterVertically),
                             imageVector = PhosphorIcons.Regular.UserCheck,
                             contentDescription = null,
                             tint = Color.Green
@@ -137,7 +137,7 @@ fun NotificationCard(
                         Icon(
                             modifier = Modifier
                                 .size(Locals.icons.smallPlus)
-                                .align(Alignment.Top),
+                                .align(Alignment.CenterVertically),
                             imageVector = PhosphorIcons.Regular.CalendarCheck,
                             contentDescription = null,
                             tint = colors.secondary
@@ -168,7 +168,7 @@ fun NotificationCard(
                         Icon(
                             modifier = Modifier
                                 .size(Locals.icons.smallPlus)
-                                .align(Alignment.Top),
+                                .align(Alignment.CenterVertically),
                             imageVector = PhosphorIcons.Regular.Repeat,
                             contentDescription = null,
                             tint = colors.error

@@ -8,6 +8,7 @@ import com.example.planify.main.features.auth.domain.entities.AuthTokenPair
 import com.example.planify.main.features.auth.domain.entities.LoginResult
 import com.example.planify.main.features.auth.domain.repositories.AuthRepository
 import com.example.planify.main.features.auth.domain.schemas.AuthLocalInfoSchema
+import com.example.planify.main.features.auth.domain.schemas.RegisterUserSchema
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
 import kotlinx.coroutines.flow.Flow
@@ -49,8 +50,8 @@ class AuthRepositoryImpl @Inject constructor(
         _authStateFlow.value = state
     }
 
-    override suspend fun register(username: String, email: String, password: String): Result<LoginResult> {
-        return remoteDatasource.register(username, email, password)
+    override suspend fun register(shema: RegisterUserSchema): Result<LoginResult> {
+        return remoteDatasource.register(shema)
     }
 
     override suspend fun login(email: String, password: String): Result<LoginResult> {

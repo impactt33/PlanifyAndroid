@@ -5,11 +5,13 @@ package com.example.planify.main.navigation.screens.main_screen.views.home.home_
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -111,12 +113,31 @@ fun DayCard(
                     }
                 }
                 is WeekUIState.ContentData -> {
-                    repeat(weekUiState.meetingsInfoShort[day.date] ?: 0) {
-                        Dot(
-                            modifier = Modifier.padding(Locals.spacing.xxxxs),
-                            color = colors.primary,
-                            size = Locals.dimens.dotSize
-                        )
+                    val dotCount = weekUiState.meetingsInfoShort[day.date] ?: 0
+                    if (dotCount < 7) {
+                        repeat(dotCount) {
+                            Dot(
+                                modifier = Modifier.padding(Locals.spacing.xxxxs),
+                                color = colors.primary,
+                                size = Locals.dimens.dotSize
+                            )
+                        }
+                    } else {
+                        Box(
+                            modifier = Modifier
+                                .size(Locals.dimens.dotContainerSize)
+                                .clip(CircleShape)
+                                .background(color = colors.primary),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                modifier = Modifier
+                                    .padding(Locals.spacing.xxxs),
+                                text = dotCount.toString(),
+                                style = MaterialTheme.typography.bodySmall,
+                                color = colors.onPrimary
+                            )
+                        }
                     }
                 }
                 is WeekUIState.Error -> {

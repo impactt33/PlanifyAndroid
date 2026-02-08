@@ -332,7 +332,7 @@ private fun LabeledTextField(
     val colors = MaterialTheme.colorScheme
     val shape = Locals.shapes.mediumShape
 
-    var isVisible by remember { mutableStateOf(true) }
+    var isVisible by remember { mutableStateOf(false) }
 
     Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
 
