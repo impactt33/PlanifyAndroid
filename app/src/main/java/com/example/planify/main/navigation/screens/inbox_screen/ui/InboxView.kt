@@ -55,8 +55,6 @@ private fun InboxView(
     viewModel: InboxViewModel,
     scaffoldPadding: PaddingValues
 ) {
-
-
     val pagerState = rememberPagerRouterScreenState(
         routes = InboxRoute.routes,
         startRoute = InboxRoute.Incoming

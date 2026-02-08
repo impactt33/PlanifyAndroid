@@ -8,6 +8,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
@@ -30,8 +31,8 @@ private data class CloudSpec(
 @Composable
 fun CloudyBackground(
     modifier: Modifier = Modifier,
-    cloudColor: Color = Color.White,
-    tintColor: Color = Color(0xFFEEF4FF),
+    cloudColor: Color = MaterialTheme.colorScheme.surfaceVariant,
+    tintColor: Color = MaterialTheme.colorScheme.background,  //Color(0xFFEEF4FF),
     animate: Boolean = true
 ) {
     val clouds = remember {

@@ -4,8 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
@@ -24,9 +27,9 @@ import java.time.LocalDateTime
 val meet = Meeting(
     id = 123L,
     ownerId = 15L,
-    name = "yaica",
-    description = "yaica123",
-    location = "yaica12",
+    name = "UI/UX Design",
+    description = "desc",
+    location = "Zoom",
     startsAt = LocalDateTime.now(),
     duration = 1
 )
@@ -59,7 +62,8 @@ fun NotificationsScreen(
                     .padding(
                         top = paddingValues.calculateTopPadding() + Locals.spacing.s,
                         start = Locals.spacing.m,
-                        end = Locals.spacing.m
+                        end = Locals.spacing.m,
+                        bottom = WindowInsets.systemBars.asPaddingValues().calculateBottomPadding()
                     )
                     .fillMaxSize()
                     .background(
@@ -71,29 +75,29 @@ fun NotificationsScreen(
                 repeat(3) {
                     NotificationCard(
                         type = NotificationType.INVITE_ACCEPTED,
-                        firstName = "Oleg",
-                        lastName = "Mongol",
+                        firstName = "Петя",
+                        lastName = "Трофимов",
                         meeting = meet
                     )
 
                     NotificationCard(
                         type = NotificationType.INVITE_INCOMING,
-                        firstName = "Oleg",
-                        lastName = "Mongol",
+                        firstName = "Юрий",
+                        lastName = "Музыченко",
                         meeting = meet
                     )
 
                     NotificationCard(
                         type = NotificationType.MEETING_UPDATED,
-                        firstName = "Oleg",
-                        lastName = "Mongol",
+                        firstName = "Елена",
+                        lastName = "Павловна",
                         meeting = meet
                     )
 
                     NotificationCard(
                         type = NotificationType.RESCHEDULED_MEETING,
-                        firstName = "Oleg",
-                        lastName = "Mongol",
+                        firstName = "Гоша",
+                        lastName = "Рубчинский",
                         meeting = meet
                     )
                 }

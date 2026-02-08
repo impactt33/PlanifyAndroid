@@ -32,6 +32,9 @@ class CreateMeetingViewModel @Inject constructor(
     private val meetingInvitesService: MeetingInvitesService,
     private val profilesService: ProfilesService
 ) : ViewModel() {
+
+    private val _showDialog = MutableStateFlow<Boolean>(false)
+    val showDialog = _showDialog.asStateFlow()
     private val profilesFetchPageSize = 20
 
     private val _effects = MutableSharedFlow<UIEffect>()
@@ -130,6 +133,7 @@ class CreateMeetingViewModel @Inject constructor(
 
             _effects.emit(UIEffect.Navigate(AppRoute.MeetingInfoMenu(meeting.id)))
         } catch (e: Exception) {
+            incorrectTimeChosen()
             Log.e(this::class.simpleName, "Error while creating meeting", e)
         }
     }
@@ -144,5 +148,17 @@ class CreateMeetingViewModel @Inject constructor(
                 state.description != null &&
                 state.location != null &&
                 state.selectedTimeSlots.isNotEmpty()
+    }
+
+    fun incorrectTimeChosen() {
+         viewModelScope.launch {
+             _showDialog.value = true
+         }
+    }
+
+    fun closeDialog() {
+        viewModelScope.launch {
+            _showDialog.value = false
+        }
     }
 }

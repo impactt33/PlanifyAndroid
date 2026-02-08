@@ -33,6 +33,7 @@ import com.example.planify.R
 import com.example.planify.core.ui.state.ResourceState
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.navigation.screens.create_meeting_screen.CreateMeetingViewModel
+import java.time.LocalTime
 
 @Composable
 private fun TimeSlotItem(
@@ -43,6 +44,12 @@ private fun TimeSlotItem(
 ) {
     val colors = MaterialTheme.colorScheme
     val shape = Locals.shapes.mediumShape
+
+    fun intToHourSlot(time: Int): String {
+        return if (time < 24) "%02d:00".format(time)
+            else "%02d:00".format(time - 24)
+    }
+
 
     val borderColor = when {
         selected -> colors.primary
@@ -86,7 +93,7 @@ private fun TimeSlotItem(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "$slot - ${slot + 1}",
+                text = "${intToHourSlot(slot)} - ${intToHourSlot(slot + 1)}",
                 style = MaterialTheme.typography.bodyMedium,
                 color = textColor,
                 fontWeight = if (selected) FontWeight.Bold else FontWeight.Normal
