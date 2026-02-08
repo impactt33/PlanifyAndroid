@@ -1,5 +1,6 @@
 package com.example.planify.main.navigation.screens.meeting_info_screen
 
+
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -38,7 +39,6 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewmodel.compose.viewModel
 import coil3.compose.AsyncImage
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
@@ -48,18 +48,10 @@ import com.adamglin.phosphoricons.regular.MapPin
 import com.adamglin.phosphoricons.regular.User
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
-import com.example.planify.main.common.ui.shimmer
 import com.example.planify.main.common.ui.withShapeBackground
-import com.example.planify.main.features.meetings.domain.entities.Meeting
-import com.example.planify.main.features.meetings.domain.entities.MeetingContext
-import com.example.planify.main.features.meetings.domain.entities.MeetingInvite
 import com.example.planify.main.features.meetings.domain.entities.MeetingInviteStatus
-import com.example.planify.main.navigation.screens.meeting_info_screen.components.TopBar
-import com.example.planify.main.features.profiles.domain.entities.Profile
 import com.example.planify.main.navigation.screens.fixed_screens.ErrorScreen
-
-
-import java.time.LocalDateTime
+import com.example.planify.main.navigation.screens.meeting_info_screen.components.TopBar
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
@@ -103,9 +95,11 @@ fun MeetingInfo(
     val uiState by viewModel.uiState.collectAsState()
 
     Scaffold(
-        topBar = { TopBar(
-            onBack = onBack
-        ) },
+        topBar = {
+            TopBar(
+                onBack = onBack
+            )
+        },
         modifier = Modifier
             .fillMaxSize(),
         containerColor = colors.background
@@ -314,7 +308,7 @@ fun InfoParticipantRow(
             modifier = Modifier
                 .withShapeBackground(
                     color = if (isAccepted) Color.Green.copy(alpha = 0.2f)
-                        else colors.errorContainer,
+                    else colors.errorContainer,
                     shape = Locals.shapes.mediumShape
                 )
         ) {
@@ -322,10 +316,10 @@ fun InfoParticipantRow(
                 modifier = Modifier
                     .padding(Locals.spacing.xxs),
                 text = if (isAccepted) stringResource(R.string.accepted)
-                    else stringResource(R.string.not_accepted),
+                else stringResource(R.string.not_accepted),
                 style = MaterialTheme.typography.bodySmall,
                 color = if (isAccepted) Color.Green.copy(alpha = 0.5f)
-                    else colors.error
+                else colors.error
             )
         }
     }
