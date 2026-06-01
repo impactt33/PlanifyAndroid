@@ -44,5 +44,8 @@ data class Dimens(
     val dotCalendarSize: Dp = 4.dp,
     val notificationCardHeight: Dp = 100.dp,
     val dotContainerSize: Dp = 18.dp,
-    val dotCalendarContainerSize: Dp = 14.dp
+    val dotCalendarContainerSize: Dp = 14.dp,
+    val circleShieldIconSize: Dp = 96.dp,
+    val codeBoxWidth: Dp = 48.dp,
+    val codeBoxHeight: Dp = 56.dp
 )

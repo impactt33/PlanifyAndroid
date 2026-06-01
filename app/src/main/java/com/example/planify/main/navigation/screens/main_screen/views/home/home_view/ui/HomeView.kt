@@ -54,7 +54,7 @@ private fun HomeView(
 
     val selectedDate by viewModel.selectedDate.collectAsState()
 
-    // Sync calendarPager and ScrollPager(Day + BottomWeek scroll)
+    // Sync calendarPager and ScrollPager (Day + BottomWeek scroll)
     LaunchedEffect(selectedDate) {
         val target = selectedDate.pageForDate(initialPage = initialScrollPage)
 

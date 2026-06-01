@@ -23,4 +23,8 @@ interface AuthRepository {
     suspend fun localLogout()
 
     suspend fun setAuthState(state: AuthState, syncLocal: Boolean = true)
+
+    suspend fun sendVerificationCode(): Result<Unit>
+
+    suspend fun checkVerificationCode(verificationCode: String): Result<Boolean>
 }

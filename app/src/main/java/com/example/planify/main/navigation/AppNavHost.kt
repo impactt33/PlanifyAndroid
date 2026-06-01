@@ -18,6 +18,7 @@ import androidx.navigation.navArgument
 import com.example.planify.core.ui.dialogs.AlertDialog
 import com.example.planify.main.navigation.components.AuthRequiredDialog
 import com.example.planify.main.navigation.screens.auth_screen.AuthScreen
+import com.example.planify.main.navigation.screens.change_password_screen.ChangePasswordScreen
 import com.example.planify.main.navigation.screens.create_meeting_screen.ui.CreateMeeting
 import com.example.planify.main.navigation.screens.init_screen.ui.InitScreen
 import com.example.planify.main.navigation.screens.main_screen.MainScreenBox
@@ -102,7 +103,7 @@ private fun AppNavHost(
         composable(AppRoute.Auth.route) {
             AuthScreen(
                 onRegister = { navController.navigate(AppRoute.Registration.route) },
-                onForgetPassword = { },
+                onForgetPassword = { navController.navigate(AppRoute.ChangePassword.route) },
                 navHostController = navController
             )
         }
@@ -148,6 +149,12 @@ private fun AppNavHost(
         composable(AppRoute.Registration.route) {
             RegistrationScreen(
                 navHostController = navController
+            )
+        }
+
+        composable(AppRoute.ChangePassword.route) {
+            ChangePasswordScreen(
+                navController = navController
             )
         }
     }

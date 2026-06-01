@@ -18,4 +18,6 @@ sealed class AppRoute(val route: String) {
     object Notifications : AppRoute("notifications")
 
     object Registration : AppRoute("registration")
+
+    object ChangePassword : AppRoute("changePassword")
 }

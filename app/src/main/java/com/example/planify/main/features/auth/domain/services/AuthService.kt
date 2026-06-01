@@ -29,4 +29,8 @@ interface AuthService {
     suspend fun fetchActualAuthContext(accessToken: String): Result<AuthContext>
 
     suspend fun fetchMe(): Result<UserPrivate>
+
+    suspend fun sendVerificationCode(): Result<Unit>
+
+    suspend fun checkVerificationCode(verificationCode: String): Result<Boolean>
 }

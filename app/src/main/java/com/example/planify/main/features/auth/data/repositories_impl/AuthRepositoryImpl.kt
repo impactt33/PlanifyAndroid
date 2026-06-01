@@ -11,6 +11,7 @@ import com.example.planify.main.features.auth.domain.schemas.AuthLocalInfoSchema
 import com.example.planify.main.features.auth.domain.schemas.RegisterUserSchema
 import jakarta.inject.Inject
 import jakarta.inject.Singleton
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -48,6 +49,18 @@ class AuthRepositoryImpl @Inject constructor(
         }
 
         _authStateFlow.value = state
+    }
+
+    override suspend fun sendVerificationCode(): Result<Unit> {
+        // TODO: ping server
+        delay(1000L)
+        return Result.success(Unit)
+    }
+
+    override suspend fun checkVerificationCode(verificationCode: String): Result<Boolean> {
+        // TODO: ping server
+        delay(1000L)
+        return Result.success(false)
     }
 
     override suspend fun register(shema: RegisterUserSchema): Result<LoginResult> {
