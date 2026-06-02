@@ -16,7 +16,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
-class SettingsRepositoryImpl @Inject constructor (
+class   SettingsRepositoryImpl @Inject constructor (
     @ApplicationContext private val context: Context
 ) : SettingsRepository {
     private val dataStore = context.settingsDataStore

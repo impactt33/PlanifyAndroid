@@ -1,8 +1,9 @@
-package com.example.planify.main.navigation.screens.change_password_screen
+package com.example.planify.main.navigation.screens.registration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.main.features.auth.domain.services.AuthService
+import com.example.planify.main.features.settings.domain.services.SettingsService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -12,37 +13,39 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 
 @HiltViewModel
-class ChangePasswordScreenViewModel @Inject constructor(
-    private val authService: AuthService
+class RegistrationEmailConfirmViewModel @Inject constructor(
+    private val authService: AuthService,
+    private val settingsService: SettingsService
 ): ViewModel() {
-    private val _uiState = MutableStateFlow<ChangePasswordScreenUIState>(
-        ChangePasswordScreenUIState.CodeInput(
+    private val _uiState = MutableStateFlow<RegistrationEmailConfirmUIState>(
+        RegistrationEmailConfirmUIState.CodeInput(
             isIncorrect = false
         )
     )
 
     val uiState = _uiState.asStateFlow()
-    private val _actions = MutableSharedFlow<ChangePasswordScreenAction>()
+
+    private val _actions = MutableSharedFlow<RegistrationEmailConfirmAction>()
 
     val actions = _actions.asSharedFlow()
 
     init {
-        codeSend()
+        sendCode()
     }
 
-    fun codeSend() {
+    fun sendCode() {
         viewModelScope.launch {
             authService.sendVerificationCode().fold(
                 onSuccess = {
                     _uiState.emit(
-                        ChangePasswordScreenUIState.CodeInput(
+                        RegistrationEmailConfirmUIState.CodeInput(
                             isIncorrect = false
                         )
                     )
                 },
                 onFailure = { error ->
                     _uiState.emit(
-                        ChangePasswordScreenUIState.Error(
+                        RegistrationEmailConfirmUIState.Error(
                             message = error.message.toString()
                         )
                     )
@@ -58,13 +61,14 @@ class ChangePasswordScreenViewModel @Inject constructor(
             ).fold(
                 onSuccess = { result ->
                     if (result) {
-                        _actions.emit(ChangePasswordScreenAction.NavigateToResetPasswordScreen)
+                        _actions.emit(RegistrationEmailConfirmAction.NavigateToMainScreen)
+                        settingsService.setIsFirstStart(false)
                     } else {
-                        _uiState.emit(ChangePasswordScreenUIState.CodeInput(isIncorrect = true))
+                        _uiState.emit(RegistrationEmailConfirmUIState.CodeInput(isIncorrect = true))
                     }
                 },
                 onFailure = { error ->
-                    _uiState.emit(ChangePasswordScreenUIState.Error(message = error.message.toString()))
+                    _uiState.emit(RegistrationEmailConfirmUIState.Error(message = error.message.toString()))
                 }
             )
         }
@@ -73,7 +77,7 @@ class ChangePasswordScreenViewModel @Inject constructor(
     fun resetCodeCorrectness() {
         viewModelScope.launch {
             _uiState.emit(
-                ChangePasswordScreenUIState.CodeInput(
+                RegistrationEmailConfirmUIState.CodeInput(
                     isIncorrect = false
                 )
             )
@@ -83,7 +87,7 @@ class ChangePasswordScreenViewModel @Inject constructor(
     fun goToAuthScreen() {
         viewModelScope.launch {
             _actions.emit(
-                ChangePasswordScreenAction.NavigateToAuthScreen
+                RegistrationEmailConfirmAction.NavigateToAuthScreen
             )
         }
     }

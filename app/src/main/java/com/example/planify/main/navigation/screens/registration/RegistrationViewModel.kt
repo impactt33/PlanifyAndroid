@@ -18,8 +18,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class RegistrationViewModel @Inject constructor(
-    private val authService: AuthService,
-    private val settingsService: SettingsService
+    private val authService: AuthService
+
 ): ViewModel() {
     private val _uiState = MutableStateFlow(UIState.LOADING)
     val uiState = _uiState.asStateFlow()
@@ -31,8 +31,7 @@ class RegistrationViewModel @Inject constructor(
         viewModelScope.launch {
             authService.register(shema)
                 .onSuccess {
-                    settingsService.setIsFirstStart(false)
-                    _navigation.emit(AppRoute.Main)
+                    _navigation.emit(AppRoute.RegistrationEmailConfirm)
                     _uiState.emit(UIState.LOADING)
                 }
                 .onFailure {

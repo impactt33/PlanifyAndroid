@@ -51,6 +51,12 @@ class AuthRepositoryImpl @Inject constructor(
         _authStateFlow.value = state
     }
 
+    override suspend fun resetPassword(newPassword: String): Result<Unit> {
+        // TODO: ping server
+        delay(1000L)
+        return Result.success(Unit)
+    }
+
     override suspend fun sendVerificationCode(): Result<Unit> {
         // TODO: ping server
         delay(1000L)
@@ -60,7 +66,7 @@ class AuthRepositoryImpl @Inject constructor(
     override suspend fun checkVerificationCode(verificationCode: String): Result<Boolean> {
         // TODO: ping server
         delay(1000L)
-        return Result.success(false)
+        return Result.success(true)
     }
 
     override suspend fun register(shema: RegisterUserSchema): Result<LoginResult> {

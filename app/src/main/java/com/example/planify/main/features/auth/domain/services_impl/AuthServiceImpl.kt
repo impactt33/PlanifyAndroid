@@ -173,6 +173,10 @@ class AuthServiceImpl @Inject constructor(
         return authRepository.sendVerificationCode()
     }
 
+    override suspend fun resetPassword(newPassword: String): Result<Unit> {
+        return authRepository.resetPassword(newPassword = newPassword)
+    }
+
     override suspend fun checkVerificationCode(verificationCode: String): Result<Boolean> {
         return authRepository.checkVerificationCode(verificationCode = verificationCode)
     }

@@ -18,13 +18,15 @@ import androidx.navigation.navArgument
 import com.example.planify.core.ui.dialogs.AlertDialog
 import com.example.planify.main.navigation.components.AuthRequiredDialog
 import com.example.planify.main.navigation.screens.auth_screen.AuthScreen
-import com.example.planify.main.navigation.screens.change_password_screen.ChangePasswordScreen
+import com.example.planify.main.navigation.screens.change_password_screens.ChangePasswordEmailConfirmScreen
+import com.example.planify.main.navigation.screens.change_password_screens.ChangePasswordScreen
 import com.example.planify.main.navigation.screens.create_meeting_screen.ui.CreateMeeting
 import com.example.planify.main.navigation.screens.init_screen.ui.InitScreen
 import com.example.planify.main.navigation.screens.main_screen.MainScreenBox
 import com.example.planify.main.navigation.screens.main_screen.views.profile.ui.edit_profile.EditProfileScreen
 import com.example.planify.main.navigation.screens.meeting_info_screen.MeetingInfoScreen
 import com.example.planify.main.navigation.screens.notifications_screen.NotificationsScreen
+import com.example.planify.main.navigation.screens.registration.RegistrationEmailConfirmScreen
 import com.example.planify.main.navigation.screens.registration.RegistrationScreen
 import com.example.planify.main.navigation.screens.settings_screen.ui.SettingsScreen
 
@@ -103,7 +105,7 @@ private fun AppNavHost(
         composable(AppRoute.Auth.route) {
             AuthScreen(
                 onRegister = { navController.navigate(AppRoute.Registration.route) },
-                onForgetPassword = { navController.navigate(AppRoute.ChangePassword.route) },
+                onForgetPassword = { navController.navigate(AppRoute.ChangePasswordEmailConfirm.route) },
                 navHostController = navController
             )
         }
@@ -152,8 +154,20 @@ private fun AppNavHost(
             )
         }
 
+        composable(AppRoute.ChangePasswordEmailConfirm.route) {
+            ChangePasswordEmailConfirmScreen(
+                navController = navController
+            )
+        }
+
         composable(AppRoute.ChangePassword.route) {
             ChangePasswordScreen(
+                navController = navController
+            )
+        }
+
+        composable(AppRoute.RegistrationEmailConfirm.route) {
+            RegistrationEmailConfirmScreen(
                 navController = navController
             )
         }

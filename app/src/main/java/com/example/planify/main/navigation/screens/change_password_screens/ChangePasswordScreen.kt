@@ -1,4 +1,4 @@
-package com.example.planify.main.navigation.screens.change_password_screen
+package com.example.planify.main.navigation.screens.change_password_screens
 
 import android.annotation.SuppressLint
 import androidx.compose.foundation.background
@@ -35,11 +35,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
@@ -49,9 +51,11 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.LockOpen
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.navigation.AppRoute
-import com.example.planify.main.navigation.screens.change_password_screen.components.CodeField
+import com.example.planify.main.navigation.screens.change_password_screens.components.CodeField
+import com.example.planify.main.navigation.screens.change_password_screens.components.NewPasswordTextField
 import com.example.planify.main.navigation.screens.fixed_screens.ErrorScreen
 import kotlinx.coroutines.delay
+
 
 @Composable
 fun ChangePasswordScreen(
@@ -60,55 +64,40 @@ fun ChangePasswordScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    when(val screenUiState = uiState) {
-        is ChangePasswordScreenUIState.CodeInput -> {
-            ChangePasswordScreenContent(
-                viewModel = viewModel,
-                isInputIncorrect = screenUiState.isIncorrect,
-                navController = navController
-            )
-        }
-        is ChangePasswordScreenUIState.Error -> {
-            ErrorScreen(status = screenUiState.message)
-        }
+    when (val screenUiState = uiState) {
+        is ChangePasswordScreenUIState.Error -> ErrorScreen(status = screenUiState.message)
+        is ChangePasswordScreenUIState.PasswordInput -> ChangePasswordScreenContent(
+            viewModel = viewModel,
+            navController = navController,
+            uiState = screenUiState
+        )
     }
 }
 
-@SuppressLint("DefaultLocale")
+
 @Composable
-private fun ChangePasswordScreenContent(
+fun ChangePasswordScreenContent(
     viewModel: ChangePasswordScreenViewModel,
-    isInputIncorrect: Boolean,
-    navController: NavController
+    navController: NavController,
+    uiState: ChangePasswordScreenUIState.PasswordInput
 ) {
     val colors = MaterialTheme.colorScheme
 
-    var code by rememberSaveable { mutableStateOf("") }
-
     val blueGradient = Locals.gradients.blue
 
-    var timeLeft by remember { mutableIntStateOf(59) }
+    var newPassword by remember { mutableStateOf("") }
+    var newPasswordRepeat by remember { mutableStateOf("") }
 
-    var resendEnabled by rememberSaveable { mutableStateOf(false) }
-
-    LaunchedEffect(key1 = timeLeft) {
-        while (timeLeft > 0) {
-            delay(1000L)
-            timeLeft--
-        }
-        resendEnabled = true
-    }
+    val firstFieldFocusRequester = remember { FocusRequester() }
+    val secondFieldFocusRequester = remember { FocusRequester() }
 
     LaunchedEffect(Unit) {
         viewModel.actions.collect { action ->
             when(action) {
-                is ChangePasswordScreenAction.NavigateToAuthScreen -> {
+                ChangePasswordScreenAction.NavigateToAuthScreen -> {
                     navController.navigate(AppRoute.Auth.route) {
                         popUpTo(AppRoute.Auth.route) { inclusive = true }
                     }
-                }
-                is ChangePasswordScreenAction.NavigateToResetPasswordScreen -> {
-
                 }
             }
         }
@@ -161,7 +150,7 @@ private fun ChangePasswordScreenContent(
             Spacer(modifier = Modifier.height(Locals.spacing.l))
 
             Text(
-                text = "Восстановление пароля",
+                text = "Новый пароль",
                 style = MaterialTheme.typography.displayMedium,
                 color = colors.onBackground
             )
@@ -172,29 +161,39 @@ private fun ChangePasswordScreenContent(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = Locals.spacing.l),
-                text = "Введите код из письма, которое мы отправили на почту",
+                text = "Придумайте новый пароль для входа в аккаунт",
                 style = MaterialTheme.typography.bodyLarge,
                 color = colors.onBackground,
                 textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(Locals.spacing.xs))
+            Spacer(modifier = Modifier.height(Locals.spacing.l))
 
-            Text(
-                text = "admin@examle.com",
-                style = MaterialTheme.typography.bodyLarge,
-                color = colors.primary
+            NewPasswordTextField(
+                value = newPassword,
+                onValueChange = {
+                    newPassword = it
+                    viewModel.checkForForbidden(newPassword)
+                },
+                imeAction = ImeAction.Next,
+                onNext = { secondFieldFocusRequester.requestFocus() },
+                isError = uiState.isForbidden || uiState.isNotMatch,
+                placeholder = "Новый пароль",
+                focusRequester = firstFieldFocusRequester
             )
 
             Spacer(modifier = Modifier.height(Locals.spacing.l))
 
-            CodeField(
-                code = code,
-                onCodeChange = {
-                    code = it
-                    viewModel.resetCodeCorrectness()
+            NewPasswordTextField(
+                value = newPasswordRepeat,
+                onValueChange = {
+                    newPasswordRepeat = it
+                    viewModel.checkForForbidden(newPasswordRepeat)
                 },
-                isError = isInputIncorrect
+                imeAction = ImeAction.Done,
+                isError = uiState.isForbidden || uiState.isNotMatch,
+                placeholder = "Повторите пароль",
+                focusRequester = secondFieldFocusRequester
             )
 
             Spacer(modifier = Modifier.height(Locals.spacing.l))
@@ -213,7 +212,10 @@ private fun ChangePasswordScreenContent(
                     containerColor = Color.Transparent
                 ),
                 onClick = {
-                    viewModel.codeVerificationIntent(code)
+                    viewModel.confirmPasswordIntent(
+                        newPassword = newPassword,
+                        newPasswordRepeat = newPasswordRepeat
+                    )
                 }
             ) {
                 Text(
@@ -223,52 +225,7 @@ private fun ChangePasswordScreenContent(
                 )
             }
 
-            Spacer(modifier = Modifier.height(Locals.spacing.s))
-
-            OutlinedButton(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(Locals.dimens.authButtonHeight)
-                    .padding(horizontal = Locals.spacing.l)
-                    .background(
-                        color = Color.Transparent,
-                        shape = Locals.shapes.mediumShape
-                    )
-                    .border(
-                        width = 1.dp,
-                        shape = Locals.shapes.mediumShape,
-                        brush = if (resendEnabled) blueGradient else Brush.linearGradient(colors = listOf(Locals.extras.mutedForeground, Locals.extras.mutedForeground))
-                    ),
-                shape = Locals.shapes.mediumShape,
-                enabled = resendEnabled,
-                onClick = {
-                    timeLeft = 59
-                    resendEnabled = false
-                }
-            ) {
-                Text(
-                    text = "Отправить код повторно",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = if (resendEnabled) colors.onPrimaryContainer else Locals.extras.mutedForeground
-                )
-            }
-
-            Spacer(modifier = Modifier.height(Locals.spacing.xs))
-
-            Text(
-                text = "Повторная отправка через 00:${String.format("%02d", timeLeft)}",
-                style = MaterialTheme.typography.bodySmall,
-                color = Locals.extras.mutedForeground
-            )
-
-            Spacer(modifier = Modifier.height(Locals.spacing.s))
-
-            HorizontalDivider(
-                modifier = Modifier
-                    .padding(horizontal = Locals.spacing.l)
-            )
-
-            Spacer(modifier = Modifier.height(Locals.spacing.s))
+            Spacer(modifier = Modifier.height(Locals.spacing.l))
 
             Text(
                 modifier = Modifier.

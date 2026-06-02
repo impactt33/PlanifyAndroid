@@ -1,5 +1,7 @@
-package com.example.planify.main.navigation.screens.change_password_screen.components
+package com.example.planify.main.navigation.screens.change_password_screens.components
 
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -87,12 +89,15 @@ fun CodeField(
                         val isActive = isFocused && index == code.length
                         val isFilled = char != null
 
-                        val borderColor = when {
-                            isError -> colors.error
-                            isActive -> colors.primary
-                            isFilled -> colors.primary.copy(alpha = 0.7f)
-                            else -> Locals.extras.border
-                        }
+                        val borderColor by animateColorAsState(
+                            targetValue = when {
+                                isError -> colors.error
+                                isActive -> colors.primary
+                                isFilled -> colors.primary.copy(alpha = 0.7f)
+                                else -> Locals.extras.border
+                            },
+                            animationSpec = tween(durationMillis = 150)
+                        )
 
                         Box(
                             modifier = Modifier
@@ -132,23 +137,4 @@ fun CodeField(
             }
         }
     )
-}
-
-@Composable
-fun ClearFocusOnKeyboardDismiss() {
-    val focusManager = LocalFocusManager.current
-    val density = LocalDensity.current
-
-    var keyboardWasVisible by remember { mutableStateOf(false) }
-
-    val isKeyboardVisible = WindowInsets.ime.getBottom(density) > 0
-
-    LaunchedEffect(isKeyboardVisible) {
-        if (isKeyboardVisible) {
-            keyboardWasVisible = true
-        } else if (keyboardWasVisible) {
-            focusManager.clearFocus()
-            keyboardWasVisible = false
-        }
-    }
 }

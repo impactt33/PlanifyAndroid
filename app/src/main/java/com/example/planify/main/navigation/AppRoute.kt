@@ -19,5 +19,9 @@ sealed class AppRoute(val route: String) {
 
     object Registration : AppRoute("registration")
 
+    object ChangePasswordEmailConfirm : AppRoute("changePasswordEmailConfirm")
+
     object ChangePassword : AppRoute("changePassword")
+
+    object RegistrationEmailConfirm : AppRoute("registrationEmailConfirm")
 }
