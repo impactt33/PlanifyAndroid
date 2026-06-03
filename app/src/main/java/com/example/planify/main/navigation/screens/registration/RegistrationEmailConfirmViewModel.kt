@@ -2,6 +2,8 @@ package com.example.planify.main.navigation.screens.registration
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.planify.main.common.network.exceptions.WrongCodeException
+import com.example.planify.main.features.auth.domain.schemas.ConfirmRegisterUserSchema
 import com.example.planify.main.features.auth.domain.services.AuthService
 import com.example.planify.main.features.settings.domain.services.SettingsService
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -54,21 +56,24 @@ class RegistrationEmailConfirmViewModel @Inject constructor(
         }
     }
 
-    fun codeVerificationIntent(verificationCode: String) {
+    fun codeVerificationIntent(verificationUserId: String, verificationCode: String) {
         viewModelScope.launch {
-            authService.checkVerificationCode(
-                verificationCode = verificationCode
+            authService.registerConfirmation(
+                shema = ConfirmRegisterUserSchema(
+                    verificationUserId = verificationUserId,
+                    verificationCode = verificationCode
+                )
             ).fold(
-                onSuccess = { result ->
-                    if (result) {
-                        _actions.emit(RegistrationEmailConfirmAction.NavigateToMainScreen)
-                        settingsService.setIsFirstStart(false)
-                    } else {
-                        _uiState.emit(RegistrationEmailConfirmUIState.CodeInput(isIncorrect = true))
-                    }
+                onSuccess = {
+                    _actions.emit(RegistrationEmailConfirmAction.NavigateToMainScreen)
+                    settingsService.setIsFirstStart(false)
                 },
                 onFailure = { error ->
-                    _uiState.emit(RegistrationEmailConfirmUIState.Error(message = error.message.toString()))
+                    if (error is WrongCodeException) {
+                        _uiState.emit(RegistrationEmailConfirmUIState.CodeInput(isIncorrect = true))
+                    } else {
+                        _uiState.emit(RegistrationEmailConfirmUIState.Error(message = error.message.toString()))
+                    }
                 }
             )
         }

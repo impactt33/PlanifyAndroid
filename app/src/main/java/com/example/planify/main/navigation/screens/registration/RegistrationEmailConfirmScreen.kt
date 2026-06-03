@@ -56,6 +56,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun RegistrationEmailConfirmScreen(
     viewModel: RegistrationEmailConfirmViewModel = hiltViewModel(),
+    verificationUserId: String?,
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -65,6 +66,7 @@ fun RegistrationEmailConfirmScreen(
             RegistrationEmailConfirmScreenContent(
                 viewModel = viewModel,
                 isInputIncorrect = screenUiState.isIncorrect,
+                verificationUserId = verificationUserId,
                 navController = navController
             )
         }
@@ -78,6 +80,7 @@ fun RegistrationEmailConfirmScreen(
 @Composable
 private fun RegistrationEmailConfirmScreenContent(
     viewModel: RegistrationEmailConfirmViewModel,
+    verificationUserId: String?,
     isInputIncorrect: Boolean,
     navController: NavController
 ) {
@@ -215,7 +218,11 @@ private fun RegistrationEmailConfirmScreenContent(
                     containerColor = Color.Transparent
                 ),
                 onClick = {
-                    viewModel.codeVerificationIntent(code)
+                    if (verificationUserId != null) {
+                        viewModel.codeVerificationIntent(verificationUserId, code)
+                    } else {
+                        viewModel.codeVerificationIntent("", code)
+                    }
                 }
             ) {
                 Text(

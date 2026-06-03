@@ -30,6 +30,15 @@ open class NotFoundHttpException(
     message = message
 )
 
+open class WrongCodeException(
+    message: String?,
+    appCode: Int = 3015
+) : ApplicationHttpException(
+    httpStatus = HttpStatusCode.Unauthorized,
+    appCode = appCode,
+    message = message
+)
+
 open class BadRequestHttpException(
     message: String?,
     appCode: Int = 2005

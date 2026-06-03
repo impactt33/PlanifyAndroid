@@ -166,8 +166,12 @@ private fun AppNavHost(
             )
         }
 
-        composable(AppRoute.RegistrationEmailConfirm.route) {
+        composable(
+            route = AppRoute.RegistrationEmailConfirm.PATTERN,
+            arguments = listOf(navArgument(AppRoute.RegistrationEmailConfirm.ARG) { type = NavType.StringType } )
+        ) { backStackEntry ->
             RegistrationEmailConfirmScreen(
+                verificationUserId = backStackEntry.arguments?.getString(AppRoute.RegistrationEmailConfirm.ARG),
                 navController = navController
             )
         }

@@ -1,7 +1,6 @@
 package com.example.planify.main.navigation.screens.registration
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,6 +50,7 @@ import com.adamglin.phosphoricons.regular.StarFour
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
+import com.example.planify.main.features.auth.domain.schemas.ConfirmRegisterUserSchema
 import com.example.planify.main.features.auth.domain.schemas.RegisterUserSchema
 import com.example.planify.main.navigation.screens.backgrounds.CloudyBackground
 

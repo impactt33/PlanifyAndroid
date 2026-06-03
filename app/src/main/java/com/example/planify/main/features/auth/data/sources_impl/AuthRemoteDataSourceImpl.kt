@@ -7,12 +7,14 @@ import com.example.planify.main.features.auth.data.dto.login.LoginRequestDTO
 import com.example.planify.main.features.auth.data.dto.login.LoginResponseDTO
 import com.example.planify.main.features.auth.data.dto.refresh.RefreshRequestDTO
 import com.example.planify.main.features.auth.data.dto.refresh.RefreshResponseDTO
+import com.example.planify.main.features.auth.data.dto.register.ConfirmationRegisterRequestDTO
 import com.example.planify.main.features.auth.data.dto.register.RegisterRequestDTO
-import com.example.planify.main.features.auth.data.dto.register.RegisterResponseDTO
+import com.example.planify.main.features.auth.data.dto.register.ConfirmationRegisterResponseDTO
 import com.example.planify.main.features.auth.data.sources.AuthRemoteDataSource
 import com.example.planify.main.features.auth.domain.entities.AuthContext
 import com.example.planify.main.features.auth.domain.entities.AuthTokenPair
 import com.example.planify.main.features.auth.domain.entities.LoginResult
+import com.example.planify.main.features.auth.domain.schemas.ConfirmRegisterUserSchema
 import com.example.planify.main.features.auth.domain.schemas.RegisterUserSchema
 import io.ktor.client.request.headers
 import io.ktor.client.request.setBody
@@ -30,28 +32,49 @@ class AuthRemoteDataSourceImpl @Inject constructor(
 ) : AuthRemoteDataSource {
     private val authFeaturePath = "/auth"
 
-    private val registerPath = "$authFeaturePath/register"
+    private val registerPath = "$authFeaturePath/register" // TODO
     private val loginPath = "$authFeaturePath/login"
     private val refreshPath = "$authFeaturePath/refresh"
     private val fetchActualAuthContextPath = "$authFeaturePath/context"
 
     private fun getDefaultClientName(): String = "${Build.MANUFACTURER}-${Build.MODEL}"
 
-    override suspend fun register(shema: RegisterUserSchema): Result<LoginResult> = withContext(Dispatchers.IO) {
+    override suspend fun register(shema: RegisterUserSchema): Result<String> = withContext(Dispatchers.IO) {
         val requestDto = RegisterRequestDTO(
             firstName = shema.firstName,
             lastName = shema.lastName,
             username = shema.username,
             email = shema.email,
-            password = shema.password,
+            password = shema.password
+        )
+
+        return@withContext runCatching {
+            // TODO
+            "123"
+        }
+    }
+
+    override suspend fun registerConfirmation(shema: ConfirmRegisterUserSchema): Result<LoginResult> = withContext(Dispatchers.IO) {
+        val requestDto = ConfirmationRegisterRequestDTO(
+            verificationUserId = shema.verificationUserId,
+            verificationCode = shema.verificationCode,
             clientName = getDefaultClientName()
         )
 
         return@withContext runCatching {
-            val responseDTO = apiClient.requestNotNull<RegisterResponseDTO> {
+            val testDto = RegisterRequestDTO(
+                username = "asdasd",
+                firstName = "asdasd",
+                lastName = "asdasd",
+                email = "asdasd@asdasd.asd",
+                password = "asdasd",
+                clientName = "yaica"
+            ) // TODO
+
+            val responseDTO = apiClient.requestNotNull<ConfirmationRegisterResponseDTO> {
                 method = HttpMethod.Post
-                url { path(registerPath) }
-                setBody(requestDto)
+                url { path(registerPath) } // TODO
+                setBody(testDto) // TODO
             }
 
             LoginResult(
