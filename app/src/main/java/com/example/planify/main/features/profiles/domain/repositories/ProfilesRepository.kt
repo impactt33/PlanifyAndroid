@@ -19,4 +19,6 @@ interface ProfilesRepository {
     suspend fun putMyProfile(shema: PutMyProfileSchema): Result<Unit>
 
     suspend fun searchProfile(query: String, page: Int? = null, size: Int? = null, sort: List<String>? = null): Result<Page>
+
+    suspend fun fetchProfileById(id: Long): Result<Profile>
 }

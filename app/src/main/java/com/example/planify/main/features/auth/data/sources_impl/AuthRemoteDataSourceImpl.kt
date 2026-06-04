@@ -67,8 +67,7 @@ class AuthRemoteDataSourceImpl @Inject constructor(
                 firstName = "asdasd",
                 lastName = "asdasd",
                 email = "asdasd@asdasd.asd",
-                password = "asdasd",
-                clientName = "yaica"
+                password = "asdasd"
             ) // TODO
 
             val responseDTO = apiClient.requestNotNull<ConfirmationRegisterResponseDTO> {

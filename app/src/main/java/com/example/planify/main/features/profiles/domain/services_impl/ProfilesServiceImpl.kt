@@ -35,4 +35,8 @@ class ProfilesServiceImpl @Inject constructor(
             sort = sort
         )
     }
+
+    override suspend fun fetchProfileById(id: Long): Result<Profile> {
+        return profilesRepository.fetchProfileById(id)
+    }
 }

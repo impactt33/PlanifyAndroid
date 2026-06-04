@@ -66,7 +66,6 @@ class RegistrationEmailConfirmViewModel @Inject constructor(
             ).fold(
                 onSuccess = {
                     _actions.emit(RegistrationEmailConfirmAction.NavigateToMainScreen)
-                    settingsService.setIsFirstStart(false)
                 },
                 onFailure = { error ->
                     if (error is WrongCodeException) {

@@ -1,0 +1,42 @@
+package com.example.planify.main.features.actions.domain.workers
+
+import android.content.Context
+import android.util.Log
+import androidx.hilt.work.HiltWorker
+import androidx.work.CoroutineWorker
+import androidx.work.WorkerParameters
+import com.example.planify.main.features.actions.data.sources.ActionsLocalDataSource
+import com.example.planify.main.features.actions.domain.notifications.ActionNotificationHandler
+import com.example.planify.main.features.actions.domain.services.ActionsService
+import dagger.assisted.Assisted
+import dagger.assisted.AssistedInject
+
+@HiltWorker
+class SyncActionsWorker @AssistedInject constructor(
+    @Assisted appContext: Context,
+    @Assisted params: WorkerParameters,
+    private val actionsService: ActionsService,
+    private val handlers: Set<@JvmSuppressWildcards ActionNotificationHandler>,
+    private val dataSource: ActionsLocalDataSource
+) : CoroutineWorker(appContext, params) {
+    override suspend fun doWork(): Result {
+        val actions = actionsService.fetchActions()
+            .getOrElse {
+                Log.e("SyncWorker", "fetchActions failed: $it")
+                return Result.retry()
+            }
+
+        Log.d("SyncWorker", "Fetched ${actions.size} actions")
+
+        actions.forEach { action ->
+            val shouldNotify = dataSource.markActionNotifiedIfNewer(action.id)
+            Log.d("SyncWorker", "action=${action.type} id=${action.id} shouldNotify=$shouldNotify")
+            if (shouldNotify) {
+                handlers.find { action.type in it.supportedTypes }
+                    ?.handle(action)
+            }
+        }
+
+        return Result.success()
+    }
+}

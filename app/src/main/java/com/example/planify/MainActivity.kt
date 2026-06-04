@@ -1,6 +1,7 @@
 package com.example.planify
 
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -14,6 +15,7 @@ import com.example.planify.main.common.themes.PlanifyTheme
 import com.example.planify.main.features.settings.domain.entities.LocalSettings
 import com.example.planify.main.navigation.AppNavHost
 import com.example.planify.main.navigation.screens.settings_screen.SettingsViewModel
+import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.collect
 
@@ -24,6 +26,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
+            FirebaseMessaging.getInstance().token.addOnSuccessListener { token ->
+                Log.d("FCM_TOKEN", "Token: $token")
+            }
+
             val settingsViewModel: SettingsViewModel = hiltViewModel()
             val settings by settingsViewModel.settingsService.settingsFlow.collectAsStateWithLifecycle(
                 initialValue = LocalSettings(

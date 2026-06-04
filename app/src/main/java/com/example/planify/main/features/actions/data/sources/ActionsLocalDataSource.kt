@@ -14,4 +14,6 @@ interface ActionsLocalDataSource {
 
     suspend fun getLastSeenActionId(): String
     suspend fun setLastSeenActionId(actionId: String)
+
+    suspend fun markActionNotifiedIfNewer(actionId: String): Boolean
 }

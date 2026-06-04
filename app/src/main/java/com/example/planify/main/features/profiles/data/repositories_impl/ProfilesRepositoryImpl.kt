@@ -1,7 +1,9 @@
 package com.example.planify.main.features.profiles.data.repositories_impl
 
+import com.example.planify.main.common.dto.ProfileDTO
 import com.example.planify.main.features.auth.domain.utils.network.AuthenticatedApiClient
 import com.example.planify.main.features.profiles.data.dto.fetch_my_profile.FetchMyProfileRequestDTO
+import com.example.planify.main.features.profiles.data.dto.fetch_profile.FetchProfileByIdResponseDTO
 import com.example.planify.main.features.profiles.data.dto.get_my_profile.GetMyProfileResponseDTO
 import com.example.planify.main.features.profiles.data.dto.put_my_profile.PutMyProfileRequestDTO
 import com.example.planify.main.features.profiles.data.dto.search.SearchProfileResponseDTO
@@ -34,6 +36,8 @@ class ProfilesRepositoryImpl @Inject constructor(
     val patchMyProfilePath = "$profileFeaturePath/my"
     val putMyProfilePath = "$profileFeaturePath/my"
     val searchProfilePath = "$profileFeaturePath/search"
+
+    private fun getProfileByIdUrl(id: Long) = "$profileFeaturePath/${id}"
 
     override suspend fun fetchMyProfile(): Result<Profile> = withContext(Dispatchers.IO) {
         return@withContext runCatching {
@@ -108,6 +112,17 @@ class ProfilesRepositoryImpl @Inject constructor(
             }
 
             response.result.toEntity()
+        }
+    }
+
+    override suspend fun fetchProfileById(id: Long): Result<Profile> = withContext(Dispatchers.IO) {
+        return@withContext runCatching {
+            val response = authenticatedApiClient.requestNotNull<FetchProfileByIdResponseDTO> {
+                method = HttpMethod.Get
+                url { path(getProfileByIdUrl(id)) }
+            }
+
+            response.profile.toEntity()
         }
     }
 }

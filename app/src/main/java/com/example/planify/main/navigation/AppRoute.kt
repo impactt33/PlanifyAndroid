@@ -28,7 +28,7 @@ sealed class AppRoute(val route: String) {
     ) : AppRoute("registrationEmailConfirm/$verificationUserId") {
         companion object {
             const val ARG = "verificationUserId"
-            const val PATTERN = "registrationEmailConfirm/{${ARG}}"
+            const val PATTERN = "registrationEmailConfirm/{$ARG}"
         }
     }
 }

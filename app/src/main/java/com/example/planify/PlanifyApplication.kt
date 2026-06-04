@@ -1,6 +1,9 @@
 package com.example.planify
 
 import android.app.Application
+import androidx.hilt.work.HiltWorkerFactory
+import androidx.work.Configuration
+import com.example.planify.core.notifications.data.NotificationChannelRegistrar
 import com.example.planify.main.features.actions.domain.utils.ActionDataParser
 import com.example.planify.main.features.actions.domain.utils.registerSchema
 import com.example.planify.main.features.meetings.domain.schemas.actions.MeetingActionInviteRescheduleRequestedSchema
@@ -17,13 +20,24 @@ import dagger.hilt.android.HiltAndroidApp
 import jakarta.inject.Inject
 
 @HiltAndroidApp
-class PlanifyApplication : Application() {
+class PlanifyApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var actionDataParser: ActionDataParser
 
+    @Inject
+    lateinit var channelRegistrar: NotificationChannelRegistrar
+
+    @Inject
+    lateinit var workerFactory: HiltWorkerFactory
+
+    override val workManagerConfiguration: Configuration
+        get() = Configuration.Builder()
+            .setWorkerFactory(workerFactory)
+            .build()
+
     override fun onCreate() {
         super.onCreate()
-
+        channelRegistrar.registerAll()
         initTink()
         initActionDataParser()
     }

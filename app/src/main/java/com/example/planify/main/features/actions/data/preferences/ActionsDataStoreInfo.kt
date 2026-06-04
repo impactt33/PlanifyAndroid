@@ -8,4 +8,5 @@ val Context.actionsDataStore by preferencesDataStore("actions_store")
 
 object ActionsDataStoreInfo {
     val LAST_SEEN_ACTION_ID_KEY = stringPreferencesKey("last_seen_action_id_key")
+    val LAST_NOTIFIED_ACTION_ID_KEY = stringPreferencesKey("last_notified_action_id")
 }

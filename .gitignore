@@ -16,3 +16,4 @@
 local.properties
 /secrets/
 .kotlin/
+app/google-services.json

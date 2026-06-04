@@ -83,4 +83,35 @@ class ActionsLocalDataSourceImpl @Inject constructor(
             preferences[ActionsDataStoreInfo.LAST_SEEN_ACTION_ID_KEY] = actionId
         }
     }
+
+    override suspend fun markActionNotifiedIfNewer(actionId: String): Boolean =
+        withContext((Dispatchers.IO)) {
+            var shouldNotify = false
+            dataStore.edit { preferences ->
+                val last = preferences[ActionsDataStoreInfo.LAST_NOTIFIED_ACTION_ID_KEY]
+                if (isNewerActionId(actionId, last)) {
+                    preferences[ActionsDataStoreInfo.LAST_NOTIFIED_ACTION_ID_KEY] = actionId
+                    shouldNotify = true
+                }
+            }
+            shouldNotify
+        }
+
+    private fun isNewerActionId(candidate: String, baseline: String?): Boolean {
+        if (baseline == null) return true
+        val (cMs, cSeq) = parseStreamId(candidate)
+        val (bMs, bSeq) = parseStreamId(baseline)
+        return cMs > bMs || (cMs == bMs && cSeq > bSeq)
+    }
+
+    private fun parseStreamId(id: String): Pair<Long, Long> {
+        val streamId = id.substringAfter("===", id)
+        val dash = streamId.indexOf('-')
+        return if (dash > 0) {
+            streamId.take(dash).toLong() to
+                    streamId.substring(dash + 1).toLong()
+        } else {
+            streamId.toLong() to 0L
+        }
+    }
 }

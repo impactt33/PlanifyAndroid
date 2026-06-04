@@ -3,6 +3,8 @@ package com.example.planify.main.navigation.screens.auth_screen
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.main.features.auth.domain.services.AuthService
+import com.example.planify.main.features.meetings.domain.entities.MeetingNotification
+import com.example.planify.main.features.meetings.domain.use_cases.NotifyNewMessageUseCase
 import com.example.planify.main.features.settings.domain.services.SettingsService
 import com.example.planify.main.navigation.AppRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -16,8 +18,7 @@ import kotlinx.coroutines.launch
 
 @HiltViewModel
 class AuthViewModel @Inject constructor(
-    private val authService: AuthService,
-    private val settingsService: SettingsService
+    private val authService: AuthService
 ): ViewModel() {
     private val _uiState = MutableStateFlow(UIState.LOADING)
 
@@ -25,7 +26,6 @@ class AuthViewModel @Inject constructor(
 
     private val _navigation = MutableSharedFlow<AppRoute>()
     val navigation = _navigation.asSharedFlow()
-
     fun authorize(email: String, password: String) {
         viewModelScope.launch {
             authService.login(
@@ -33,7 +33,6 @@ class AuthViewModel @Inject constructor(
                 password = password
             )
                 .onSuccess {
-                    settingsService.setIsFirstStart(false)
                     _navigation.emit(AppRoute.Main)
                     _uiState.emit(UIState.LOADING)
                 }

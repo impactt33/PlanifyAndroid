@@ -63,7 +63,6 @@ fun InboxViewIncoming(
                                         onAccept = { viewModel.acceptMeeting(it.data.inviteUuid, it.data.actionId) },
                                         onReject = { viewModel.rejectMeeting(it.data.inviteUuid, it.data.actionId) }
                                     )
-
                                 }
                             }
                         }
