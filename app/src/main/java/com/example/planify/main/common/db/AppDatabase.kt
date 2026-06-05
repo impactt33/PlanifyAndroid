@@ -4,11 +4,12 @@ import androidx.room.Database
 import androidx.room.RoomDatabase
 import com.example.planify.main.features.actions.data.dao.ActionModelDAO
 import com.example.planify.main.features.actions.data.models.ActionModel
+import com.example.planify.main.features.notifications.data.models.FullActionInfoModel
 import javax.inject.Singleton
 
 @Singleton
 @Database(
-    entities = [ActionModel::class],
+    entities = [ActionModel::class, FullActionInfoModel::class],
     version = 2
 )
 abstract class AppDatabase : RoomDatabase() {

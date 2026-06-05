@@ -33,30 +33,30 @@ class InboxViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
+            actionService.getAllActionLocal()
+                .getOrDefault(emptyList())
+                .forEach { action -> processAction(action) }
+        }
+
+        viewModelScope.launch {
             actionService.actionsFlow.collect { action ->
-                _actions.update { current ->
-                    if ( current.any { it.id == action.id } ) current
-                    else current + action
-                }
+                processAction(action)
+            }
+        }
+    }
 
-                Log.d("ACTION", action.type)
+    private fun processAction(action: Action<*>) {
+        _actions.update { current ->
+            if (current.any { it.id == action.id }) return
+            current + action
+        }
 
-                viewModelScope.launch {
-                    when(action.type) {
-                        "meetings:invited" -> {
-                            if (_uiState.value.actions.containsKey(action.id)) return@launch
-                            val data = action.data as? UserActionInvitedToMeetingSchema
-                            if (data != null) {
-                                processMeetingInvite(
-                                    actionId = action.id,
-                                    data = data
-                                )
-                            }
-                        }
-                        "meetings:invite_reschedule_requested" -> {
-                            // TODO
-                        }
-                    }
+        viewModelScope.launch {
+            when (action.type) {
+                "meetings:invited" -> {
+                    if (_uiState.value.actions.containsKey(action.id)) return@launch
+                    val data = action.data as? UserActionInvitedToMeetingSchema ?: return@launch
+                    processMeetingInvite(actionId = action.id, data = data)
                 }
             }
         }

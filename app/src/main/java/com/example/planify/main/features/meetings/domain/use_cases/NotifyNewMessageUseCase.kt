@@ -1,10 +1,8 @@
 package com.example.planify.main.features.meetings.domain.use_cases
 
-import android.app.Notification
 import com.example.planify.core.notifications.data.Notifier
 import com.example.planify.core.notifications.domain.AppNotification
 import com.example.planify.main.features.actions.domain.entities.Action
-import com.example.planify.main.features.meetings.domain.entities.MeetingNotification
 import com.example.planify.main.features.meetings.domain.notifications.MeetingNotifications
 import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInviteRescheduleRequestedSchema
 import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInvitedToMeetingSchema

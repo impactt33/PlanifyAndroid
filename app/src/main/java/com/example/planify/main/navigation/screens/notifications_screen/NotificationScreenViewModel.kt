@@ -47,7 +47,6 @@ class NotificationScreenViewModel @Inject constructor(
     }
 
     private fun processAction(action: Action<*>) {
-        // дедуп — не обрабатываем то, что уже есть в state
         if (_uiState.value.actions.containsKey(action.id)) return
 
         when (action.type) {
