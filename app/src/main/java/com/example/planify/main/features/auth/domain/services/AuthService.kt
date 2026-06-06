@@ -38,7 +38,7 @@ interface AuthService {
 
     suspend fun checkVerificationCode(confirmationUuid: String, verificationCode: Int): Result<Unit>
 
-    suspend fun resendRegisterVerificationCode(confirmationUuid: String): Result<Unit> // TODO
+    suspend fun resendRegisterVerificationCode(confirmationUuid: String): Result<Unit>
 
-    suspend fun resendRecoverVerificationCode(challengeUUID: String): Result<Unit> // TODO
+    suspend fun resendRecoverVerificationCode(challengeUUID: String): Result<Unit>
 }

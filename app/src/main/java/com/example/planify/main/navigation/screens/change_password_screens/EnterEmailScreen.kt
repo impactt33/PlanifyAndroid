@@ -1,23 +1,26 @@
 package com.example.planify.main.navigation.screens.change_password_screens
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
-import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -32,17 +35,22 @@ import androidx.compose.ui.graphics.BlendMode
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Envelope
 import com.adamglin.phosphoricons.regular.LockOpen
+import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
 import com.example.planify.main.navigation.AppRoute
+import com.example.planify.main.navigation.AppRoute.*
+import com.example.planify.main.navigation.screens.auth_screen.AuthScreen
 import com.example.planify.main.navigation.screens.fixed_screens.ErrorScreen
 
 @Composable
@@ -82,8 +90,14 @@ private fun EnterEmailScreenContent(
             when(action) {
                 is EnterEmailScreenAction.NavigateToEmailConfirmation -> {
                     navController.navigate(
-                        AppRoute.ChangePasswordEmailConfirm(action.challengeUUID)
+                        ChangePasswordEmailConfirm(action.challengeUUID).route
                     )
+                }
+
+                is EnterEmailScreenAction.NavigateToAuthScreen -> {
+                    navController.navigate(Auth.route) {
+                        popUpTo(Auth.route) { inclusive = true }
+                    }
                 }
             }
         }
@@ -95,7 +109,7 @@ private fun EnterEmailScreenContent(
 
     Surface(
         modifier = Modifier.fillMaxSize(),
-        color = Color.Transparent
+        color = colors.background
     ) {
         Column(
             modifier = Modifier.fillMaxSize(),
@@ -104,24 +118,28 @@ private fun EnterEmailScreenContent(
         ) {
             Text(
                 text = "Сброс пароля",
-                style = MaterialTheme.typography.displayMedium,
+                style = MaterialTheme.typography.displayLarge,
                 color = colors.onBackground
             )
 
-            Spacer(modifier = Modifier.height(Locals.spacing.m))
+            Spacer(modifier = Modifier.height(Locals.spacing.l))
 
             Text(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = Locals.spacing.xl),
                 text = "Введите адрес электронной почты, на которую мы отправим код для сброса пароля",
-                style = MaterialTheme.typography.labelMedium,
-                color = Locals.extras.mutedForeground
+                style = MaterialTheme.typography.bodyMedium,
+                color = Locals.extras.mutedForeground,
+                textAlign = TextAlign.Center
             )
 
-            Spacer(modifier = Modifier.height(Locals.spacing.m))
+            Spacer(modifier = Modifier.height(Locals.spacing.l))
 
             Icon(
                 tint = Color.Unspecified,
                 modifier = Modifier
-                    .size(Locals.icons.medium)
+                    .size(Locals.icons.largePlus)
                     .graphicsLayer(
                         compositingStrategy = CompositingStrategy.Offscreen
                     )
@@ -132,13 +150,13 @@ private fun EnterEmailScreenContent(
                             blendMode = BlendMode.SrcIn
                         )
                     },
-                imageVector = PhosphorIcons.Regular.LockOpen,
+                painter = painterResource(R.drawable.exchange_mails_10505900),
                 contentDescription = null
             )
 
-            Spacer(modifier = Modifier.height(Locals.spacing.m))
+            Spacer(modifier = Modifier.height(Locals.spacing.l))
 
-            TextField(
+            OutlinedTextField(
                 value = emailQuery,
                 onValueChange = {
                     emailQuery = it
@@ -146,17 +164,17 @@ private fun EnterEmailScreenContent(
                 },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .withShapeBackground(
-                        color = colors.background,
-                        shape = Locals.shapes.mediumShape
-                    )
+                    .height(Locals.dimens.inputTextFieldHeight)
                     .padding(horizontal = Locals.spacing.l),
-                label = { Text("Электронная почта") },
-                placeholder = { Text("Введите ваш email") },
+                label = {
+                    Text("Электронная почта")
+                },
+                placeholder = {
+                    Text("Введите ваш email")
+                },
                 leadingIcon = {
                     Icon(
-                        modifier = Modifier
-                            .size(Locals.icons.smallPlus),
+                        modifier = Modifier.size(Locals.icons.smallPlus),
                         imageVector = PhosphorIcons.Regular.Envelope,
                         tint = colors.onBackground,
                         contentDescription = null
@@ -170,7 +188,13 @@ private fun EnterEmailScreenContent(
                     onDone = {}
                 ),
                 singleLine = true,
-                shape = Locals.shapes.mediumShape
+                shape = Locals.shapes.mediumShape,
+                colors = OutlinedTextFieldDefaults.colors(
+                    focusedBorderColor = colors.primary,
+                    unfocusedBorderColor = Locals.extras.border,
+                    focusedContainerColor = colors.surface,
+                    unfocusedContainerColor = colors.surface
+                )
             )
 
             Spacer(modifier = Modifier.height(Locals.spacing.m))
@@ -178,6 +202,7 @@ private fun EnterEmailScreenContent(
             Button(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .height(Locals.dimens.authButtonHeight)
                     .padding(horizontal = Locals.spacing.l),
                 shape = Locals.shapes.mediumShape,
                 onClick = {
@@ -187,8 +212,32 @@ private fun EnterEmailScreenContent(
             ) {
                 Text(
                     text = "Отправить код",
-                    style = MaterialTheme.typography.bodyLarge,
+                    style = MaterialTheme.typography.titleMedium,
                     color = colors.onPrimary
+                )
+            }
+
+            Spacer(modifier = Modifier.height(Locals.spacing.m))
+
+            Row(
+
+            ) {
+                Text(
+                    text = "Вспомнили пароль?",
+                    color = Locals.extras.mutedForeground,
+                    style = MaterialTheme.typography.bodyMedium
+                )
+
+                Spacer(modifier = Modifier.width(Locals.spacing.xxs))
+
+                Text(
+                    modifier = Modifier
+                        .clickable {
+                            viewModel.goToAuth()
+                        },
+                    text = "Войти",
+                    color = colors.primary,
+                    style = MaterialTheme.typography.bodyMedium
                 )
             }
         }

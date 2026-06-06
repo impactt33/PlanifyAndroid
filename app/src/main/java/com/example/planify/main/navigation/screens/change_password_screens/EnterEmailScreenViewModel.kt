@@ -50,4 +50,10 @@ class EnterEmailScreenViewModel @Inject constructor(
                 }
         }
     }
+
+    fun goToAuth() {
+        viewModelScope.launch {
+            _actions.emit(EnterEmailScreenAction.NavigateToAuthScreen)
+        }
+    }
 }

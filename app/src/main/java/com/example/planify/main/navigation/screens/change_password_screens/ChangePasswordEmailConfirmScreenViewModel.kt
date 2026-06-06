@@ -58,8 +58,22 @@ class ChangePasswordEmailConfirmScreenViewModel @Inject constructor(
         }
     }
 
-    fun resendVerificationCode() {
-        // TODO
+    fun resendVerificationCode(challengeUUID: String?) {
+        viewModelScope.launch {
+            if (challengeUUID == null) {
+                _uiState.emit(ChangePasswordEmailConfirmScreenUIState.Error(
+                    message = "missing challengeUUID"
+                ))
+                return@launch
+            }
+
+            authService.resendRecoverVerificationCode(challengeUUID)
+                .onFailure { error ->
+                    _uiState.emit(
+                        ChangePasswordEmailConfirmScreenUIState.Error(error.message.toString())
+                    )
+                }
+        }
     }
 
     fun resetCodeCorrectness() {

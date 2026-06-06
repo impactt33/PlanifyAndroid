@@ -1,11 +1,12 @@
 package com.example.planify.main.features.actions.domain.notifications
 
+import android.util.Log
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
-import com.example.planify.main.common.fcm.FcmTokenRegistrar
 import com.example.planify.main.features.actions.domain.workers.SyncActionsWorker
 import com.example.planify.main.features.auth.domain.services.AuthService
+import com.example.planify.main.features.firebase_fcm.domain.services.FcmService
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
 import dagger.hilt.android.AndroidEntryPoint
@@ -19,7 +20,7 @@ import kotlinx.coroutines.launch
 @AndroidEntryPoint
 class ActionMessagingService(): FirebaseMessagingService() {
     @Inject
-    lateinit var tokenRegistrar: FcmTokenRegistrar
+    lateinit var fcmService: FcmService
 
     @Inject
     lateinit var authService: AuthService
@@ -38,7 +39,8 @@ class ActionMessagingService(): FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         serviceScope.launch {
             if (authService.isAuthenticated()) {
-                tokenRegistrar.registerNewToken(token)
+                Log.d("FCM TOKEN FROM SERVICE", token)
+                fcmService.sendFcmToken(token)
             }
         }
     }

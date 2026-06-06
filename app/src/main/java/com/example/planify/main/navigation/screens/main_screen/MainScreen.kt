@@ -133,6 +133,8 @@ private fun MainScreen(
             if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 launcher.launch(Manifest.permission.POST_NOTIFICATIONS)
             }
+
+            viewModel.sendFcmToken()
         }
 
         viewModel.setIsFirstStartFalse()

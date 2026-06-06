@@ -251,6 +251,8 @@ private fun RegistrationEmailConfirmScreenContent(
                 shape = Locals.shapes.mediumShape,
                 enabled = resendEnabled,
                 onClick = {
+                    viewModel.codeVerificationResendIntent(verificationUserId)
+
                     timeLeft = 59
                     resendEnabled = false
                 }

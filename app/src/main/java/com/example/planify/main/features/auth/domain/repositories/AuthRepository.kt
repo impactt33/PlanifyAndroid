@@ -31,4 +31,8 @@ interface AuthRepository {
     suspend fun sendVerificationCode(email: String): Result<String>
 
     suspend fun checkVerificationCode(confirmationUuid: String, verificationCode: Int): Result<Unit>
+
+    suspend fun resendRegisterVerificationCode(confirmationUuid: String): Result<Unit>
+
+    suspend fun resendRecoverVerificationCode(challengeUUID: String): Result<Unit>
 }

@@ -17,4 +17,8 @@ interface AuthRemoteDataSource {
     suspend fun checkVerificationCode(confirmationUuid: String, verificationCode: Int): Result<Unit>
 
     suspend fun resetPassword(newPassword: String, challengeUUID: String): Result<Unit>
+
+    suspend fun resendRegisterCode(confirmationUuid: String): Result<Unit>
+
+    suspend fun resendRecoverCode(challengeUUID: String): Result<Unit>
 }

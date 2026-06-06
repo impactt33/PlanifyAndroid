@@ -53,9 +53,26 @@ class RegistrationEmailConfirmViewModel @Inject constructor(
         }
     }
 
-    fun codeVerificationResendIntent(verificationUserId: String) {
+    fun codeVerificationResendIntent(verificationUserId: String?) {
         viewModelScope.launch {
-            authService.
+            if (verificationUserId == null) {
+                _uiState.emit(
+                    RegistrationEmailConfirmUIState.Error(
+                        message = "Missing verificationUserId"
+                    )
+                )
+
+                return@launch
+            }
+
+            authService.resendRegisterVerificationCode(verificationUserId)
+                .onFailure { error ->
+                    _uiState.emit(
+                        RegistrationEmailConfirmUIState.Error(
+                            message = error.message.toString()
+                        )
+                    )
+                }
         }
     }
 

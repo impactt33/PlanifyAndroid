@@ -111,7 +111,7 @@ private fun ChangePasswordEmailConfirmScreenContent(
                     }
                 }
                 is ChangePasswordEmailConfirmScreenAction.NavigateToResetPasswordScreen -> {
-                    navController.navigate(AppRoute.ChangePassword(action.challengeUUID) ) {
+                    navController.navigate(AppRoute.ChangePassword(action.challengeUUID).route ) {
                         popUpTo(AppRoute.EnterEmail.route) { inclusive = true }
                     }
                 }
@@ -247,6 +247,8 @@ private fun ChangePasswordEmailConfirmScreenContent(
                 shape = Locals.shapes.mediumShape,
                 enabled = resendEnabled,
                 onClick = {
+                    viewModel.resendVerificationCode(challengeUUID)
+
                     timeLeft = 59
                     resendEnabled = false
                 }

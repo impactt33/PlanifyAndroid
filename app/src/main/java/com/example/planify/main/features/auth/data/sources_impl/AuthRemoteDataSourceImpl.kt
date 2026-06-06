@@ -1,6 +1,7 @@
 package com.example.planify.main.features.auth.data.sources_impl
 
 import android.os.Build
+import android.util.Log
 import androidx.compose.ui.window.DialogProperties
 import com.example.planify.main.common.network.api_client.ApiClient
 import com.example.planify.main.features.auth.data.dto.ChallengeUuidDTO
@@ -47,6 +48,10 @@ class AuthRemoteDataSourceImpl @Inject constructor(
 
     private val sendVerificationPasswordRecoveryPath = "$authRecoveryPath/password"
     private val challengeAuthPath = "$sendVerificationPasswordRecoveryPath/challenge"
+
+    private fun getRegisterResendCodeUrl(confirmationUuid: String): String = "$registerPath/$confirmationUuid/resend"
+
+    private fun getRecoverResendCodeUrl(challengeUUID: String): String = "$challengeAuthPath/$challengeUUID/resend"
 
     private fun getRegisterConfirmPathUrl(confirmationUuid: String): String = "$registerPath/$confirmationUuid/confirm"
     private fun getRecoverySubmitPathUrl(challengeUUID: String): String = "$challengeAuthPath/$challengeUUID/submit"
@@ -182,7 +187,7 @@ class AuthRemoteDataSourceImpl @Inject constructor(
         return@withContext runCatching {
             apiClient.requestUnit {
                 method = HttpMethod.Post
-                url { getRecoverySubmitPathUrl(confirmationUuid) }
+                url { path(getRecoverySubmitPathUrl(confirmationUuid)) }
                 setBody(requestDto)
             }
         }
@@ -194,8 +199,26 @@ class AuthRemoteDataSourceImpl @Inject constructor(
         return@withContext runCatching {
             apiClient.requestUnit {
                 method = HttpMethod.Post
-                url { getRecoveryRecoverPathUrl(challengeUUID) }
+                url { path(getRecoveryRecoverPathUrl(challengeUUID)) }
                 setBody(requestDto)
+            }
+        }
+    }
+
+    override suspend fun resendRegisterCode(confirmationUuid: String): Result<Unit>  = withContext(Dispatchers.IO) {
+        return@withContext runCatching {
+            apiClient.requestUnit {
+                method = HttpMethod.Post
+                url { path(getRegisterResendCodeUrl(confirmationUuid)) }
+            }
+        }
+    }
+
+    override suspend fun resendRecoverCode(challengeUUID: String): Result<Unit> = withContext(Dispatchers.IO) {
+        return@withContext runCatching {
+            apiClient.requestUnit {
+                method = HttpMethod.Post
+                url { path(getRecoverResendCodeUrl(challengeUUID)) }
             }
         }
     }

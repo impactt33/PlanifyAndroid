@@ -53,9 +53,7 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun resetPassword(newPassword: String, challengeUUID: String): Result<Unit> {
-        // TODO: ping server
-        delay(1000L)
-        return Result.success(Unit)
+        return remoteDatasource.resetPassword(newPassword, challengeUUID)
     }
 
     override suspend fun sendVerificationCode(email: String): Result<String> {
@@ -67,6 +65,14 @@ class AuthRepositoryImpl @Inject constructor(
         verificationCode: Int
     ): Result<Unit> {
         return remoteDatasource.checkVerificationCode(confirmationUuid, verificationCode)
+    }
+
+    override suspend fun resendRegisterVerificationCode(confirmationUuid: String): Result<Unit> {
+        return remoteDatasource.resendRegisterCode(confirmationUuid)
+    }
+
+    override suspend fun resendRecoverVerificationCode(challengeUUID: String): Result<Unit> {
+        return remoteDatasource.resendRecoverCode(challengeUUID)
     }
 
     override suspend fun registerConfirmation(shema: ConfirmRegisterUserSchema): Result<LoginResult> {

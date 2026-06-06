@@ -13,4 +13,5 @@ val jsonCore = Json {
         contextual(LocalTime::class, InstantToLocalTimeSerializer)
     }
     ignoreUnknownKeys = true
+    encodeDefaults = true
 }

@@ -4,4 +4,6 @@ sealed interface EnterEmailScreenAction {
     data class NavigateToEmailConfirmation(
         val challengeUUID: String
     ): EnterEmailScreenAction
+
+    data object NavigateToAuthScreen: EnterEmailScreenAction
 }

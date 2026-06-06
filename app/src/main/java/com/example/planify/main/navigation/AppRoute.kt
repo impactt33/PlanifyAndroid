@@ -1,5 +1,7 @@
 package com.example.planify.main.navigation
 
+import kotlinx.serialization.Serializable
+
 sealed class AppRoute(val route: String) {
     object Main : AppRoute("main")
     object Auth : AppRoute("auth")

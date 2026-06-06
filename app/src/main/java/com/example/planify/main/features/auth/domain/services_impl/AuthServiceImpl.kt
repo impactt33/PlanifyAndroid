@@ -189,6 +189,14 @@ class AuthServiceImpl @Inject constructor(
         )
     }
 
+    override suspend fun resendRegisterVerificationCode(confirmationUuid: String): Result<Unit> {
+        return authRepository.resendRegisterVerificationCode(confirmationUuid)
+    }
+
+    override suspend fun resendRecoverVerificationCode(challengeUUID: String): Result<Unit> {
+        return authRepository.resendRecoverVerificationCode(challengeUUID)
+    }
+
     override fun getTokenPair(): AuthTokenPair {
         if (authStateFlow.value !is AuthState.Authenticated) throw UnauthenticatedAppError("Cannot get auth tokens: Unauthenticated")
         return (authStateFlow.value as AuthState.Authenticated).tokenPair
