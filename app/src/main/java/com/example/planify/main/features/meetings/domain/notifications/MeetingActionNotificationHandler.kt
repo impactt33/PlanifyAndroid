@@ -10,7 +10,8 @@ class MeetingActionNotificationHandler @Inject constructor(
 ) : ActionNotificationHandler {
     override val supportedTypes = setOf(
         "meetings:invited",
-        "meetings:invite_reschedule_requested"
+        "meetings:invite_reschedule_requested",
+        "meetings:invite_status_updated"
     )
 
     override suspend fun handle(action: Action<*>) {

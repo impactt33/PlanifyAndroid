@@ -6,6 +6,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.planify.core.ui.state.ResourceState
 import com.example.planify.main.features.actions.domain.entities.Action
 import com.example.planify.main.features.actions.domain.services.ActionsService
+import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInviteStatusUpdatedSchema
 import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInvitedToMeetingSchema
 import com.example.planify.main.features.meetings.domain.services.MeetingsService
 import com.example.planify.main.features.profiles.domain.services.ProfilesService
@@ -31,16 +32,11 @@ class NotificationScreenViewModel @Inject constructor(
     init {
         viewModelScope.launch {
             val local = actionService.getAllActionLocal().getOrDefault(emptyList())
-            Log.d("NotifVM", "local actions: ${local.size}")
-            local.forEach {
-                Log.d("NotifVM", "  type=${it.type} data=${it.data?.javaClass?.simpleName}")
-            }
             local.forEach { processAction(it) }
         }
 
         viewModelScope.launch {
             actionService.actionsFlow.collect { action ->
-                Log.d("NotifVM", "flow action: ${action.type}")
                 processAction(action)
             }
         }
@@ -57,11 +53,42 @@ class NotificationScreenViewModel @Inject constructor(
             "meetings:invite_reschedule_requested" -> {
                 // TODO
             }
+            "meetings:invite_status_updated" -> {
+                val data = action.data as? UserActionInviteStatusUpdatedSchema ?: return
+                viewModelScope.launch { processMeetingStatusUpdated(action.id, data) }
+            }
+        }
+    }
+
+    private suspend fun processMeetingStatusUpdated(actionId: String, data: UserActionInviteStatusUpdatedSchema) {
+        _uiState.update { it.copy(actions = it.actions + (actionId to ResourceState.Loading)) }
+
+        coroutineScope {
+            val profileDeferred = async { profileService.fetchProfileById(data.targetId) }
+            val contextDeferred = async { meetingsService.fetchMeetingContext(data.meetingId) }
+
+            val profile = profileDeferred.await()
+                .onFailure { Log.e("NotifVM", "profile failed: $it") }
+                .getOrElse { null }
+            val context = contextDeferred.await()
+                .onFailure { Log.e("NotifVM", "context failed: $it") }
+                .getOrElse { null }
+
+            Log.d("NotifVM", "profile=$profile context=$context")
+
+            if (profile != null && context != null) {
+                _uiState.update {
+                    it.copy(actions = it.actions + (actionId to ResourceState.Success(
+                        NotificationAction.NotificationStatusUpdate(profile, context)
+                    )))
+                }
+            } else {
+                _uiState.update { it.copy(actions = it.actions - actionId) }
+            }
         }
     }
 
     private suspend fun processMeetingInvite(actionId: String, data: UserActionInvitedToMeetingSchema) {
-        Log.d("NotifVM", "processMeetingInvite: $actionId")
         _uiState.update { it.copy(actions = it.actions + (actionId to ResourceState.Loading)) }
 
         coroutineScope {

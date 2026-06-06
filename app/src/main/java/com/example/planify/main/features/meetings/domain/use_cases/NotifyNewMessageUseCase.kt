@@ -3,8 +3,10 @@ package com.example.planify.main.features.meetings.domain.use_cases
 import com.example.planify.core.notifications.data.Notifier
 import com.example.planify.core.notifications.domain.AppNotification
 import com.example.planify.main.features.actions.domain.entities.Action
+import com.example.planify.main.features.meetings.domain.entities.MeetingInviteStatus
 import com.example.planify.main.features.meetings.domain.notifications.MeetingNotifications
 import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInviteRescheduleRequestedSchema
+import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInviteStatusUpdatedSchema
 import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInvitedToMeetingSchema
 import javax.inject.Inject
 
@@ -36,6 +38,19 @@ class NotifyNewMessageUseCase @Inject constructor(
             Content(
                 title = "Предложение перенести встречу",
                 body = "Пользователь ${it.senderId} предложил перенести встречу на ${it.rescheduleTo}"
+            )
+        }
+        "meetings:invite_status_updated" -> (data as? UserActionInviteStatusUpdatedSchema)?.let {
+            val actionFromUser: String = when(data.newStatus) {
+                MeetingInviteStatus.ACCEPTED -> "принял(а)"
+                MeetingInviteStatus.REJECTED -> "отклонил(а)"
+                MeetingInviteStatus.RESCHEDULE_REQUESTED -> " "
+                else -> " "
+            }
+
+            Content(
+                title = "Статус приглашения обновлен",
+                body = "Пользователь ${data.targetId} $actionFromUser предложение о встрече ${data.meetingId}"
             )
         }
         else -> null

@@ -48,23 +48,6 @@ class MainScreenViewModel @Inject constructor(
                 }
             }
         }
-
-        viewModelScope.launch {
-            handlers.find { "meetings:invite_reschedule_requested" in it.supportedTypes }?.handle(
-                Action(
-                    id = "test-${System.currentTimeMillis()}-0",
-                    type = "meetings:invite_reschedule_requested",
-                    data = UserActionInviteRescheduleRequestedSchema(
-                        senderId = 123L,
-                        targetId = 124L,
-                        meetingId = 125,
-                        inviteUuid = "1234",
-                        updatedAt = LocalDateTime.now(),
-                        rescheduleTo = LocalDateTime.now()
-                    )
-                )
-            )
-        }
     }
 
     fun sendFcmToken() {

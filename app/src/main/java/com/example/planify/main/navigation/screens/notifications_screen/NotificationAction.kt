@@ -8,4 +8,9 @@ sealed interface NotificationAction {
         val senderProfile: Profile,
         val meetingContext: MeetingContext
     ): NotificationAction
+
+    data class NotificationStatusUpdate(
+        val targetProfile: Profile,
+        val meetingContext: MeetingContext
+    ): NotificationAction
 }

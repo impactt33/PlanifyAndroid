@@ -81,6 +81,15 @@ fun NotificationsScreen(
                                         meeting = action.data.meetingContext.meeting
                                     )
                                 }
+
+                                is NotificationAction.NotificationStatusUpdate -> {
+                                    NotificationCard(
+                                        type = NotificationType.INVITE_ACCEPTED,
+                                        firstName = action.data.targetProfile.firstName,
+                                        lastName = action.data.targetProfile.lastName,
+                                        meeting = action.data.meetingContext.meeting
+                                    )
+                                }
                             }
                         }
                     }
