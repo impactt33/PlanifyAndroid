@@ -56,6 +56,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun ChangePasswordEmailConfirmScreen(
     viewModel: ChangePasswordEmailConfirmScreenViewModel = hiltViewModel(),
+    challengeUUID: String?,
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -65,6 +66,7 @@ fun ChangePasswordEmailConfirmScreen(
             ChangePasswordEmailConfirmScreenContent(
                 viewModel = viewModel,
                 isInputIncorrect = screenUiState.isIncorrect,
+                challengeUUID = challengeUUID,
                 navController = navController
             )
         }
@@ -79,6 +81,7 @@ fun ChangePasswordEmailConfirmScreen(
 private fun ChangePasswordEmailConfirmScreenContent(
     viewModel: ChangePasswordEmailConfirmScreenViewModel,
     isInputIncorrect: Boolean,
+    challengeUUID: String?,
     navController: NavController
 ) {
     val colors = MaterialTheme.colorScheme
@@ -108,8 +111,8 @@ private fun ChangePasswordEmailConfirmScreenContent(
                     }
                 }
                 is ChangePasswordEmailConfirmScreenAction.NavigateToResetPasswordScreen -> {
-                    navController.navigate(AppRoute.ChangePassword.route) {
-                        popUpTo(AppRoute.ChangePasswordEmailConfirm.route) { inclusive = true }
+                    navController.navigate(AppRoute.ChangePassword(action.challengeUUID) ) {
+                        popUpTo(AppRoute.EnterEmail.route) { inclusive = true }
                     }
                 }
             }
@@ -215,7 +218,7 @@ private fun ChangePasswordEmailConfirmScreenContent(
                     containerColor = Color.Transparent
                 ),
                 onClick = {
-                    viewModel.codeVerificationIntent(code)
+                    viewModel.codeVerificationIntent(challengeUUID, code.toInt())
                 }
             ) {
                 Text(

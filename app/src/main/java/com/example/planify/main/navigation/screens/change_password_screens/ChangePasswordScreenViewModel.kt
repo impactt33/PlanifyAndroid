@@ -33,6 +33,7 @@ class ChangePasswordScreenViewModel @Inject constructor(
     fun confirmPasswordIntent(
         newPassword: String,
         newPasswordRepeat: String,
+        challengeUUID: String?,
         minLength: Int = 8,
         maxLength: Int = 32
     ) {
@@ -48,8 +49,18 @@ class ChangePasswordScreenViewModel @Inject constructor(
                 return@launch
             }
 
+            if (challengeUUID == null) {
+                _uiState.emit(
+                    ChangePasswordScreenUIState.Error(
+                        message = "challengeUUID is not specified"
+                    )
+                )
+                return@launch
+            }
+
             authService.resetPassword(
-                newPassword = newPassword
+                newPassword = newPassword,
+                challengeUUID = challengeUUID
             ).fold(
                 onSuccess = {
                     _actions.emit(ChangePasswordScreenAction.NavigateToAuthScreen)

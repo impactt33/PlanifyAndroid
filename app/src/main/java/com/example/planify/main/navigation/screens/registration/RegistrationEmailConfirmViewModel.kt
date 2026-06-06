@@ -31,32 +31,7 @@ class RegistrationEmailConfirmViewModel @Inject constructor(
 
     val actions = _actions.asSharedFlow()
 
-    init {
-        sendCode()
-    }
-
-    fun sendCode() {
-        viewModelScope.launch {
-            authService.sendVerificationCode().fold(
-                onSuccess = {
-                    _uiState.emit(
-                        RegistrationEmailConfirmUIState.CodeInput(
-                            isIncorrect = false
-                        )
-                    )
-                },
-                onFailure = { error ->
-                    _uiState.emit(
-                        RegistrationEmailConfirmUIState.Error(
-                            message = error.message.toString()
-                        )
-                    )
-                }
-            )
-        }
-    }
-
-    fun codeVerificationIntent(verificationUserId: String, verificationCode: String) {
+    fun codeVerificationIntent(verificationUserId: String, verificationCode: Int) {
         viewModelScope.launch {
             authService.registerConfirmation(
                 shema = ConfirmRegisterUserSchema(
@@ -75,6 +50,12 @@ class RegistrationEmailConfirmViewModel @Inject constructor(
                     }
                 }
             )
+        }
+    }
+
+    fun codeVerificationResendIntent(verificationUserId: String) {
+        viewModelScope.launch {
+            authService.
         }
     }
 

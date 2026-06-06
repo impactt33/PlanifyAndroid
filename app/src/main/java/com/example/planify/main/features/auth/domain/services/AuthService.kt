@@ -32,9 +32,13 @@ interface AuthService {
 
     suspend fun fetchMe(): Result<UserPrivate>
 
-    suspend fun sendVerificationCode(): Result<Unit>
+    suspend fun sendVerificationCode(email: String): Result<String>
 
-    suspend fun resetPassword(newPassword: String): Result<Unit>
+    suspend fun resetPassword(newPassword: String, challengeUUID: String): Result<Unit>
 
-    suspend fun checkVerificationCode(verificationCode: String): Result<Boolean>
+    suspend fun checkVerificationCode(confirmationUuid: String, verificationCode: Int): Result<Unit>
+
+    suspend fun resendRegisterVerificationCode(confirmationUuid: String): Result<Unit> // TODO
+
+    suspend fun resendRecoverVerificationCode(challengeUUID: String): Result<Unit> // TODO
 }

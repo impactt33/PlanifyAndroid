@@ -52,22 +52,21 @@ class AuthRepositoryImpl @Inject constructor(
         _authStateFlow.value = state
     }
 
-    override suspend fun resetPassword(newPassword: String): Result<Unit> {
+    override suspend fun resetPassword(newPassword: String, challengeUUID: String): Result<Unit> {
         // TODO: ping server
         delay(1000L)
         return Result.success(Unit)
     }
 
-    override suspend fun sendVerificationCode(): Result<Unit> {
-        // TODO: ping server
-        delay(1000L)
-        return Result.success(Unit)
+    override suspend fun sendVerificationCode(email: String): Result<String> {
+        return remoteDatasource.sendVerificationCode(email)
     }
 
-    override suspend fun checkVerificationCode(verificationCode: String): Result<Boolean> {
-        // TODO: ping server
-        delay(1000L)
-        return Result.success(true)
+    override suspend fun checkVerificationCode(
+        confirmationUuid: String,
+        verificationCode: Int
+    ): Result<Unit> {
+        return remoteDatasource.checkVerificationCode(confirmationUuid, verificationCode)
     }
 
     override suspend fun registerConfirmation(shema: ConfirmRegisterUserSchema): Result<LoginResult> {
@@ -75,9 +74,7 @@ class AuthRepositoryImpl @Inject constructor(
     }
 
     override suspend fun register(shema: RegisterUserSchema): Result<String> {
-        // TODO("Not yet implemented")
-        delay(1000L)
-        return Result.success("123")
+        return remoteDatasource.register(shema)
     }
 
     override suspend fun login(email: String, password: String): Result<LoginResult> {

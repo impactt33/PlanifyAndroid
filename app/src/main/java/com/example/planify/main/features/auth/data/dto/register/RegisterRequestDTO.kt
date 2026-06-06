@@ -19,4 +19,7 @@ data class RegisterRequestDTO(
 
     @SerialName("password")
     val password: String,
+
+    @SerialName("clientName")
+    val clientName: String
 )

@@ -20,6 +20,7 @@ import com.example.planify.main.navigation.components.AuthRequiredDialog
 import com.example.planify.main.navigation.screens.auth_screen.AuthScreen
 import com.example.planify.main.navigation.screens.change_password_screens.ChangePasswordEmailConfirmScreen
 import com.example.planify.main.navigation.screens.change_password_screens.ChangePasswordScreen
+import com.example.planify.main.navigation.screens.change_password_screens.EnterEmailScreen
 import com.example.planify.main.navigation.screens.create_meeting_screen.ui.CreateMeeting
 import com.example.planify.main.navigation.screens.init_screen.ui.InitScreen
 import com.example.planify.main.navigation.screens.main_screen.MainScreenBox
@@ -105,7 +106,7 @@ private fun AppNavHost(
         composable(AppRoute.Auth.route) {
             AuthScreen(
                 onRegister = { navController.navigate(AppRoute.Registration.route) },
-                onForgetPassword = { navController.navigate(AppRoute.ChangePasswordEmailConfirm.route) },
+                onForgetPassword = { navController.navigate(AppRoute.EnterEmail.route) },
                 navHostController = navController
             )
         }
@@ -154,14 +155,22 @@ private fun AppNavHost(
             )
         }
 
-        composable(AppRoute.ChangePasswordEmailConfirm.route) {
+        composable(
+            route = AppRoute.ChangePasswordEmailConfirm.PATTERN,
+            arguments = listOf(navArgument(AppRoute.ChangePasswordEmailConfirm.ARG) { type = NavType.StringType } )
+        ) { backStackEntry ->
             ChangePasswordEmailConfirmScreen(
+                challengeUUID = backStackEntry.arguments?.getString(AppRoute.ChangePasswordEmailConfirm.ARG),
                 navController = navController
             )
         }
 
-        composable(AppRoute.ChangePassword.route) {
+        composable(
+            route = AppRoute.ChangePassword.PATTERN,
+            arguments = listOf(navArgument(AppRoute.ChangePassword.ARG) { type = NavType.StringType } )
+        ) { backStackEntry ->
             ChangePasswordScreen(
+                challengeUUID = backStackEntry.arguments?.getString(AppRoute.ChangePassword.ARG),
                 navController = navController
             )
         }
@@ -172,6 +181,12 @@ private fun AppNavHost(
         ) { backStackEntry ->
             RegistrationEmailConfirmScreen(
                 verificationUserId = backStackEntry.arguments?.getString(AppRoute.RegistrationEmailConfirm.ARG),
+                navController = navController
+            )
+        }
+
+        composable(AppRoute.EnterEmail.route) {
+            EnterEmailScreen(
                 navController = navController
             )
         }

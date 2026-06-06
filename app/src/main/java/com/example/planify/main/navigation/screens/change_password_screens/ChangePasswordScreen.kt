@@ -60,6 +60,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun ChangePasswordScreen(
     viewModel: ChangePasswordScreenViewModel = hiltViewModel(),
+    challengeUUID: String?,
     navController: NavController
 ) {
     val uiState by viewModel.uiState.collectAsState()
@@ -68,6 +69,7 @@ fun ChangePasswordScreen(
         is ChangePasswordScreenUIState.Error -> ErrorScreen(status = screenUiState.message)
         is ChangePasswordScreenUIState.PasswordInput -> ChangePasswordScreenContent(
             viewModel = viewModel,
+            challengeUUID = challengeUUID,
             navController = navController,
             uiState = screenUiState
         )
@@ -78,6 +80,7 @@ fun ChangePasswordScreen(
 @Composable
 fun ChangePasswordScreenContent(
     viewModel: ChangePasswordScreenViewModel,
+    challengeUUID: String?,
     navController: NavController,
     uiState: ChangePasswordScreenUIState.PasswordInput
 ) {
@@ -214,7 +217,8 @@ fun ChangePasswordScreenContent(
                 onClick = {
                     viewModel.confirmPasswordIntent(
                         newPassword = newPassword,
-                        newPasswordRepeat = newPasswordRepeat
+                        newPasswordRepeat = newPasswordRepeat,
+                        challengeUUID = challengeUUID
                     )
                 }
             ) {

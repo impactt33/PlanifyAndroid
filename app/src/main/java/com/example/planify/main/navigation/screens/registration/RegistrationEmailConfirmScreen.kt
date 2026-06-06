@@ -219,9 +219,9 @@ private fun RegistrationEmailConfirmScreenContent(
                 ),
                 onClick = {
                     if (verificationUserId != null) {
-                        viewModel.codeVerificationIntent(verificationUserId, code)
+                        viewModel.codeVerificationIntent(verificationUserId, code.toInt())
                     } else {
-                        viewModel.codeVerificationIntent("", code)
+                        viewModel.codeVerificationIntent("", code.toInt())
                     }
                 }
             ) {

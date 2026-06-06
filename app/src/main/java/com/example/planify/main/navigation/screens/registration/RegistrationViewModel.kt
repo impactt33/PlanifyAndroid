@@ -27,8 +27,8 @@ class RegistrationViewModel @Inject constructor(
     fun register(shema: RegisterUserSchema) {
         viewModelScope.launch {
             authService.register(shema)
-                .onSuccess { verificationUserId ->
-                    _navigation.emit(AppRoute.RegistrationEmailConfirm(verificationUserId))
+                .onSuccess { confirmationUUID ->
+                    _navigation.emit(AppRoute.RegistrationEmailConfirm(confirmationUUID))
                     _uiState.emit(UIState.LOADING)
                 }
                 .onFailure {

@@ -2,6 +2,7 @@ package com.example.planify.main.navigation.screens.change_password_screens
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.planify.main.common.network.exceptions.WrongCodeException
 import com.example.planify.main.features.auth.domain.services.AuthService
 import dagger.hilt.android.lifecycle.HiltViewModel
 import jakarta.inject.Inject
@@ -26,48 +27,39 @@ class ChangePasswordEmailConfirmScreenViewModel @Inject constructor(
 
     val actions = _actions.asSharedFlow()
 
-    init {
-        codeSend()
-    }
-
-    fun codeSend() {
+    fun codeVerificationIntent(challengeUUID: String?, verificationCode: Int) {
         viewModelScope.launch {
-            authService.sendVerificationCode().fold(
-                onSuccess = {
-                    _uiState.emit(
-                        ChangePasswordEmailConfirmScreenUIState.CodeInput(
-                            isIncorrect = false
-                        )
-                    )
-                },
-                onFailure = { error ->
-                    _uiState.emit(
-                        ChangePasswordEmailConfirmScreenUIState.Error(
-                            message = error.message.toString()
-                        )
-                    )
-                }
-            )
-        }
-    }
+            if (challengeUUID == null) {
+                _uiState.emit(ChangePasswordEmailConfirmScreenUIState.Error(
+                    message = "missing challengeUUID"
+                ))
+                return@launch
+            }
 
-    fun codeVerificationIntent(verificationCode: String) {
-        viewModelScope.launch {
             authService.checkVerificationCode(
+                confirmationUuid = challengeUUID,
                 verificationCode = verificationCode
             ).fold(
-                onSuccess = { result ->
-                    if (result) {
-                        _actions.emit(ChangePasswordEmailConfirmScreenAction.NavigateToResetPasswordScreen)
-                    } else {
-                        _uiState.emit(ChangePasswordEmailConfirmScreenUIState.CodeInput(isIncorrect = true))
-                    }
+                onSuccess = {
+                    _actions.emit(ChangePasswordEmailConfirmScreenAction.NavigateToResetPasswordScreen(challengeUUID))
                 },
                 onFailure = { error ->
-                    _uiState.emit(ChangePasswordEmailConfirmScreenUIState.Error(message = error.message.toString()))
+                    if (error is WrongCodeException) {
+                        _uiState.emit(ChangePasswordEmailConfirmScreenUIState.CodeInput(
+                            isIncorrect = true
+                        ))
+                    } else {
+                        _uiState.emit(ChangePasswordEmailConfirmScreenUIState.Error(
+                            message = error.message.toString()
+                        ))
+                    }
                 }
             )
         }
+    }
+
+    fun resendVerificationCode() {
+        // TODO
     }
 
     fun resetCodeCorrectness() {

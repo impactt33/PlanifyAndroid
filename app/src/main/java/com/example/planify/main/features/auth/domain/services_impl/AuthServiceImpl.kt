@@ -174,16 +174,19 @@ class AuthServiceImpl @Inject constructor(
         return usersRepository.fetchMe()
     }
 
-    override suspend fun sendVerificationCode(): Result<Unit> {
-        return authRepository.sendVerificationCode()
+    override suspend fun sendVerificationCode(email: String): Result<String> {
+        return authRepository.sendVerificationCode(email)
     }
 
-    override suspend fun resetPassword(newPassword: String): Result<Unit> {
-        return authRepository.resetPassword(newPassword = newPassword)
+    override suspend fun resetPassword(newPassword: String, challengeUUID: String): Result<Unit> {
+        return authRepository.resetPassword(newPassword, challengeUUID)
     }
 
-    override suspend fun checkVerificationCode(verificationCode: String): Result<Boolean> {
-        return authRepository.checkVerificationCode(verificationCode = verificationCode)
+    override suspend fun checkVerificationCode(confirmationUuid: String, verificationCode: Int): Result<Unit> {
+        return authRepository.checkVerificationCode(
+            confirmationUuid = confirmationUuid,
+            verificationCode = verificationCode
+        )
     }
 
     override fun getTokenPair(): AuthTokenPair {

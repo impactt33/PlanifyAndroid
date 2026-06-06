@@ -19,9 +19,23 @@ sealed class AppRoute(val route: String) {
 
     object Registration : AppRoute("registration")
 
-    object ChangePasswordEmailConfirm : AppRoute("changePasswordEmailConfirm")
+    data class ChangePasswordEmailConfirm(
+        val challengeUUID: String
+    ) : AppRoute("changePasswordEmailConfirm/$challengeUUID") {
+        companion object {
+            const val ARG = "challengeUUID"
+            const val PATTERN = "changePasswordEmailConfirm/{$ARG}"
+        }
+    }
 
-    object ChangePassword : AppRoute("changePassword")
+    data class ChangePassword(
+        val challengeUUID: String
+    ) : AppRoute("changePassword/$challengeUUID") {
+        companion object {
+            const val ARG = "challengeUUID"
+            const val PATTERN = "changePassword/{$ARG}"
+        }
+    }
 
     data class RegistrationEmailConfirm(
         val verificationUserId: String
@@ -31,4 +45,6 @@ sealed class AppRoute(val route: String) {
             const val PATTERN = "registrationEmailConfirm/{$ARG}"
         }
     }
+
+    object EnterEmail : AppRoute("enterEmail")
 }

@@ -26,9 +26,9 @@ interface AuthRepository {
 
     suspend fun setAuthState(state: AuthState, syncLocal: Boolean = true)
 
-    suspend fun resetPassword(newPassword: String): Result<Unit>
+    suspend fun resetPassword(newPassword: String, challengeUUID: String): Result<Unit>
 
-    suspend fun sendVerificationCode(): Result<Unit>
+    suspend fun sendVerificationCode(email: String): Result<String>
 
-    suspend fun checkVerificationCode(verificationCode: String): Result<Boolean>
+    suspend fun checkVerificationCode(confirmationUuid: String, verificationCode: Int): Result<Unit>
 }

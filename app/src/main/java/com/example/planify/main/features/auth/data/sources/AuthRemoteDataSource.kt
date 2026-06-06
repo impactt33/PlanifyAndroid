@@ -12,4 +12,9 @@ interface AuthRemoteDataSource {
     suspend fun login(email: String, password: String): Result<LoginResult>
     suspend fun refresh(refreshToken: String): Result<AuthTokenPair>
     suspend fun fetchActualAuthContext(accessToken: String): Result<AuthContext>
+    suspend fun sendVerificationCode(email: String): Result<String>
+
+    suspend fun checkVerificationCode(confirmationUuid: String, verificationCode: Int): Result<Unit>
+
+    suspend fun resetPassword(newPassword: String, challengeUUID: String): Result<Unit>
 }

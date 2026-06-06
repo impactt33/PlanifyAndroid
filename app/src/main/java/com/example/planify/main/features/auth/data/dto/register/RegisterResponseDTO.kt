@@ -4,10 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-data class ConfirmationRegisterRequestDTO(
-    @SerialName("code")
-    val verificationCode: Int,
-
-    @SerialName("clientName")
-    val clientName: String
+data class RegisterResponseDTO(
+    @SerialName("confirmationUUID")
+    val confirmationUUID: String
 )
