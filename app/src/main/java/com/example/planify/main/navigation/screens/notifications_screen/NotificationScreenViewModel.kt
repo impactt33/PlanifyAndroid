@@ -68,6 +68,37 @@ class NotificationScreenViewModel @Inject constructor(
         }
     }
 
+    fun dismiss(actionId: String) {
+        viewModelScope.launch {
+            actionService.deleteAction(actionId)
+                .onSuccess {
+                    _uiState.update { it.copy(actions = it.actions - actionId) }
+                    inFlight.remove(actionId)
+                }
+                .onFailure { Log.e(TAG, "dismiss failed for $actionId", it) }
+        }
+    }
+
+    fun clearRead() {
+        val readIds = _uiState.value.actions
+            .filterValues { state ->
+                state is ResourceState.Success && state.data is NotificationAction.NotificationStatusUpdate
+            }
+            .keys
+            .toList()
+
+        if (readIds.isEmpty()) return
+
+        viewModelScope.launch {
+            readIds.forEach { id ->
+                actionService.deleteAction(id)
+                    .onFailure { Log.e(TAG, "clearRead failed for $id", it) }
+            }
+            _uiState.update { state -> state.copy(actions = state.actions - readIds.toSet()) }
+            readIds.forEach { inFlight.remove(it) }
+        }
+    }
+
     private suspend fun processMeetingStatusUpdated(actionId: String, data: UserActionInviteStatusUpdatedSchema) {
         _uiState.update { it.copy(actions = it.actions + (actionId to ResourceState.Loading)) }
 
@@ -75,8 +106,8 @@ class NotificationScreenViewModel @Inject constructor(
             val profileDeferred = async { profileService.fetchProfileById(data.targetId) }
             val contextDeferred = async { meetingsService.fetchMeetingContext(data.meetingId) }
 
-            val profile = profileDeferred.await().onFailure { Log.e("NotifVM", "profile failed: $it") }.getOrElse { null }
-            val context = contextDeferred.await().onFailure { Log.e("NotifVM", "context failed: $it") }.getOrElse { null }
+            val profile = profileDeferred.await().onFailure { Log.e(TAG, "profile failed: $it") }.getOrElse { null }
+            val context = contextDeferred.await().onFailure { Log.e(TAG, "context failed: $it") }.getOrElse { null }
 
             if (profile != null && context != null) {
                 _uiState.update {
@@ -100,8 +131,8 @@ class NotificationScreenViewModel @Inject constructor(
             val profileDeferred = async { profileService.fetchProfileById(data.senderId) }
             val contextDeferred = async { meetingsService.fetchMeetingContext(data.meetingId) }
 
-            val profile = profileDeferred.await().onFailure { Log.e("NotifVM", "profile failed: $it") }.getOrElse { null }
-            val context = contextDeferred.await().onFailure { Log.e("NotifVM", "context failed: $it") }.getOrElse { null }
+            val profile = profileDeferred.await().onFailure { Log.e(TAG, "profile failed: $it") }.getOrElse { null }
+            val context = contextDeferred.await().onFailure { Log.e(TAG, "context failed: $it") }.getOrElse { null }
 
             if (profile != null && context != null) {
                 _uiState.update {
@@ -116,5 +147,9 @@ class NotificationScreenViewModel @Inject constructor(
                 inFlight.remove(actionId)
             }
         }
+    }
+
+    private companion object {
+        const val TAG = "NotificationScreenVM"
     }
 }
