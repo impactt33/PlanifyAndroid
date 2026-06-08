@@ -17,9 +17,11 @@ class RetryRequestMiddleware(
         return retrying(
             attempts = retryCount,
             initialDelayMs = 200,
-            backoffFactor = 2.0, tag = this::class.simpleName!!
+            backoffFactor = 2.0,
+            tag = this::class.simpleName!!
         ) {
-            next(input) as HttpResponse
+            val attemptBuilder = HttpRequestBuilder().takeFrom(input)
+            next(attemptBuilder) as HttpResponse
         }
     }
 }

@@ -7,6 +7,8 @@ val props = Properties().apply {
     if (file.exists()) file.inputStream().use { load(it) }
 }
 
+fun buildConfigString(value: String?): String = "\"${value.orEmpty()}\""
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -98,7 +100,6 @@ dependencies {
     implementation(libs.protobuf.javalite)
 
     // Serialization
-    implementation(libs.kotlinx.serialization.json)
     implementation(libs.kotlinx.serialization.json)
 
     // UI
