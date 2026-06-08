@@ -33,7 +33,7 @@ class CreateMeetingViewModel @Inject constructor(
     private val profilesService: ProfilesService
 ) : ViewModel() {
 
-    private val _showDialog = MutableStateFlow<Boolean>(false)
+    private val _showDialog = MutableStateFlow(false)
     val showDialog = _showDialog.asStateFlow()
     private val profilesFetchPageSize = 20
 
@@ -65,45 +65,42 @@ class CreateMeetingViewModel @Inject constructor(
     fun setName(v: String) = _meetingDraftState.update { it.copy(name = v) }
     fun setDescription(v: String) = _meetingDraftState.update { it.copy(description = v) }
     fun setLocation(v: String) = _meetingDraftState.update { it.copy(location = v) }
-    fun setStartsAtDate(v: LocalDate) = _meetingDraftState.update { it.copy(startsAtDate = v) }
+    fun setStartsAtDate(v: java.time.LocalDate) = _meetingDraftState.update { it.copy(startsAtDate = v) }
     fun setSelectedTimeSlots(v: List<Int>) = _meetingDraftState.update { it.copy(selectedTimeSlots = v) }
     fun removeInvite(userId: Long) = _meetingDraftState.update { it.copy(inviteUsersIds = it.inviteUsersIds - userId) }
     fun toggleInvite(userId: Long) = _meetingDraftState.update {
         it.copy(
             inviteUsersIds =
-                if (it.inviteUsersIds.contains(userId))
-                    it.inviteUsersIds - userId
-                else
-                    it.inviteUsersIds + userId
+                if (it.inviteUsersIds.contains(userId)) it.inviteUsersIds - userId
+                else it.inviteUsersIds + userId
         )
     }
 
     fun setProfilesQuery(query: String) = _profilesSearchState.update { it.copy(query = query) }
 
     suspend fun fetchUserSchedule() {
-        meetingsService.fetchUserSchedule(_meetingDraftState.value.startsAtDate).onSuccess { schedule ->
-            _userScheduleResourceState.value = ResourceState.Success(schedule)
-        }.onFailure { error ->
-            Log.e(this::class.simpleName, "Error while fetching user schedule", error)
-        }
+        meetingsService.fetchUserSchedule(_meetingDraftState.value.startsAtDate)
+            .onSuccess { schedule -> _userScheduleResourceState.value = ResourceState.Success(schedule) }
+            .onFailure { error -> Log.e(this::class.simpleName, "Error while fetching user schedule", error) }
     }
 
     suspend fun fetchProfiles(reset: Boolean = false) {
         val state = profilesSearchState.value
-
         if (state.query.isEmpty()) return
+
         profilesService.searchProfile(
             page = state.page,
             size = profilesFetchPageSize,
             query = state.query
         ).onSuccess { page ->
-            if (!reset && _profilesSearchResourceState.value is ResourceState.Success) {
-                val old = (_profilesSearchResourceState.value as ResourceState.Success<Map<Long, Profile>>).data
-                val new = page.content.associateBy { it.userId }
-                _profilesSearchResourceState.value = ResourceState.Success(old + new)
-            } else {
-                _profilesSearchResourceState.value = ResourceState.Success(page.content.associateBy { it.userId })
-            }
+            val current = _profilesSearchResourceState.value
+            val newItems = page.content.associateBy { it.userId }
+            _profilesSearchResourceState.value =
+                if (!reset && current is ResourceState.Success) {
+                    ResourceState.Success(current.data + newItems)
+                } else {
+                    ResourceState.Success(newItems)
+                }
         }.onFailure { exception ->
             _profilesSearchResourceState.value = ResourceState.Error(exception)
         }
@@ -112,30 +109,41 @@ class CreateMeetingViewModel @Inject constructor(
     suspend fun createMeeting() {
         val state = meetingDraftState.value
 
-        try {
-            val meeting = meetingsService.createMeeting(
-                schema = CreateMeetingSchema(
-                    name = state.name!!,
-                    description = state.description!!,
-                    location = state.location!!,
-                    startsAt = state.startsAtDate.atTime(LocalTime.of(state.selectedTimeSlots.sorted()[0], 0)),
-                    duration = state.selectedTimeSlots.size
-                )
-            ).getOrThrow()
+        // Явная валидация: раньше тут были name!!/description!!/location!! и общий catch,
+        // из-за чего NPE или сетевая ошибка одинаково показывали "выбрано неверное время".
+        val name = state.name
+        val description = state.description
+        val location = state.location
+        val slots = state.selectedTimeSlots.sorted()
 
-            state.inviteUsersIds.forEach { userId ->
-                try {
-                    meetingInvitesService.inviteUser(meeting.id, userId)
-                } catch (error: Exception) {
-                    Log.e(this::class.simpleName, "Error while sending invite", error)
-                }
-            }
-
-            _effects.emit(UIEffect.Navigate(AppRoute.MeetingInfoMenu(meeting.id)))
-        } catch (e: Exception) {
-            incorrectTimeChosen()
-            Log.e(this::class.simpleName, "Error while creating meeting", e)
+        if (name.isNullOrBlank() || description.isNullOrBlank() || location.isNullOrBlank() || slots.isEmpty()) {
+            Log.w(this::class.simpleName, "createMeeting: некорректный черновик встречи")
+            _showDialog.value = true
+            return
         }
+
+        val startsAt = state.startsAtDate.atTime(LocalTime.of(slots.first(), 0))
+
+        val meeting = meetingsService.createMeeting(
+            schema = CreateMeetingSchema(
+                name = name,
+                description = description,
+                location = location,
+                startsAt = startsAt,
+                duration = slots.size
+            )
+        ).getOrElse { error ->
+            Log.e(this::class.simpleName, "Error while creating meeting", error)
+            _showDialog.value = true
+            return
+        }
+
+        state.inviteUsersIds.forEach { userId ->
+            meetingInvitesService.inviteUser(meeting.id, userId)
+                .onFailure { Log.e(this::class.simpleName, "Error while sending invite to $userId", it) }
+        }
+
+        _effects.emit(UIEffect.Navigate(AppRoute.MeetingInfoMenu(meeting.id)))
     }
 
     fun runCreateMeeting() {
@@ -144,21 +152,17 @@ class CreateMeetingViewModel @Inject constructor(
 
     fun canCreate(): Boolean {
         val state = _meetingDraftState.value
-        return state.name != null &&
-                state.description != null &&
-                state.location != null &&
+        return !state.name.isNullOrBlank() &&
+                !state.description.isNullOrBlank() &&
+                !state.location.isNullOrBlank() &&
                 state.selectedTimeSlots.isNotEmpty()
     }
 
     fun incorrectTimeChosen() {
-         viewModelScope.launch {
-             _showDialog.value = true
-         }
+        _showDialog.value = true
     }
 
     fun closeDialog() {
-        viewModelScope.launch {
-            _showDialog.value = false
-        }
+        _showDialog.value = false
     }
 }

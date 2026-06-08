@@ -1,14 +1,17 @@
 package com.example.planify.main.features.actions.domain.services
 
 import com.example.planify.main.features.actions.domain.entities.Action
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.serialization.KSerializer
 import kotlinx.serialization.serializer
 
 interface ActionsService {
-    val actionsFlow: SharedFlow<Action<*>>
+    fun observeActions(): Flow<List<Action<*>>>
 
-    suspend fun fetchActions(): Result<List<Action<*>>>
+    fun observeNewActions(): Flow<List<Action<*>>>
+
+    suspend fun syncActions(): Result<List<Action<*>>>
 
     suspend fun deleteAction(actionId: String): Result<Unit>
 

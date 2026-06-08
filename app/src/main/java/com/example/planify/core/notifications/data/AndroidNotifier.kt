@@ -17,32 +17,38 @@ import jakarta.inject.Inject
 import jakarta.inject.Singleton
 
 @Singleton
-class AndroidNotifier @Inject constructor (
+class AndroidNotifier @Inject constructor(
     @ApplicationContext private val context: Context,
     private val manager: NotificationManagerCompat
-): Notifier {
+) : Notifier {
     override fun show(notification: AppNotification) {
         val builder = NotificationCompat.Builder(context, notification.channelId)
-            .setSmallIcon(R.drawable.ic_launcher_foreground)
+            .setSmallIcon(R.drawable.ic_notification)
             .setContentTitle(notification.title)
             .setContentText(notification.body)
+            .setStyle(NotificationCompat.BigTextStyle().bigText(notification.body))
+            .setPriority(NotificationCompat.PRIORITY_HIGH)
+            .setCategory(NotificationCompat.CATEGORY_SOCIAL)
+            .setWhen(System.currentTimeMillis())
+            .setShowWhen(true)
             .setAutoCancel(true)
 
         notification.deepLink?.let {
-            builder.setContentIntent(
-                buildPendingIntent(notification.id, it)
-            )
+            builder.setContentIntent(buildPendingIntent(notification.id, it))
         }
 
-        val canPost = Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
-                ActivityCompat.checkSelfPermission(
-                    context, Manifest.permission.POST_NOTIFICATIONS
-                ) == PackageManager.PERMISSION_GRANTED
-
-        if (canPost) manager.notify(notification.id, builder.build())
+        if (canPostNotifications()) {
+            manager.notify(notification.id, builder.build())
+        }
     }
 
     override fun cancel(id: Int) = manager.cancel(id)
+
+    private fun canPostNotifications(): Boolean =
+        Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU ||
+                ActivityCompat.checkSelfPermission(
+                    context, Manifest.permission.POST_NOTIFICATIONS
+                ) == PackageManager.PERMISSION_GRANTED
 
     private fun buildPendingIntent(id: Int, deepLink: String): PendingIntent {
         val intent = Intent(Intent.ACTION_VIEW, deepLink.toUri()).apply {

@@ -7,31 +7,27 @@ import com.example.planify.main.features.actions.data.sources.ActionsLocalDataSo
 import com.example.planify.main.features.actions.domain.entities.Action
 import com.example.planify.main.features.actions.domain.notifications.ActionNotificationHandler
 import com.example.planify.main.features.actions.domain.services.ActionsService
-import com.example.planify.main.features.actions.domain.utils.ActionDataParser
-import com.example.planify.main.features.firebase_fcm.domain.services.FcmService
-import com.example.planify.main.features.meetings.domain.notifications.MeetingActionNotificationHandler
-import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInviteRescheduleRequestedSchema
-import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInvitedToMeetingSchema
+import com.example.planify.main.features.auth.domain.entities.AuthState
+import com.example.planify.main.features.auth.domain.services.AuthService
+import com.example.planify.main.features.firebase_fcm.domain.registrar.FcmTokenRegistrar
 import com.example.planify.main.features.settings.domain.services.SettingsService
-import com.google.firebase.messaging.FirebaseMessaging
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.tasks.await
-import java.time.LocalDateTime
 import javax.inject.Inject
-
 @HiltViewModel
 class MainScreenViewModel @Inject constructor(
     private val actionsService: ActionsService,
     private val handlers: Set<@JvmSuppressWildcards ActionNotificationHandler>,
     private val actionsLocalDataSource: ActionsLocalDataSource,
-    private val fcmService: FcmService,
+    private val tokenRegistrar: FcmTokenRegistrar,
+    private val authService: AuthService,
     private val settingsService: SettingsService
 ) : ViewModel() {
     private val _isFirstStartState = MutableStateFlow(true)
-
     val isFirstStart = _isFirstStartState.asStateFlow()
 
     init {
@@ -42,30 +38,33 @@ class MainScreenViewModel @Inject constructor(
         }
 
         viewModelScope.launch {
-            actionsService.actionsFlow.collect { action ->
-                if (actionsLocalDataSource.markActionNotifiedIfNewer(action.id)) {
-                    handlers.find { action.type in it.supportedTypes }?.handle(action)
+            authService.authStateFlow
+                .map { it is AuthState.Authenticated }
+                .distinctUntilChanged()
+                .collect { authenticated ->
+                    if (authenticated) tokenRegistrar.registerCurrentToken()
+                }
+        }
+
+        viewModelScope.launch {
+            actionsService.observeNewActions().collect { delta ->
+                delta.forEach { action ->
+                    if (actionsLocalDataSource.markActionNotifiedIfNewer(action.id)) {
+                        handlers.find { action.type in it.supportedTypes }?.handle(action)
+                    }
                 }
             }
         }
     }
 
     fun sendFcmToken() {
-        viewModelScope.launch {
-            val currentToken = FirebaseMessaging.getInstance().token.await()
-
-            Log.d("FCM TOKEN FROM VM", currentToken)
-            fcmService.sendFcmToken(currentToken)
-        }
+        viewModelScope.launch { tokenRegistrar.registerCurrentToken() }
     }
 
     fun setIsFirstStartFalse() {
-        viewModelScope.launch {
-            _isFirstStartState.emit(false)
-        }
+        viewModelScope.launch { _isFirstStartState.emit(false) }
     }
 
-    @Suppress("UNCHECKED_CAST")
     fun onAction(action: Action<*>) {
         Log.i("Actions", "${action.type}: ${action.id}")
     }

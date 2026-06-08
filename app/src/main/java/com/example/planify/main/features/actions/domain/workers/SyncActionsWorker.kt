@@ -20,23 +20,24 @@ class SyncActionsWorker @AssistedInject constructor(
     private val dataSource: ActionsLocalDataSource
 ) : CoroutineWorker(appContext, params) {
     override suspend fun doWork(): Result {
-        val actions = actionsService.fetchActions()
+        val actions = actionsService.syncActions()
             .getOrElse {
-                Log.e("SyncWorker", "fetchActions failed: $it")
-                return Result.retry()
+                Log.e("SyncWorker", "syncActions failed (attempt $runAttemptCount): $it")
+                return if (runAttemptCount >= MAX_ATTEMPTS) Result.failure() else Result.retry()
             }
 
         Log.d("SyncWorker", "Fetched ${actions.size} actions")
 
         actions.forEach { action ->
-            val shouldNotify = dataSource.markActionNotifiedIfNewer(action.id)
-            Log.d("SyncWorker", "action=${action.type} id=${action.id} shouldNotify=$shouldNotify")
-            if (shouldNotify) {
-                handlers.find { action.type in it.supportedTypes }
-                    ?.handle(action)
+            if (dataSource.markActionNotifiedIfNewer(action.id)) {
+                handlers.find { action.type in it.supportedTypes }?.handle(action)
             }
         }
 
         return Result.success()
+    }
+
+    private companion object {
+        const val MAX_ATTEMPTS = 5
     }
 }

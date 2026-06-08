@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 @HiltViewModel
@@ -29,34 +30,41 @@ class NotificationScreenViewModel @Inject constructor(
     private val _uiState = MutableStateFlow(NotificationState.empty())
     val uiState = _uiState.asStateFlow()
 
+    private val inFlight: MutableSet<String> = ConcurrentHashMap.newKeySet()
+
     init {
         viewModelScope.launch {
-            val local = actionService.getAllActionLocal().getOrDefault(emptyList())
-            local.forEach { processAction(it) }
-        }
-
-        viewModelScope.launch {
-            actionService.actionsFlow.collect { action ->
-                processAction(action)
-            }
+            actionService.observeActions().collect { list -> reconcile(list) }
         }
     }
 
-    private fun processAction(action: Action<*>) {
-        if (_uiState.value.actions.containsKey(action.id)) return
+    private fun reconcile(list: List<Action<*>>) {
+        list.forEach { action ->
+            if (_uiState.value.actions.containsKey(action.id)) return@forEach
+            if (!inFlight.add(action.id)) return@forEach
 
-        when (action.type) {
-            "meetings:invited" -> {
-                val data = action.data as? UserActionInvitedToMeetingSchema ?: return
-                viewModelScope.launch { processMeetingInvite(action.id, data) }
+            when (action.type) {
+                "meetings:invited" -> {
+                    val data = action.data as? UserActionInvitedToMeetingSchema
+                    if (data == null) { inFlight.remove(action.id); return@forEach }
+                    viewModelScope.launch { processMeetingInvite(action.id, data) }
+                }
+
+                "meetings:invite_status_updated" -> {
+                    val data = action.data as? UserActionInviteStatusUpdatedSchema
+                    if (data == null) { inFlight.remove(action.id); return@forEach }
+                    viewModelScope.launch { processMeetingStatusUpdated(action.id, data) }
+                }
+
+                else -> inFlight.remove(action.id)
             }
-            "meetings:invite_reschedule_requested" -> {
-                // TODO
-            }
-            "meetings:invite_status_updated" -> {
-                val data = action.data as? UserActionInviteStatusUpdatedSchema ?: return
-                viewModelScope.launch { processMeetingStatusUpdated(action.id, data) }
-            }
+        }
+
+        val presentIds = list.mapTo(HashSet()) { it.id }
+        val stale = _uiState.value.actions.keys - presentIds
+        if (stale.isNotEmpty()) {
+            _uiState.update { state -> state.copy(actions = state.actions - stale) }
+            stale.forEach { inFlight.remove(it) }
         }
     }
 
@@ -67,23 +75,20 @@ class NotificationScreenViewModel @Inject constructor(
             val profileDeferred = async { profileService.fetchProfileById(data.targetId) }
             val contextDeferred = async { meetingsService.fetchMeetingContext(data.meetingId) }
 
-            val profile = profileDeferred.await()
-                .onFailure { Log.e("NotifVM", "profile failed: $it") }
-                .getOrElse { null }
-            val context = contextDeferred.await()
-                .onFailure { Log.e("NotifVM", "context failed: $it") }
-                .getOrElse { null }
-
-            Log.d("NotifVM", "profile=$profile context=$context")
+            val profile = profileDeferred.await().onFailure { Log.e("NotifVM", "profile failed: $it") }.getOrElse { null }
+            val context = contextDeferred.await().onFailure { Log.e("NotifVM", "context failed: $it") }.getOrElse { null }
 
             if (profile != null && context != null) {
                 _uiState.update {
-                    it.copy(actions = it.actions + (actionId to ResourceState.Success(
-                        NotificationAction.NotificationStatusUpdate(profile, context)
-                    )))
+                    it.copy(
+                        actions = it.actions + (actionId to ResourceState.Success(
+                            NotificationAction.NotificationStatusUpdate(profile, context)
+                        ))
+                    )
                 }
             } else {
                 _uiState.update { it.copy(actions = it.actions - actionId) }
+                inFlight.remove(actionId)
             }
         }
     }
@@ -95,23 +100,20 @@ class NotificationScreenViewModel @Inject constructor(
             val profileDeferred = async { profileService.fetchProfileById(data.senderId) }
             val contextDeferred = async { meetingsService.fetchMeetingContext(data.meetingId) }
 
-            val profile = profileDeferred.await()
-                .onFailure { Log.e("NotifVM", "profile failed: $it") }
-                .getOrElse { null }
-            val context = contextDeferred.await()
-                .onFailure { Log.e("NotifVM", "context failed: $it") }
-                .getOrElse { null }
-
-            Log.d("NotifVM", "profile=$profile context=$context")
+            val profile = profileDeferred.await().onFailure { Log.e("NotifVM", "profile failed: $it") }.getOrElse { null }
+            val context = contextDeferred.await().onFailure { Log.e("NotifVM", "context failed: $it") }.getOrElse { null }
 
             if (profile != null && context != null) {
                 _uiState.update {
-                    it.copy(actions = it.actions + (actionId to ResourceState.Success(
-                        NotificationAction.NotificationInvite(profile, context)
-                    )))
+                    it.copy(
+                        actions = it.actions + (actionId to ResourceState.Success(
+                            NotificationAction.NotificationInvite(profile, context)
+                        ))
+                    )
                 }
             } else {
                 _uiState.update { it.copy(actions = it.actions - actionId) }
+                inFlight.remove(actionId)
             }
         }
     }

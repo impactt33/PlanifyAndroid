@@ -61,7 +61,7 @@ private fun RequestNotificationPermission() {
     val context = LocalContext.current
     val launcher = rememberLauncherForActivityResult(
         contract = ActivityResultContracts.RequestPermission()
-    ) {  }
+    ) { }
 
     LaunchedEffect(Unit) {
         val granted = ContextCompat.checkSelfPermission(

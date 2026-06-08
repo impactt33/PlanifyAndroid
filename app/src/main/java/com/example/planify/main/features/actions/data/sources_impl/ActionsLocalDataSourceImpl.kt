@@ -1,6 +1,7 @@
 package com.example.planify.main.features.actions.data.sources_impl
 
 import android.content.Context
+import android.util.Log
 import androidx.datastore.preferences.core.edit
 import com.example.planify.core.data.serializers.jsonCore
 import com.example.planify.main.features.actions.data.dao.ActionModelDAO
@@ -10,6 +11,7 @@ import com.example.planify.main.features.actions.data.preferences.actionsDataSto
 import com.example.planify.main.features.actions.data.sources.ActionsLocalDataSource
 import com.example.planify.main.features.actions.domain.entities.Action
 import com.example.planify.main.features.actions.domain.entities.ActionsLocalInfo
+import com.example.planify.main.features.actions.domain.entities.ActionsLocalInfoDefaults
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.first
@@ -26,66 +28,64 @@ class ActionsLocalDataSourceImpl @Inject constructor(
 ) : ActionsLocalDataSource {
     private val dataStore = context.actionsDataStore
 
-    private fun fromPrimitives(
-        lastSeenActionId: String?
-    ): ActionsLocalInfo {
-        return ActionsLocalInfo(
-            lastSeenActionId = lastSeenActionId
-        )
-    }
+    private fun fromPrimitives(lastSeenActionId: String?): ActionsLocalInfo =
+        ActionsLocalInfo(lastSeenActionId = lastSeenActionId)
 
     val actionsLocalFlow: Flow<ActionsLocalInfo> = dataStore.data.map { preferences ->
-        fromPrimitives(
-            lastSeenActionId = preferences[ActionsDataStoreInfo.LAST_SEEN_ACTION_ID_KEY]
-        )
+        fromPrimitives(preferences[ActionsDataStoreInfo.LAST_SEEN_ACTION_ID_KEY])
     }
 
-    override suspend fun <T : Any> saveAction(action: Action<T>, serializer: KSerializer<T>): Result<ActionModel> = withContext(Dispatchers.IO) {
-        return@withContext runCatching {
-            val model = ActionModel(
-                id = action.id,
-                type = action.type,
-                data = action.data?.let { jsonCore.encodeToString(serializer, action.data) }
-            )
+    override fun observeActions(): Flow<List<ActionModel>> = actionModelDAO.observeAll()
 
-            actionModelDAO.upsert(model)
-
-            model
+    override suspend fun <T : Any> saveAction(action: Action<T>, serializer: KSerializer<T>): Result<ActionModel> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                val model = ActionModel(
+                    id = action.id,
+                    type = action.type,
+                    data = action.data?.let { jsonCore.encodeToString(serializer, action.data) }
+                )
+                actionModelDAO.upsert(model)
+                model
+            }
         }
-    }
 
-    override suspend fun saveAction(id: String, type: String, data: String?): Result<ActionModel> = withContext(Dispatchers.IO) {
-        return@withContext runCatching {
-            val model = ActionModel(id, type, data)
-            actionModelDAO.upsert(model)
-            model
+    override suspend fun saveAction(id: String, type: String, data: String?): Result<ActionModel> =
+        withContext(Dispatchers.IO) {
+            runCatching {
+                val model = ActionModel(id, type, data)
+                actionModelDAO.upsert(model)
+                model
+            }
         }
-    }
 
-    override suspend fun getAllActions(): Result<List<ActionModel>> = withContext(Dispatchers.IO) {
-        return@withContext runCatching {
-            actionModelDAO.getAll()
-        }
-    }
+    override suspend fun getAllActions(): Result<List<ActionModel>> =
+        withContext(Dispatchers.IO) { runCatching { actionModelDAO.getAll() } }
 
-    override suspend fun deleteAction(actionId: String): Result<Unit> = withContext(Dispatchers.IO) {
-        return@withContext runCatching {
-            actionModelDAO.deleteActionById(actionId)
-        }
-    }
+    override suspend fun deleteAction(actionId: String): Result<Unit> =
+        withContext(Dispatchers.IO) { runCatching { actionModelDAO.deleteActionById(actionId) } }
 
-    override suspend fun getLastSeenActionId(): String {
-        return actionsLocalFlow.first().lastSeenActionId
-    }
+    override suspend fun getLastSeenActionId(): String =
+        actionsLocalFlow.first().lastSeenActionId
 
     override suspend fun setLastSeenActionId(actionId: String) {
         dataStore.edit { preferences ->
-            preferences[ActionsDataStoreInfo.LAST_SEEN_ACTION_ID_KEY] = actionId
+            val current = preferences[ActionsDataStoreInfo.LAST_SEEN_ACTION_ID_KEY]
+            if (isNewerActionId(actionId, current)) {
+                preferences[ActionsDataStoreInfo.LAST_SEEN_ACTION_ID_KEY] = actionId
+            }
+        }
+    }
+
+    override suspend fun resetLastSeenActionId() {
+        dataStore.edit { preferences ->
+            preferences[ActionsDataStoreInfo.LAST_SEEN_ACTION_ID_KEY] =
+                ActionsLocalInfoDefaults.LAST_SEEN_ACTION_ID
         }
     }
 
     override suspend fun markActionNotifiedIfNewer(actionId: String): Boolean =
-        withContext((Dispatchers.IO)) {
+        withContext(Dispatchers.IO) {
             var shouldNotify = false
             dataStore.edit { preferences ->
                 val last = preferences[ActionsDataStoreInfo.LAST_NOTIFIED_ACTION_ID_KEY]
@@ -107,11 +107,17 @@ class ActionsLocalDataSourceImpl @Inject constructor(
     private fun parseStreamId(id: String): Pair<Long, Long> {
         val streamId = id.substringAfter("===", id)
         val dash = streamId.indexOf('-')
-        return if (dash > 0) {
-            streamId.take(dash).toLong() to
-                    streamId.substring(dash + 1).toLong()
-        } else {
-            streamId.toLong() to 0L
+        return try {
+            if (dash > 0) {
+                val ms = streamId.take(dash).toLongOrNull() ?: 0L
+                val seq = streamId.substring(dash + 1).toLongOrNull() ?: 0L
+                ms to seq
+            } else {
+                (streamId.toLongOrNull() ?: 0L) to 0L
+            }
+        } catch (e: Exception) {
+            Log.w("ActionsLocalDataSource", "Bad action id '$id': ${e.message}")
+            0L to 0L
         }
     }
 }

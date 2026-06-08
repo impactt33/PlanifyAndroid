@@ -17,6 +17,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.util.concurrent.ConcurrentHashMap
 import javax.inject.Inject
 
 @HiltViewModel
@@ -24,83 +25,87 @@ class InboxViewModel @Inject constructor(
     private val actionService: ActionsService,
     private val meetingsService: MeetingsService,
     private val meetingInvitesService: MeetingInvitesService
-): ViewModel() {
+) : ViewModel() {
     private val _uiState = MutableStateFlow(InboxState.empty())
     val uiState = _uiState.asStateFlow()
 
     private val _actions = MutableStateFlow<List<Action<*>>>(emptyList())
     val actions = _actions.asStateFlow()
 
+    private val inFlight: MutableSet<String> = ConcurrentHashMap.newKeySet()
+
     init {
         viewModelScope.launch {
-            actionService.getAllActionLocal()
-                .getOrDefault(emptyList())
-                .forEach { action -> processAction(action) }
-        }
-
-        viewModelScope.launch {
-            actionService.actionsFlow.collect { action ->
-                processAction(action)
-            }
+            actionService.observeActions().collect { list -> reconcile(list) }
         }
     }
 
-    private fun processAction(action: Action<*>) {
-        _actions.update { current ->
-            if (current.any { it.id == action.id }) return
-            current + action
+    private fun reconcile(list: List<Action<*>>) {
+        _actions.value = list
+
+        list.forEach { action ->
+            if (action.type != "meetings:invited") return@forEach
+            val data = action.data as? UserActionInvitedToMeetingSchema ?: return@forEach
+
+            if (_uiState.value.actions.containsKey(action.id)) return@forEach
+            if (!inFlight.add(action.id)) return@forEach
+
+            viewModelScope.launch {
+                val ok = processMeetingInvite(action.id, data)
+                if (!ok) inFlight.remove(action.id)
+            }
         }
 
-        viewModelScope.launch {
-            when (action.type) {
-                "meetings:invited" -> {
-                    if (_uiState.value.actions.containsKey(action.id)) return@launch
-                    val data = action.data as? UserActionInvitedToMeetingSchema ?: return@launch
-                    processMeetingInvite(actionId = action.id, data = data)
-                }
-            }
+        val presentIds = list.mapTo(HashSet()) { it.id }
+        val stale = _uiState.value.actions.keys - presentIds
+        if (stale.isNotEmpty()) {
+            _uiState.update { state -> state.copy(actions = state.actions - stale) }
+            stale.forEach { inFlight.remove(it) }
         }
     }
 
     private suspend fun processMeetingInvite(
         actionId: String,
         data: UserActionInvitedToMeetingSchema
-    ) {
-        _uiState.update {
-            it.copy(actions = it.actions.plus(actionId to ResourceState.Loading))
-        }
+    ): Boolean {
+        _uiState.update { it.copy(actions = it.actions + (actionId to ResourceState.Loading)) }
 
-        fetchMeetingContext(data.meetingId)
+        return fetchMeetingContext(data.meetingId)
             .onSuccess { context ->
-                _uiState.update { it.copy(actions = it.actions.plus(
-                    actionId to ResourceState.Success(InboxAction.Invite(
-                        meetingContext = context,
-                        inviteUuid = data.inviteUuid,
-                        actionId = actionId
-                    ))
-                )) }
-            }
-            .onFailure {
                 _uiState.update {
-                    it.copy(actions = it.actions.minus(actionId))
+                    it.copy(
+                        actions = it.actions + (actionId to ResourceState.Success(
+                            InboxAction.Invite(
+                                meetingContext = context,
+                                inviteUuid = data.inviteUuid,
+                                actionId = actionId
+                            )
+                        ))
+                    )
                 }
             }
+            .onFailure {
+                _uiState.update { it.copy(actions = it.actions - actionId) }
+            }
+            .isSuccess
     }
 
-    private suspend fun fetchMeetingContext(meetingId: Long): Result<MeetingContext> {
-        return meetingsService.fetchMeetingContext(meetingId)
-    }
+    private suspend fun fetchMeetingContext(meetingId: Long): Result<MeetingContext> =
+        meetingsService.fetchMeetingContext(meetingId)
+
     fun acceptMeeting(inviteUuid: String, actionId: String) {
         viewModelScope.launch {
             meetingInvitesService.inviteAccept(inviteUuid, actionId)
-            _uiState.update { it.copy(actions = it.actions.minus(actionId)) }
+                .onSuccess { _uiState.update { it.copy(actions = it.actions - actionId) } }
+                .onFailure { Log.e(this::class.simpleName, "inviteAccept failed", it) }
         }
     }
 
     fun rejectMeeting(inviteUuid: String, actionId: String) {
         viewModelScope.launch {
             meetingInvitesService.inviteReject(inviteUuid, actionId)
-            _uiState.update { it.copy(actions = it.actions.minus(actionId)) }
+                .onSuccess { _uiState.update { it.copy(actions = it.actions - actionId) } }
+                .onFailure { Log.e(this::class.simpleName, "inviteReject failed", it) }
         }
     }
 }

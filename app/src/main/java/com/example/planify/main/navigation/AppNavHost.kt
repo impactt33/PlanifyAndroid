@@ -1,21 +1,32 @@
 package com.example.planify.main.navigation
 
+import android.app.Activity
+import android.content.Context
+import android.content.ContextWrapper
+import android.content.Intent
+import android.net.Uri
 import android.util.Log
+import androidx.activity.ComponentActivity
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.core.util.Consumer
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.planify.core.ui.dialogs.AlertDialog
+import com.example.planify.main.common.notifications.NotificationDeepLinks
 import com.example.planify.main.navigation.components.AuthRequiredDialog
 import com.example.planify.main.navigation.screens.auth_screen.AuthScreen
 import com.example.planify.main.navigation.screens.change_password_screens.ChangePasswordEmailConfirmScreen
@@ -43,8 +54,42 @@ private fun AppNavHost(
     viewModel: AppNavHostViewModel
 ) {
     val navController = rememberNavController()
+    val context = LocalContext.current
 
     var dialog by remember { mutableStateOf<DialogType?>(null) }
+
+    var pendingMeetingId by remember { mutableStateOf<Long?>(null) }
+
+    LaunchedEffect(Unit) {
+        pendingMeetingId = extractMeetingId(context.findActivity()?.intent)
+    }
+
+    DisposableEffect(navController) {
+        val activity = context.findActivity() as? ComponentActivity
+        val listener = Consumer<Intent> { intent ->
+            extractMeetingId(intent)?.let { meetingId ->
+                navController.navigate(AppRoute.MeetingInfoMenu(meetingId).route) {
+                    launchSingleTop = true
+                }
+            }
+        }
+        activity?.addOnNewIntentListener(listener)
+        onDispose { activity?.removeOnNewIntentListener(listener) }
+    }
+
+    DisposableEffect(navController) {
+        val listener = NavController.OnDestinationChangedListener { _, destination, _ ->
+            val meetingId = pendingMeetingId ?: return@OnDestinationChangedListener
+            if (destination.route == AppRoute.Main.route) {
+                pendingMeetingId = null
+                navController.navigate(AppRoute.MeetingInfoMenu(meetingId).route) {
+                    launchSingleTop = true
+                }
+            }
+        }
+        navController.addOnDestinationChangedListener(listener)
+        onDispose { navController.removeOnDestinationChangedListener(listener) }
+    }
 
     LaunchedEffect(Unit) {
         viewModel.effects.collect { effect ->
@@ -191,4 +236,25 @@ private fun AppNavHost(
             )
         }
     }
+}
+
+private fun extractMeetingId(intent: Intent?): Long? {
+    val data: Uri = intent?.data ?: return null
+    if (data.scheme != NotificationDeepLinks.SCHEME || data.host != NotificationDeepLinks.HOST) return null
+
+    val segments = data.pathSegments
+    return if (segments.size == 2 && segments[0] == "meeting") {
+        segments[1].toLongOrNull()
+    } else {
+        null
+    }
+}
+
+private fun Context.findActivity(): Activity? {
+    var ctx: Context = this
+    while (ctx is ContextWrapper) {
+        if (ctx is Activity) return ctx
+        ctx = ctx.baseContext
+    }
+    return null
 }

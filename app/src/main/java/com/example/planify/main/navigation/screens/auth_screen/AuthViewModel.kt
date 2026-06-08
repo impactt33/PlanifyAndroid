@@ -4,7 +4,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.main.features.auth.domain.services.AuthService
 import com.example.planify.main.features.meetings.domain.entities.MeetingNotification
-import com.example.planify.main.features.meetings.domain.use_cases.NotifyNewMessageUseCase
 import com.example.planify.main.features.settings.domain.services.SettingsService
 import com.example.planify.main.navigation.AppRoute
 import dagger.hilt.android.lifecycle.HiltViewModel

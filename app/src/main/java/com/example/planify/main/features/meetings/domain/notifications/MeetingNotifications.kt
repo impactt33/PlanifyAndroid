@@ -3,6 +3,9 @@ package com.example.planify.main.features.meetings.domain.notifications
 import com.example.planify.main.common.notifications.NotificationDeepLinks
 
 object MeetingNotifications {
-    const val CHANNEL_ID = "meeting_notifications"
-    fun notificationDeepLink(notificationId: String) = "${NotificationDeepLinks.SCHEME}://notification/$notificationId"
+    const val CHANNEL_ID = "meetings"
+
+    fun meetingDeepLink(meetingId: Long): String = NotificationDeepLinks.meeting(meetingId)
+
+    fun notificationsDeepLink(): String = NotificationDeepLinks.notifications()
 }

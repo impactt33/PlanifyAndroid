@@ -18,9 +18,10 @@ data class ActionModel(
     @ColumnInfo(name = "data")
     val data: String? = null
 ) {
-    fun toEntity(actionDataParser: ActionDataParser): Action<*> = Action(
-        id = id,
-        type = type,
-        data = data?.let { actionDataParser.deserialize(data, type) }
-    )
+    fun toEntity(actionDataParser: ActionDataParser): Action<*>? {
+        if (data == null) return Action<Any>(id = id, type = type, data = null)
+
+        val parsed = actionDataParser.deserializeOrNull(data, type) ?: return null
+        return Action(id = id, type = type, data = parsed)
+    }
 }

@@ -6,6 +6,7 @@ import androidx.work.OutOfQuotaPolicy
 import androidx.work.WorkManager
 import com.example.planify.main.features.actions.domain.workers.SyncActionsWorker
 import com.example.planify.main.features.auth.domain.services.AuthService
+import com.example.planify.main.features.firebase_fcm.domain.registrar.FcmTokenRegistrar
 import com.example.planify.main.features.firebase_fcm.domain.services.FcmService
 import com.google.firebase.messaging.FirebaseMessagingService
 import com.google.firebase.messaging.RemoteMessage
@@ -18,9 +19,9 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
-class ActionMessagingService(): FirebaseMessagingService() {
+class ActionMessagingService : FirebaseMessagingService() {
     @Inject
-    lateinit var fcmService: FcmService
+    lateinit var tokenRegistrar: FcmTokenRegistrar
 
     @Inject
     lateinit var authService: AuthService
@@ -28,25 +29,31 @@ class ActionMessagingService(): FirebaseMessagingService() {
     private val serviceScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun onMessageReceived(message: RemoteMessage) {
-        WorkManager.getInstance(applicationContext)
-            .enqueue(
-                OneTimeWorkRequestBuilder<SyncActionsWorker>()
-                    .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
-                    .build()
-            )
+        if (!authService.isAuthenticated()) {
+            Log.d(TAG, "Push received while unauthenticated — ignoring")
+            return
+        }
+
+        WorkManager.getInstance(applicationContext).enqueue(
+            OneTimeWorkRequestBuilder<SyncActionsWorker>()
+                .setExpedited(OutOfQuotaPolicy.RUN_AS_NON_EXPEDITED_WORK_REQUEST)
+                .build()
+        )
     }
 
     override fun onNewToken(token: String) {
         serviceScope.launch {
-            if (authService.isAuthenticated()) {
-                Log.d("FCM TOKEN FROM SERVICE", token)
-                fcmService.sendFcmToken(token)
-            }
+            Log.d(TAG, "onNewToken")
+            tokenRegistrar.register(token)
         }
     }
 
     override fun onDestroy() {
         super.onDestroy()
         serviceScope.cancel()
+    }
+
+    private companion object {
+        const val TAG = "ActionMessagingService"
     }
 }
