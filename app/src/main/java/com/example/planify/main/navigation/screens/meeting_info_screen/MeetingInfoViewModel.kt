@@ -1,8 +1,10 @@
 package com.example.planify.main.navigation.screens.meeting_info_screen
 
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.planify.main.features.auth.domain.services.AuthService
 import com.example.planify.main.features.meetings.domain.services.MeetingsService
 import com.example.planify.main.navigation.AppRoute
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -14,10 +16,13 @@ import javax.inject.Inject
 @HiltViewModel
 class MeetingInfoViewModel @Inject constructor(
     private val meetingService: MeetingsService,
+    private val authService: AuthService,
     savedStateHandle: SavedStateHandle
 ) : ViewModel() {
 
     private val meetingId: Long = checkNotNull(savedStateHandle[AppRoute.MeetingInfoMenu.ARG])
+
+    val authFlow = authService.authStateFlow
 
     private val _uiState = MutableStateFlow<UIState>(UIState.Loading)
     val uiState = _uiState.asStateFlow()
@@ -29,8 +34,7 @@ class MeetingInfoViewModel @Inject constructor(
             meetingService.fetchMeetingContext(meetingId = meetingId)
                 .onSuccess { meetingContext ->
                     _uiState.emit(
-                        UIState
-                            .ContentData(meetingContext)
+                        UIState.ContentData(meetingContext)
                     )
                 }
                 .onFailure { error ->

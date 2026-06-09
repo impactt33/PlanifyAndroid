@@ -3,6 +3,8 @@ package com.example.planify.main.navigation.screens.meeting_info_screen
 
 import android.util.Log
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,11 +15,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.requiredWidth
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonColors
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -30,6 +36,11 @@ import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -48,10 +59,14 @@ import com.adamglin.phosphoricons.regular.MapPin
 import com.adamglin.phosphoricons.regular.User
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
+import com.example.planify.main.common.themes.surfaceContainerLowLight
 import com.example.planify.main.common.ui.withShapeBackground
+import com.example.planify.main.features.auth.domain.entities.AuthState
 import com.example.planify.main.features.meetings.domain.entities.MeetingInviteStatus
 import com.example.planify.main.navigation.screens.fixed_screens.ErrorScreen
+import com.example.planify.main.navigation.screens.meeting_info_screen.components.RescheduleDialog
 import com.example.planify.main.navigation.screens.meeting_info_screen.components.TopBar
+import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
@@ -84,6 +99,51 @@ fun MeetingInfo(
     onBack: () -> Unit,
     viewModel: MeetingInfoViewModel
 ) {
+    var showRescheduleDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var selectedDate by remember {
+        mutableStateOf(LocalDate.now())
+    }
+
+    var startHour by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+
+    var endHour by rememberSaveable {
+        mutableIntStateOf(3)
+    }
+
+
+    RescheduleDialog(
+        visible = showRescheduleDialog,
+        meetingTitle = "meeting.title",
+        oldDateTime = "oldDateTime",
+        selectedDate = selectedDate,
+        startHour = startHour,
+        endHour = endHour,
+        onDateSelected = {
+            selectedDate = it
+        },
+        onStartHourSelected = {
+            startHour = it
+        },
+        onEndHourSelected = {
+            endHour = it
+        },
+        onMoveClick = {
+            // selectedDate
+            // startHour
+            // endHour
+
+            showRescheduleDialog = false
+        },
+        onDismiss = {
+            showRescheduleDialog = false
+        }
+    )
+
     val colors = MaterialTheme.colorScheme
     val shape = Locals.shapes.mediumShape
 
@@ -91,6 +151,8 @@ fun MeetingInfo(
     val formatter2 = DateTimeFormatter.ofPattern("HH:mm", Locale("ru"))
 
     val pullRefreshState = rememberPullToRefreshState()
+
+    val authState by viewModel.authFlow.collectAsState()
 
     val uiState by viewModel.uiState.collectAsState()
 
@@ -132,11 +194,11 @@ fun MeetingInfo(
                             )
                         )
                 ) {
-                    when (uiState) {
+                    when (val screenUiState = uiState) {
                         is UIState.Loading, is UIState.Refreshing -> {}
                         is UIState.Error -> ErrorScreen((uiState as UIState.Error).message)
                         is UIState.ContentData -> {
-                            val meetingInfo = (uiState as UIState.ContentData).meetingContext
+                            val meetingInfo = screenUiState.meetingContext
 
                             Text(
                                 text = meetingInfo.meeting.name,
@@ -153,6 +215,59 @@ fun MeetingInfo(
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = colors.onBackground
                             )
+
+                            Spacer(modifier = Modifier.height(Locals.spacing.xs))
+
+                            if ((authState as AuthState.Authenticated).context.user.id == meetingInfo.meeting.ownerId) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(Locals.spacing.xs)
+                                ) {
+                                    Button(
+                                        modifier = Modifier
+                                            .weight(0.5f),
+                                        shape = Locals.shapes.smallShape,
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = colors.primaryContainer
+                                        ),
+                                        border = BorderStroke(
+                                            width = 1.dp,
+                                            color = Locals.extras.border
+                                        ),
+                                        onClick = {}
+                                    ) {
+                                        Text(
+                                            text = "Редактировать",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = colors.onBackground
+                                        )
+                                    }
+
+                                    Button(
+                                        modifier = Modifier
+                                            .weight(0.5f),
+                                        shape = Locals.shapes.smallShape,
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = colors.primaryContainer
+                                        ),
+                                        border = BorderStroke(
+                                            width = 1.dp,
+                                            color = Locals.extras.border
+                                        ),
+                                        onClick = {
+                                            showRescheduleDialog = true
+                                        }
+                                    ) {
+                                        Text(
+                                            text = "Изменить время",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = colors.onBackground
+                                        )
+                                    }
+                                }
+                            }
 
                             Spacer(modifier = Modifier.height(Locals.spacing.xs))
 
