@@ -182,7 +182,8 @@ private fun MainScreen(
                 )
             }
             screen(MainScreenRoute.Inbox) { InboxView(
-                scaffoldPadding = padding
+                scaffoldPadding = padding,
+                navController = navController
             ) }
             screen(MainScreenRoute.Profile) {
                 ProfileView(
