@@ -41,6 +41,7 @@ import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.rememberPagerRouterScreenState
 import com.example.planify.main.navigation.screens.chat_screen.ChatScreen
 import com.example.planify.main.navigation.screens.create_meeting_screen.components.create_meeting_floating_dialog.CreateMeetingDialog
+import com.example.planify.main.navigation.screens.favorites_screen.FavoritesScreen
 import com.example.planify.main.navigation.screens.inbox_screen.ui.InboxView
 import com.example.planify.main.navigation.screens.main_screen.components.BottomNavBar
 import com.example.planify.main.navigation.screens.main_screen.components.TopBar
@@ -176,9 +177,9 @@ private fun MainScreen(
                     setMonthTitle = { monthTitle = it }
                 )
             }
-            screen(MainScreenRoute.Chat) {
-                ChatScreen(
-                    scaffoldPadding = padding
+            screen(MainScreenRoute.Favorites) {
+                FavoritesScreen(
+                    innerPadding = padding,
                 )
             }
             screen(MainScreenRoute.Inbox) { InboxView(

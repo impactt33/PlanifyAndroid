@@ -1,6 +1,5 @@
 package com.example.planify.main.common.ui
 
-import android.text.Highlights
 import androidx.compose.animation.core.LinearEasing
 import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
@@ -8,6 +7,7 @@ import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.ripple
 import androidx.compose.runtime.Composable
@@ -19,6 +19,8 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.platform.LocalFocusManager
 
 @Composable
 fun Modifier.objectClickable(onClick: () -> Unit) =
@@ -81,4 +83,13 @@ fun Modifier.shimmer(
     this
         .clip(shape)
         .background(brush)
+}
+
+@Composable
+fun Modifier.clearFocusOnTap(): Modifier {
+    val focusManager = LocalFocusManager.current
+
+    return this.pointerInput(Unit) {
+        detectTapGestures(onTap = { focusManager.clearFocus() })
+    }
 }

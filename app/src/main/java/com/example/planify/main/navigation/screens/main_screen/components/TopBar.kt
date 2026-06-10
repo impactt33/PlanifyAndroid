@@ -46,6 +46,7 @@ import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.bold.Bell
 import com.adamglin.phosphoricons.regular.CalendarDots
 import com.adamglin.phosphoricons.regular.MagnifyingGlass
+import com.adamglin.phosphoricons.regular.User
 import com.example.planify.R
 import com.example.planify.core.ui.pager_router_screen.PagerRouterNavigator
 import com.example.planify.main.common.themes.Locals
@@ -132,29 +133,8 @@ fun HomeTopBar(
 fun ChatTopBar(
     title: String
 ) {
-
-    var query by remember { mutableStateOf("") }
-
-    Row(
-        modifier = Modifier
-            .fillMaxSize(),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.Center
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxHeight(),
-            horizontalAlignment = Alignment.Start
-        ) {
-            TopBarTitleText(title = title)
-            Spacer(modifier = Modifier.height(Locals.spacing.xxs))
-            GlassSearchBar(
-                value = query,
-                onValueChange = { query = it },
-                modifier = Modifier,
-                placeholder = stringResource(R.string.glass_search_placeholder)
-            )
-        }
+    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.CenterStart) {
+        TopBarTitleTextLarge(title = title)
     }
 }
 
@@ -260,8 +240,8 @@ fun TopBar(
                         description = countUnread,
                         onClick = onNotifications
                     )
-                    MainScreenRoute.Chat.key -> ChatTopBar(
-                        title = stringResource(R.string.chats)
+                    MainScreenRoute.Favorites.key -> ChatTopBar(
+                        title = stringResource(R.string.favorites)
                     )
                     MainScreenRoute.Profile.key -> ProfileTopBar(
                         title = stringResource(R.string.profile),

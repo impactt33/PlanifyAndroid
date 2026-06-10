@@ -10,4 +10,6 @@ data class Profile(
     val position: String,
     val department: String,
     val profileImageUrl: String
-)
+) {
+    val fullName get() = "$firstName $lastName"
+}

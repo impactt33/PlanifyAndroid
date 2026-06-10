@@ -41,6 +41,7 @@ import com.adamglin.phosphoricons.bold.User
 import com.adamglin.phosphoricons.regular.ChatCircle
 import com.adamglin.phosphoricons.regular.EnvelopeSimple
 import com.adamglin.phosphoricons.regular.HouseSimple
+import com.adamglin.phosphoricons.regular.Star
 import com.adamglin.phosphoricons.regular.User
 import com.example.planify.R
 import com.example.planify.core.ui.pager_router_screen.PagerRouterNavigator
@@ -207,12 +208,12 @@ fun BottomNavBar(
            )
 
            BottomNavItem(
-               title = stringResource(R.string.chats),
-               iconNormal = PhosphorIcons.Regular.ChatCircle,
-               iconSelected = PhosphorIcons.Bold.ChatCircle,
-               selected = pagerRouter.currentRoute == MainScreenRoute.Chat,
+               title = stringResource(R.string.favorites),
+               iconNormal = PhosphorIcons.Regular.Star,
+               iconSelected = PhosphorIcons.Regular.Star,
+               selected = pagerRouter.currentRoute == MainScreenRoute.Favorites,
                onClick = {
-                   pagerRouter.navigateTo(MainScreenRoute.Chat)
+                   pagerRouter.navigateTo(MainScreenRoute.Favorites)
                }
            )
 
