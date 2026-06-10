@@ -6,7 +6,10 @@ import androidx.lifecycle.viewModelScope
 import com.example.planify.core.ui.state.ResourceState
 import com.example.planify.main.features.actions.domain.entities.Action
 import com.example.planify.main.features.actions.domain.services.ActionsService
+import com.example.planify.main.features.meetings.domain.entities.Meeting
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
+import com.example.planify.main.features.meetings.domain.entities.MeetingInvitationContext
+import com.example.planify.main.features.meetings.domain.entities.MeetingInvite
 import com.example.planify.main.features.meetings.domain.schemas.actions.UserActionInvitedToMeetingSchema
 import com.example.planify.main.features.meetings.domain.services.MeetingInvitesService
 import com.example.planify.main.features.meetings.domain.services.MeetingsService
@@ -34,7 +37,39 @@ class InboxViewModel @Inject constructor(
 
     private val inFlight: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
+    private val _meetings = MutableStateFlow<List<MeetingContextShort>>(emptyList())
+
+    val meetings = _meetings.asStateFlow()
+
     init {
+        Log.d("InboxViewModel", "init called")
+
+        viewModelScope.launch {
+            Log.d("InboxViewModel", "before getMeetingInvitationContext")
+
+            meetingInvitesService.getMeetingInvitationContext()
+                .onSuccess { invites ->
+                    Log.d("InboxViewModel", "success, invites size = ${invites.size}")
+
+                    val meets = invites
+                        .groupBy { it.meeting.id }
+                        .map { (_, inviteList) ->
+                            MeetingContextShort(
+                                meeting = inviteList.first().meeting,
+                                participantProfiles = inviteList.map { it.targetProfile },
+                                invites = inviteList.map { it.invite }
+                            )
+                        }
+
+                    _meetings.value = meets
+
+                    Log.d("InboxViewModel", "meetings size = ${meets.size}")
+                }
+                .onFailure { error ->
+                    Log.e("InboxViewModel", "getMeetingInvitationContext failed", error)
+                }
+        }
+
         viewModelScope.launch {
             actionService.observeActions().collect { list -> reconcile(list) }
         }
@@ -109,3 +144,9 @@ class InboxViewModel @Inject constructor(
         }
     }
 }
+
+data class MeetingContextShort(
+    val meeting: Meeting,
+    val participantProfiles: List<Profile>,
+    val invites: List<MeetingInvite>
+)

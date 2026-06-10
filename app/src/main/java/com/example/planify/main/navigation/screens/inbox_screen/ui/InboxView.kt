@@ -29,6 +29,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavController
 import com.example.planify.R
 import com.example.planify.core.ui.pager_router_screen.PagerRouterScreen
 import com.example.planify.core.ui.pager_router_screen.PagerRouterState
@@ -42,10 +43,12 @@ import com.example.planify.main.navigation.screens.inbox_screen.ui.views.InboxVi
 
 @Composable
 fun InboxView(
-    scaffoldPadding: PaddingValues
+    scaffoldPadding: PaddingValues,
+    navController: NavController
 ) {
     InboxView(
         viewModel = hiltViewModel(),
+        navController = navController,
         scaffoldPadding = scaffoldPadding
     )
 }
@@ -53,6 +56,7 @@ fun InboxView(
 @Composable
 private fun InboxView(
     viewModel: InboxViewModel,
+    navController: NavController,
     scaffoldPadding: PaddingValues
 ) {
     val pagerState = rememberPagerRouterScreenState(
@@ -79,7 +83,10 @@ private fun InboxView(
                     InboxViewIncoming(viewModel)
                 }
                 screen(InboxRoute.Sent) {
-                    InboxViewSent(viewModel)
+                    InboxViewSent(
+                        viewModel = viewModel,
+                        navController = navController
+                    )
                 }
             }
         }

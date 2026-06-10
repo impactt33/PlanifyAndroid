@@ -1,5 +1,6 @@
 package com.example.planify.main.features.meetings.data.repositories_impl
 
+import com.example.planify.core.exceptions.ForbiddenTimeAppError
 import com.example.planify.main.features.auth.domain.utils.network.AuthenticatedApiClient
 import com.example.planify.main.features.meetings.data.dto.create_meeting.CreateMeetingRequestDTO
 import com.example.planify.main.features.meetings.data.dto.create_meeting.CreateMeetingResponseDTO
@@ -88,6 +89,36 @@ class MeetingsRepositoryImpl @Inject constructor(
             startsAt = patch.startsAt,
             duration = patch.duration
         )
+
+        if (patch.startsAt != null) {
+            val anchorDate = patch.startsAt.toLocalDate()
+
+            val dailyMeetings = fetchMyDailyMeetings(startDate = anchorDate, endDate = anchorDate)
+                .getOrElse { return@withContext Result.failure(it) }
+                .values.flatten()
+
+            val current = dailyMeetings.firstOrNull { it.meeting.id == meetingId }?.meeting
+            val newDuration = patch.duration ?: current?.duration
+
+            if (newDuration != null) {
+                val newStart = patch.startsAt
+                val newEnd = newStart.plusHours(newDuration.toLong())
+
+                val hasOverlap = dailyMeetings
+                    .filterNot { it.meeting.id == meetingId }
+                    .any { ctx ->
+                        val otherStart = ctx.meeting.startsAt
+                        val otherEnd = otherStart.plusHours(ctx.meeting.duration.toLong())
+                        newStart < otherEnd && otherStart < newEnd
+                    }
+
+                if (hasOverlap) {
+                    return@withContext Result.failure(
+                        ForbiddenTimeAppError("Время встречи пересекается с другим митингом")
+                    )
+                }
+            }
+        }
 
         return@withContext runCatching {
             authenticatedApiClient.requestUnit {

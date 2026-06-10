@@ -1,14 +1,18 @@
 package com.example.planify.main.features.meetings.data.repositories_impl
 
 import com.example.planify.main.features.auth.domain.utils.network.AuthenticatedApiClient
+import com.example.planify.main.features.meetings.data.dto.GetMeetingInvitationsContextDTO
+import com.example.planify.main.features.meetings.data.dto.MeetingInvitationContextDTO
 import com.example.planify.main.features.meetings.data.dto.create_invite.InviteUserRequestDTO
 import com.example.planify.main.features.meetings.data.dto.create_invite.InviteUserResponseDTO
 import com.example.planify.main.features.meetings.data.dto.get_invite.GetInviteDTO
 import com.example.planify.main.features.meetings.data.dto.reschedule_invite.InviteRescheduleRequestDTO
 import com.example.planify.main.features.meetings.data.dto.reschedule_invite.InviteRescheduleResponseDTO
+import com.example.planify.main.features.meetings.domain.entities.MeetingInvitationContext
 import com.example.planify.main.features.meetings.domain.entities.MeetingInvite
 import com.example.planify.main.features.meetings.domain.repositories.MeetingInvitesRepository
 import io.ktor.client.request.setBody
+import io.ktor.client.utils.HttpResponseReceived
 import io.ktor.http.HttpMethod
 import io.ktor.http.path
 import kotlinx.coroutines.Dispatchers
@@ -30,6 +34,7 @@ class MeetingInvitesRepositoryImpl @Inject constructor(
     private val meetingInvitesRejectPath = "$meetingInvitesFeaturePath/%s/reject"
     private val meetingInvitesAcceptPath = "$meetingInvitesFeaturePath/%s/accept"
     private val meetingInviteGetPath = "$meetingInvitesFeaturePath/%s"
+    private val meetingInvitationContext = "$meetingInvitesFeaturePath/my/sent/withcontext"
 
     override suspend fun inviteUser(meetingId: Long, targetUserId: Long): Result<MeetingInvite> = withContext(Dispatchers.IO) {
         val requestDTO = InviteUserRequestDTO(
@@ -102,6 +107,17 @@ class MeetingInvitesRepositoryImpl @Inject constructor(
             }
 
             response.invite.toEntity()
+        }
+    }
+
+    override suspend fun getMeetingInvitationContext(): Result<List<MeetingInvitationContext>> = withContext(Dispatchers.IO){
+        return@withContext runCatching {
+            val response = authenticatedApiClient.requestNotNull<GetMeetingInvitationsContextDTO> {
+                method = HttpMethod.Get
+                url { path(meetingInvitationContext) }
+            }
+
+            response.toEntity()
         }
     }
 }

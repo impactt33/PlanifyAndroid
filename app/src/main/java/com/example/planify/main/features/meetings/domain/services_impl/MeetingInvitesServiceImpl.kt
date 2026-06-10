@@ -1,6 +1,7 @@
 package com.example.planify.main.features.meetings.domain.services_impl
 
 import com.example.planify.main.features.actions.domain.services.ActionsService
+import com.example.planify.main.features.meetings.domain.entities.MeetingInvitationContext
 import com.example.planify.main.features.meetings.domain.entities.MeetingInvite
 import com.example.planify.main.features.meetings.domain.repositories.MeetingInvitesRepository
 import com.example.planify.main.features.meetings.domain.services.MeetingInvitesService
@@ -19,6 +20,10 @@ class MeetingInvitesServiceImpl @Inject constructor(
 
     override suspend fun getInvite(inviteUuid: String): Result<MeetingInvite> {
         return meetingInvitesRepository.getInvite(inviteUuid = inviteUuid)
+    }
+
+    override suspend fun getMeetingInvitationContext(): Result<List<MeetingInvitationContext>> {
+        return meetingInvitesRepository.getMeetingInvitationContext()
     }
 
     override suspend fun inviteRescheduleResponse(inviteUuid: String, shouldReschedule: Boolean, actionId: String): Result<Unit> {

@@ -54,6 +54,8 @@ fun HomeWeekView(
     getMeetingsInfoByDate: (LocalDate) -> List<MeetingContext>,
     onMeetingClick: (Long) -> Unit
 ) {
+    val authFlow by viewModel.authState.collectAsState()
+
     fun pageForWeek(date: LocalDate): Int =
         ChronoUnit.WEEKS.between(
             LocalDate.now().with(TemporalAdjusters.previousOrSame(DayOfWeek.MONDAY)),

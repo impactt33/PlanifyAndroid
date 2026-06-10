@@ -1,9 +1,11 @@
 package com.example.planify.main.navigation.screens.main_screen.views.home.home_view
 
 import android.util.Log
+import androidx.compose.runtime.collectAsState
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.planify.core.ui.state.ResourceState
+import com.example.planify.main.features.auth.domain.services.AuthService
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
 import com.example.planify.main.features.meetings.domain.services.MeetingsService
 import com.example.planify.main.navigation.AppRoute
@@ -20,10 +22,13 @@ import java.time.LocalDate
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    val meetingsService: MeetingsService
+    private val meetingsService: MeetingsService,
+    private val authService: AuthService
 ) : ViewModel() {
     private val _navigateEvents = MutableSharedFlow<AppRoute>()
     val navigateEvents = _navigateEvents.asSharedFlow()
+
+    val authState = authService.authStateFlow
 
     private val _uiState = MutableStateFlow(UIState.empty())
     val uiState = _uiState.asStateFlow()

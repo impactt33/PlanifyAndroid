@@ -2,6 +2,7 @@ package com.example.planify.main.navigation.screens.meeting_info_screen
 
 
 import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,8 +19,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -28,13 +32,20 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -49,9 +60,13 @@ import com.adamglin.phosphoricons.regular.User
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
+import com.example.planify.main.features.auth.domain.entities.AuthState
 import com.example.planify.main.features.meetings.domain.entities.MeetingInviteStatus
 import com.example.planify.main.navigation.screens.fixed_screens.ErrorScreen
+import com.example.planify.main.navigation.screens.meeting_info_screen.components.RescheduleDialog
 import com.example.planify.main.navigation.screens.meeting_info_screen.components.TopBar
+import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.Locale
@@ -72,18 +87,99 @@ private fun MeetingInfoScreen(
     onBack: () -> Unit,
     viewModel: MeetingInfoViewModel
 ) {
-    MeetingInfo(
-        onBack = onBack,
-        viewModel = viewModel
-    )
+    val uiState by viewModel.uiState.collectAsState()
+
+    when (val screenUIState = uiState) {
+        is UIState.ContentData -> {
+            MeetingInfo(
+                onBack = onBack,
+                uiState = screenUIState,
+                viewModel = viewModel
+            )
+        }
+
+        is UIState.Error -> {
+            ErrorScreen(
+                status = screenUIState.message
+            )
+        }
+
+        is UIState.Loading, UIState.Refreshing -> {
+            CircularProgressIndicator()
+        }
+    }
+
+
 }
 
 @Composable
 @OptIn(ExperimentalMaterial3Api::class)
-fun MeetingInfo(
+private fun MeetingInfo(
     onBack: () -> Unit,
+    uiState: UIState.ContentData,
     viewModel: MeetingInfoViewModel
 ) {
+    val context = LocalContext.current
+
+    LaunchedEffect(Unit) {
+        viewModel.eventFlow.collect { event ->
+            when (event) {
+                is MeetingInfoEvent.ShowToast -> {
+                    Toast.makeText(
+                        context,
+                        event.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            }
+        }
+    }
+
+    var showRescheduleDialog by rememberSaveable {
+        mutableStateOf(false)
+    }
+
+    var selectedDate by remember {
+        mutableStateOf(LocalDate.now())
+    }
+
+    var startHour by rememberSaveable {
+        mutableIntStateOf(0)
+    }
+
+    var endHour by rememberSaveable {
+        mutableIntStateOf(3)
+    }
+
+    val stringInterval = (uiState.meetingContext.meeting.startsAt
+            to uiState.meetingContext.meeting.startsAt.plusHours(uiState.meetingContext.meeting.duration.toLong()))
+        .toStringInterval()
+
+    RescheduleDialog(
+        visible = showRescheduleDialog,
+        meetingTitle = uiState.meetingContext.meeting.name,
+        oldDateTime = stringInterval,
+        selectedDate = selectedDate,
+        startHour = startHour,
+        endHour = endHour,
+        onDateSelected = {
+            selectedDate = it
+        },
+        onStartHourSelected = {
+            startHour = it
+        },
+        onEndHourSelected = {
+            endHour = it
+        },
+        onMoveClick = {
+            viewModel.rescheduleThisMeeting(selectedDate.atTime(startHour, 0), endHour - startHour)
+            showRescheduleDialog = false
+        },
+        onDismiss = {
+            showRescheduleDialog = false
+        }
+    )
+
     val colors = MaterialTheme.colorScheme
     val shape = Locals.shapes.mediumShape
 
@@ -91,6 +187,8 @@ fun MeetingInfo(
     val formatter2 = DateTimeFormatter.ofPattern("HH:mm", Locale("ru"))
 
     val pullRefreshState = rememberPullToRefreshState()
+
+    val authState by viewModel.authFlow.collectAsState()
 
     val uiState by viewModel.uiState.collectAsState()
 
@@ -132,11 +230,11 @@ fun MeetingInfo(
                             )
                         )
                 ) {
-                    when (uiState) {
+                    when (val screenUiState = uiState) {
                         is UIState.Loading, is UIState.Refreshing -> {}
                         is UIState.Error -> ErrorScreen((uiState as UIState.Error).message)
                         is UIState.ContentData -> {
-                            val meetingInfo = (uiState as UIState.ContentData).meetingContext
+                            val meetingInfo = screenUiState.meetingContext
 
                             Text(
                                 text = meetingInfo.meeting.name,
@@ -153,6 +251,61 @@ fun MeetingInfo(
                                 style = MaterialTheme.typography.bodyLarge,
                                 color = colors.onBackground
                             )
+
+                            Spacer(modifier = Modifier.height(Locals.spacing.xs))
+
+                            if ((authState as AuthState.Authenticated).context.user.id == meetingInfo.meeting.ownerId &&
+                                meetingInfo.meeting.startsAt.isAfter(LocalDateTime.now())
+                            ) {
+                                Row(
+                                    modifier = Modifier
+                                        .fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.spacedBy(Locals.spacing.xs)
+                                ) {
+                                    Button(
+                                        modifier = Modifier
+                                            .weight(0.5f),
+                                        shape = Locals.shapes.smallShape,
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = colors.primaryContainer
+                                        ),
+                                        border = BorderStroke(
+                                            width = 1.dp,
+                                            color = Locals.extras.border
+                                        ),
+                                        onClick = {}
+                                    ) {
+                                        Text(
+                                            text = "Редактировать",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = colors.onBackground
+                                        )
+                                    }
+
+                                    Button(
+                                        modifier = Modifier
+                                            .weight(0.5f),
+                                        shape = Locals.shapes.smallShape,
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = colors.primaryContainer
+                                        ),
+                                        border = BorderStroke(
+                                            width = 1.dp,
+                                            color = Locals.extras.border
+                                        ),
+                                        onClick = {
+                                            showRescheduleDialog = true
+                                        }
+                                    ) {
+                                        Text(
+                                            text = "Изменить время",
+                                            style = MaterialTheme.typography.bodyMedium,
+                                            color = colors.onBackground
+                                        )
+                                    }
+                                }
+                            }
 
                             Spacer(modifier = Modifier.height(Locals.spacing.xs))
 
@@ -430,4 +583,10 @@ fun InfoMeetingRow(
             )
         }
     }
+}
+
+fun Pair<LocalDateTime, LocalDateTime>.toStringInterval(): String {
+    val formatter = DateTimeFormatter.ofPattern("HH:00")
+
+    return "${this.first.format(formatter)} - ${this.second.format(formatter)}"
 }

@@ -1,5 +1,6 @@
 package com.example.planify.main.features.meetings.domain.repositories
 
+import com.example.planify.main.features.meetings.domain.entities.MeetingInvitationContext
 import com.example.planify.main.features.meetings.domain.entities.MeetingInvite
 import java.time.LocalDateTime
 
@@ -15,4 +16,6 @@ interface MeetingInvitesRepository {
     suspend fun inviteAccept(inviteUuid: String): Result<Unit>
 
     suspend fun getInvite(inviteUuid: String): Result<MeetingInvite>
+
+    suspend fun getMeetingInvitationContext(): Result<List<MeetingInvitationContext>>
 }

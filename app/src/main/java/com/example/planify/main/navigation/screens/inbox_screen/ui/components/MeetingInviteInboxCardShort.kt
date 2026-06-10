@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -36,20 +35,23 @@ import com.adamglin.phosphoricons.regular.Pen
 import com.example.planify.R
 import com.example.planify.main.common.themes.Locals
 import com.example.planify.main.common.ui.withShapeBackground
-import com.example.planify.main.features.meetings.domain.entities.MeetingContext
+import com.example.planify.main.features.meetings.domain.entities.Meeting
+import com.example.planify.main.features.meetings.domain.entities.MeetingInvite
 import com.example.planify.main.features.meetings.domain.entities.MeetingInviteStatus
+import com.example.planify.main.features.profiles.domain.entities.Profile
 import java.time.format.DateTimeFormatter
 import java.util.Locale
 
 @Composable
 fun MeetingInviteInboxCardShort(
-    meetingInfo: MeetingContext,
+    meeting: Meeting,
+    participantProfiles: List<Profile>,
+    invites: List<MeetingInvite>,
+    onClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val shape = Locals.shapes.mediumShape
     val colors = MaterialTheme.colorScheme
-
-    val meeting = meetingInfo.meeting
 
     val formatter1 = DateTimeFormatter.ofPattern("dd.MM", Locale("ru"))
     val formatter2 = DateTimeFormatter.ofPattern("HH:mm", Locale("ru"))
@@ -59,7 +61,10 @@ fun MeetingInviteInboxCardShort(
             .fillMaxWidth()
             .height(Locals.dimens.meetingInboxCardHeightShort)
             .padding(horizontal = Locals.spacing.m)
-            .clip(shape),
+            .clip(shape)
+            .clickable {
+                onClick(meeting.id)
+            },
         contentAlignment = Alignment.Center,
     ) {
         Box(
@@ -134,7 +139,7 @@ fun MeetingInviteInboxCardShort(
                     )
 
                     Text(
-                        text = meetingInfo.meeting.startsAt.format(formatter1),
+                        text = meeting.startsAt.format(formatter1),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Locals.extras.mutedForeground
                     )
@@ -151,7 +156,7 @@ fun MeetingInviteInboxCardShort(
                     )
 
                     Text(
-                        text = meetingInfo.meeting.startsAt.format(formatter2),
+                        text = meeting.startsAt.format(formatter2),
                         style = MaterialTheme.typography.bodyMedium,
                         color = Locals.extras.mutedForeground
                     )
@@ -170,7 +175,7 @@ fun MeetingInviteInboxCardShort(
                     )
 
                     Text(
-                        text = meetingInfo.meeting.location,
+                        text = meeting.location,
                         style = MaterialTheme.typography.bodyMedium,
                         color = Locals.extras.mutedForeground
                     )
@@ -188,8 +193,7 @@ fun MeetingInviteInboxCardShort(
                     ) {
                         var count = 0
 
-                        meetingInfo.participantProfiles.forEach { participant ->
-                            if (count > 2) return@forEach
+                        participantProfiles.forEach { participant ->
                             SmallPhotoIcon(
                                 modifier = Modifier
                                     .size(Locals.icons.mediumLower)
@@ -201,7 +205,7 @@ fun MeetingInviteInboxCardShort(
 
                         var accepted = 0
 
-                        meetingInfo.invites.forEach { invite ->
+                        invites.forEach { invite ->
                             if (invite.status == MeetingInviteStatus.ACCEPTED)
                                 accepted += 1
                         }
@@ -209,7 +213,7 @@ fun MeetingInviteInboxCardShort(
                         Text(
                             modifier = Modifier
                                 .offset(x = -(Locals.icons.mediumLower/4)),
-                            text = "${accepted}/${meetingInfo.invites.size}",
+                            text = "${accepted}/${invites.size}",
                             style = MaterialTheme.typography.bodySmall,
                             color = Locals.extras.mutedForeground
                         )
