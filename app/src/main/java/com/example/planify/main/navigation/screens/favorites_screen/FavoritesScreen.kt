@@ -46,7 +46,6 @@ internal fun FavoritesScreen(
     val favorites: List<FavoriteRecordUIEntity> =
         (uiState.favorites as? ResourceState.Success)?.data?.values?.toList().orEmpty()
 
-    Log.d("asdasd", favorites.size.toString())
     val isRefreshing = uiState.favorites is ResourceState.Refreshing
 
     PullToRefreshBox(

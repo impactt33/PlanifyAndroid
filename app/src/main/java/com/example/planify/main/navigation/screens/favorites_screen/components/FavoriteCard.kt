@@ -43,7 +43,7 @@ internal fun FavoriteCard(
     Row(
         modifier = Modifier
             .fillMaxWidth()
-            .height(100.dp)
+            .height(110.dp)
             .withShapeBackground(
                 color = colors.surface,
                 shape = RoundedCornerShape(16.dp)

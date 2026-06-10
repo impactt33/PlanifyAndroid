@@ -1,7 +1,10 @@
 package com.example.planify.main.features.favorites.data.sources
 
 import com.example.planify.main.features.auth.domain.utils.network.AuthenticatedApiClient
+import com.example.planify.main.features.favorites.data.dto.add_favorite.AddFavoriteRequestDTO
 import com.example.planify.main.features.favorites.data.dto.get_favorites.GetFavoritesResponseDTO
+import com.example.planify.main.features.favorites.data.dto.remove_favorite.RemoveFavoriteRequestDTO
+import io.ktor.client.request.setBody
 import io.ktor.http.HttpMethod
 import io.ktor.http.path
 import jakarta.inject.Inject
@@ -13,21 +16,34 @@ class FavoritesRemoteDataSource @Inject constructor(
 
     private fun favoriteByUserIdPath(favoriteUserId: Long) = "$favoritesFeaturePath/$favoriteUserId"
 
-    suspend fun getFavorites(): GetFavoritesResponseDTO =
-        authenticatedApiClient.requestNotNull<GetFavoritesResponseDTO> {
+    suspend fun getFavorites(): GetFavoritesResponseDTO {
+        return authenticatedApiClient.requestNotNull<GetFavoritesResponseDTO> {
             method = HttpMethod.Get
             url { path(favoritesFeaturePath) }
         }
+    }
 
-    suspend fun addFavorite(favoriteUserId: Long) =
-        authenticatedApiClient.requestUnit {
+    suspend fun addFavorite(favoriteUserId: Long) {
+        val requestDTO = AddFavoriteRequestDTO(
+            favoriteUserId = favoriteUserId
+        )
+
+        return authenticatedApiClient.requestUnit {
             method = HttpMethod.Post
-            url { path(favoriteByUserIdPath(favoriteUserId)) }
+            url { path(favoritesFeaturePath) }
+            setBody(requestDTO)
         }
+    }
 
-    suspend fun removeFavorite(favoriteUserId: Long) =
-        authenticatedApiClient.requestUnit {
+    suspend fun removeFavorite(favoriteUserId: Long) {
+        val requestDTO = RemoveFavoriteRequestDTO(
+            favoriteUserId = favoriteUserId
+        )
+
+        return authenticatedApiClient.requestUnit {
             method = HttpMethod.Delete
-            url { path(favoriteByUserIdPath(favoriteUserId)) }
+            url { path(favoritesFeaturePath) }
+            setBody(requestDTO)
         }
+    }
 }
