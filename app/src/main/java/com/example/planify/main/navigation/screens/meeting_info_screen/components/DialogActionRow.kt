@@ -44,7 +44,7 @@ fun DialogActionRow(
             .height(Locals.dimens.buttonMeetingInboxCardHeight),
         shape = Locals.shapes.mediumShape,
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = colors.background
         ),
         border = BorderStroke(
             width = 1.dp,

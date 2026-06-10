@@ -153,11 +153,10 @@ fun InboxTopBar(
         Column(
             modifier = Modifier
                 .fillMaxHeight(),
-            horizontalAlignment = Alignment.Start
+            horizontalAlignment = Alignment.Start,
+            verticalArrangement = Arrangement.Center
         ) {
             TopBarTitleText(title = title)
-            Spacer(modifier = Modifier.height(Locals.spacing.xxs))
-            SecondaryInboxInfo(description)
         }
 
         Spacer(modifier = Modifier.weight(1f))

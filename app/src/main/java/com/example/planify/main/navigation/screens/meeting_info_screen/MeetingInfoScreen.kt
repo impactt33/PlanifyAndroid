@@ -105,7 +105,16 @@ private fun MeetingInfoScreen(
         }
 
         is UIState.Loading, UIState.Refreshing -> {
-            CircularProgressIndicator()
+            Box(
+                modifier = Modifier
+                    .fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                CircularProgressIndicator(
+                    modifier = Modifier
+                        .size(Locals.icons.medium)
+                )
+            }
         }
     }
 

@@ -35,6 +35,9 @@ class InboxViewModel @Inject constructor(
     private val _actions = MutableStateFlow<List<Action<*>>>(emptyList())
     val actions = _actions.asStateFlow()
 
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing = _isRefreshing.asStateFlow()
+
     private val inFlight: MutableSet<String> = ConcurrentHashMap.newKeySet()
 
     private val _meetings = MutableStateFlow<List<MeetingContextShort>>(emptyList())
@@ -141,6 +144,45 @@ class InboxViewModel @Inject constructor(
             meetingInvitesService.inviteReject(inviteUuid, actionId)
                 .onSuccess { _uiState.update { it.copy(actions = it.actions - actionId) } }
                 .onFailure { Log.e(this::class.simpleName, "inviteReject failed", it) }
+        }
+    }
+
+    fun refreshSent() {
+        viewModelScope.launch {
+            if (_isRefreshing.value) return@launch
+
+            _isRefreshing.emit(true)
+
+            try {
+                viewModelScope.launch {
+                    Log.d("InboxViewModel", "before getMeetingInvitationContext")
+
+                    meetingInvitesService.getMeetingInvitationContext()
+                        .onSuccess { invites ->
+                            Log.d("InboxViewModel", "success, invites size = ${invites.size}")
+
+                            val meets = invites
+                                .groupBy { it.meeting.id }
+                                .map { (_, inviteList) ->
+                                    MeetingContextShort(
+                                        meeting = inviteList.first().meeting,
+                                        participantProfiles = inviteList.map { it.targetProfile },
+                                        invites = inviteList.map { it.invite }
+                                    )
+                                }
+
+                            _meetings.value = meets
+
+                            _isRefreshing.emit(false)
+
+                            Log.d("InboxViewModel", "meetings size = ${meets.size}")
+                        }
+                        .onFailure { error ->
+                            Log.e("InboxViewModel", "getMeetingInvitationContext failed", error)
+                        }
+                }
+            }
+            catch (e: Exception) { }
         }
     }
 }

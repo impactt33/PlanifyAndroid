@@ -45,7 +45,6 @@ fun MeetingInfoCard(
             Text(
                 text = title,
                 style = MaterialTheme.typography.bodyMedium,
-                fontWeight = FontWeight.SemiBold,
                 color = colors.onBackground
             )
 

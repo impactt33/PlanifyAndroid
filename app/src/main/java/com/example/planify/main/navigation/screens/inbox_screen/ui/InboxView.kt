@@ -17,8 +17,11 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.pulltorefresh.PullToRefreshBox
+import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -28,6 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import com.example.planify.R
@@ -53,6 +57,7 @@ fun InboxView(
     )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun InboxView(
     viewModel: InboxViewModel,
@@ -64,29 +69,45 @@ private fun InboxView(
         startRoute = InboxRoute.Incoming
     )
 
+    val pullToRefreshState = rememberPullToRefreshState()
+
+    val isRefreshing by viewModel.isRefreshing.collectAsStateWithLifecycle()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .padding(scaffoldPadding)
     ) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize(),
-            verticalArrangement = Arrangement.Top,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            PagerRouterScreen(
-                modifier = Modifier.fillMaxSize(),
-                state = pagerState
-            ) {
-                screen(InboxRoute.Incoming) {
-                    InboxViewIncoming(viewModel)
+        PullToRefreshBox(
+            modifier = Modifier.fillMaxSize(),
+            state = pullToRefreshState,
+            isRefreshing = isRefreshing,
+            onRefresh = {
+                when (pagerState.currentRoute) {
+                    InboxRoute.Incoming -> {}
+                    InboxRoute.Sent -> viewModel.refreshSent()
                 }
-                screen(InboxRoute.Sent) {
-                    InboxViewSent(
-                        viewModel = viewModel,
-                        navController = navController
-                    )
+            }
+        ) {
+            Column(
+                modifier = Modifier.fillMaxSize(),
+                verticalArrangement = Arrangement.Top,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                PagerRouterScreen(
+                    modifier = Modifier.fillMaxSize(),
+                    state = pagerState
+                ) {
+                    screen(InboxRoute.Incoming) {
+                        InboxViewIncoming(viewModel)
+                    }
+
+                    screen(InboxRoute.Sent) {
+                        InboxViewSent(
+                            viewModel = viewModel,
+                            navController = navController
+                        )
+                    }
                 }
             }
         }
@@ -94,9 +115,7 @@ private fun InboxView(
         TopNavButtonIsland(
             pagerState = pagerState
         )
-
     }
-
 }
 
 @Composable
