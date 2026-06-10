@@ -1,6 +1,7 @@
 package com.example.planify.main.navigation.screens.meeting_info_screen.components
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +32,9 @@ import com.adamglin.PhosphorIcons
 import com.adamglin.phosphoricons.Regular
 import com.adamglin.phosphoricons.regular.Calendar
 import com.adamglin.phosphoricons.regular.Cross
+import com.adamglin.phosphoricons.regular.X
 import com.example.planify.main.common.themes.Locals
+import com.example.planify.main.navigation.screens.create_meeting_screen.components.RowWith2Buttons
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -88,8 +91,10 @@ fun RescheduleDialog(
                     modifier = Modifier.fillMaxWidth(),
                     verticalAlignment = Alignment.Top
                 ) {
-                    Column(
-                        modifier = Modifier.weight(1f)
+                    Row(
+                        modifier = Modifier
+                            .weight(1f),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
                         Text(
                             text = "Перенести встречу",
@@ -97,26 +102,26 @@ fun RescheduleDialog(
                             color = colors.onBackground
                         )
 
-                        Spacer(modifier = Modifier.height(Locals.spacing.xxxs))
-
-                        Text(
-                            text = "Выберите новую дату и время",
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = colors.onBackground
-                        )
-                    }
-
-                    IconButton(
-                        onClick = onDismiss,
-                        modifier = Modifier.size(Locals.icons.large)
-                    ) {
-                        Icon(
-                            imageVector = PhosphorIcons.Regular.Cross,
-                            contentDescription = null,
-                            tint = colors.primary
-                        )
+                        IconButton(
+                            onClick = onDismiss,
+                            modifier = Modifier.size(Locals.icons.smallPlus)
+                        ) {
+                            Icon(
+                                imageVector = PhosphorIcons.Regular.X,
+                                contentDescription = null,
+                                tint = colors.primary
+                            )
+                        }
                     }
                 }
+
+                Spacer(modifier = Modifier.height(Locals.spacing.xxs))
+
+                Text(
+                    text = "Выберите новую дату и время",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = colors.onBackground
+                )
 
                 Spacer(modifier = Modifier.height(Locals.spacing.l))
 
@@ -159,18 +164,17 @@ fun RescheduleDialog(
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(Locals.dimens.buttonMeetingInboxCardHeight),
-                    shape = Locals.shapes.mediumShape,
+                    shape = Locals.shapes.smallShape,
                     border = BorderStroke(
                         width = 1.dp,
-                        color = colors.primary
-                    ),
-                    colors = ButtonDefaults.outlinedButtonColors(
-                        contentColor = colors.primary
+                        brush = Locals.gradients.blue
                     )
                 ) {
                     Text(
                         text = "Отмена",
-                        style = MaterialTheme.typography.bodyLarge
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            brush = Locals.gradients.blue
+                        )
                     )
                 }
             }
@@ -192,7 +196,7 @@ fun RescheduleDialog(
 
 private fun LocalDate.toRussianDateText(): String {
     val formatter = DateTimeFormatter.ofPattern(
-        "d MMMM yyyy, EEEE",
+        "d MMMM, EEEE",
         Locale("ru")
     )
 

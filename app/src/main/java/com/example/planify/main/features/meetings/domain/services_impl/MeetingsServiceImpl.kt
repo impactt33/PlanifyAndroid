@@ -1,5 +1,6 @@
 package com.example.planify.main.features.meetings.domain.services_impl
 
+import com.example.planify.core.exceptions.ForbiddenTimeAppError
 import com.example.planify.core.utils.until
 import com.example.planify.main.features.meetings.domain.entities.Meeting
 import com.example.planify.main.features.meetings.domain.entities.MeetingContext
@@ -10,6 +11,7 @@ import com.example.planify.main.features.meetings.domain.services.MeetingsServic
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import java.time.LocalDate
+import java.time.LocalDateTime
 import javax.inject.Inject
 import javax.inject.Singleton
 
@@ -30,6 +32,11 @@ class MeetingsServiceImpl @Inject constructor(
     }
 
     override suspend fun patchMeeting(meetingId: Long, patch: PatchMeetingSchema): Result<Unit> {
+        if (patch.startsAt != null && patch.startsAt.isBefore(LocalDateTime.now())) {
+            return Result.failure(
+                ForbiddenTimeAppError("It is forbidden to reschedule meeting to the past")
+            )
+        }
         return meetingsRepository.patchMeeting(meetingId, patch)
     }
 

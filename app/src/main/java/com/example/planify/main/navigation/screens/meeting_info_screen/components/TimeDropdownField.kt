@@ -156,5 +156,5 @@ fun TimeRangePickerRow(
 }
 
 private fun Int.toHourText(): String {
-    return "%02d:00".format(this)
+    return if (this != 24) "%02d:00".format(this) else "00:00"
 }

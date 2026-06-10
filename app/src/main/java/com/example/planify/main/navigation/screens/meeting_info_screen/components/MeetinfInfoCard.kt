@@ -16,21 +16,24 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.planify.main.common.themes.Locals
 
 @Composable
 fun MeetingInfoCard(
     title: String,
     dateTime: String
 ) {
+    val colors = MaterialTheme.colorScheme
+
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(10.dp),
         colors = CardDefaults.cardColors(
-            containerColor = Color.White
+            containerColor = colors.background
         ),
         border = BorderStroke(
             width = 1.dp,
-            color = Color(0xFFE7E7E7)
+            color = Locals.extras.border
         )
     ) {
         Column(
@@ -43,7 +46,7 @@ fun MeetingInfoCard(
                 text = title,
                 style = MaterialTheme.typography.bodyMedium,
                 fontWeight = FontWeight.SemiBold,
-                color = Color(0xFF111111)
+                color = colors.onBackground
             )
 
             Spacer(modifier = Modifier.height(3.dp))
@@ -51,7 +54,7 @@ fun MeetingInfoCard(
             Text(
                 text = dateTime,
                 style = MaterialTheme.typography.bodySmall,
-                color = Color(0xFF7A7A7A)
+                color = colors.onBackground
             )
         }
     }

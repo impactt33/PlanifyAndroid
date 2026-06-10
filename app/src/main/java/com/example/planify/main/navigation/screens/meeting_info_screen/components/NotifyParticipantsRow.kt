@@ -26,12 +26,15 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.example.planify.main.common.themes.Locals
 
 @Composable
 private fun NotifyParticipantsRow(
     checked: Boolean,
     onCheckedChange: (Boolean) -> Unit
 ) {
+    val colors = MaterialTheme.colorScheme
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -42,7 +45,7 @@ private fun NotifyParticipantsRow(
         ),
         border = BorderStroke(
             width = 1.dp,
-            color = Color(0xFFEAEAEA)
+            color = Locals.extras.border
         )
     ) {
         Row(
@@ -55,7 +58,7 @@ private fun NotifyParticipantsRow(
                 imageVector = Icons.Default.Notifications,
                 contentDescription = null,
                 modifier = Modifier.size(19.dp),
-                tint = Color(0xFF222222)
+                tint = colors.primary
             )
 
             Spacer(modifier = Modifier.width(12.dp))
@@ -64,7 +67,7 @@ private fun NotifyParticipantsRow(
                 text = "Уведомить участников",
                 style = MaterialTheme.typography.bodySmall,
                 fontWeight = FontWeight.Medium,
-                color = Color(0xFF222222)
+                color = colors.primary
             )
 
             Spacer(modifier = Modifier.weight(1f))
@@ -74,10 +77,10 @@ private fun NotifyParticipantsRow(
                 onCheckedChange = onCheckedChange,
                 modifier = Modifier.scale(0.8f),
                 colors = SwitchDefaults.colors(
-                    checkedThumbColor = Color.White,
-                    checkedTrackColor = Color(0xFF3478FF),
+                    checkedThumbColor = colors.background,
+                    checkedTrackColor = colors.primary,
                     uncheckedThumbColor = Color.White,
-                    uncheckedTrackColor = Color(0xFFD1D1D1)
+                    uncheckedTrackColor = colors.background
                 )
             )
         }
