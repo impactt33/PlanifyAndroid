@@ -8,27 +8,22 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
-import androidx.lifecycle.viewModelScope
+import com.example.planify.core.ui.state.ResourceState
 import com.example.planify.main.common.ui.add
 import com.example.planify.main.common.ui.clearFocusOnTap
 import com.example.planify.main.features.profiles.domain.entities.Profile
 import com.example.planify.main.navigation.screens.favorites_screen.components.FavoriteCard
 import com.example.planify.main.navigation.screens.favorites_screen.components.SearchSelection
 import com.example.planify.main.navigation.screens.favorites_screen.entities.FavoriteRecordUIEntity
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 @Composable
 fun FavoritesScreen(
@@ -48,13 +43,10 @@ internal fun FavoritesScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
 
-    var isRefreshing by remember { mutableStateOf(false) }
+    val favorites: List<FavoriteRecordUIEntity> =
+        (uiState.favorites as? ResourceState.Success)?.data?.values?.toList().orEmpty()
 
-    LaunchedEffect(Unit) {
-        viewModel.effects.collect { effect ->
-
-        }
-    }
+    val isRefreshing = uiState.favorites is ResourceState.Refreshing
 
     PullToRefreshBox(
         modifier = Modifier
@@ -62,13 +54,7 @@ internal fun FavoritesScreen(
             .padding(innerPadding.add(horizontal = 16.dp))
             .clearFocusOnTap(),
         isRefreshing = isRefreshing,
-        onRefresh = {
-            viewModel.viewModelScope.launch {
-                isRefreshing = true
-                delay(2000)
-                isRefreshing = false
-            }
-        }
+        onRefresh = { viewModel.fetchFavorites(refresh = true) }
     ) {
         LazyColumn(
             verticalArrangement = Arrangement.spacedBy(8.dp)
@@ -83,18 +69,18 @@ internal fun FavoritesScreen(
                 )
             }
 
-            items(10) {
+            items(5) { favorite ->  // FIXME
                 FavoriteCard(
                     favorite = FavoriteRecordUIEntity(
                         favoriteUserProfile = Profile(
                             userId = 123,
-                            firstName = "asd",
-                            lastName = "asd",
-                            position = "asd",
-                            department = "asd",
+                            firstName = "User",
+                            lastName = "User",
+                            position = "Developer",
+                            department = "Frontend",
                             profileImageUrl = "https://dummyimage.com/512x512/000/fff"
                         ),
-                        createdAt = "asdasdasdasd",
+                        createdAt = "now",
                         userId = 123,
                         starred = true
                     ),
