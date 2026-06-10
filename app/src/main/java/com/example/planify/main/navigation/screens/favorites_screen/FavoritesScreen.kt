@@ -1,5 +1,6 @@
 package com.example.planify.main.navigation.screens.favorites_screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
@@ -20,7 +21,6 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.planify.core.ui.state.ResourceState
 import com.example.planify.main.common.ui.add
 import com.example.planify.main.common.ui.clearFocusOnTap
-import com.example.planify.main.features.profiles.domain.entities.Profile
 import com.example.planify.main.navigation.screens.favorites_screen.components.FavoriteCard
 import com.example.planify.main.navigation.screens.favorites_screen.components.SearchSelection
 import com.example.planify.main.navigation.screens.favorites_screen.entities.FavoriteRecordUIEntity
@@ -46,6 +46,7 @@ internal fun FavoritesScreen(
     val favorites: List<FavoriteRecordUIEntity> =
         (uiState.favorites as? ResourceState.Success)?.data?.values?.toList().orEmpty()
 
+    Log.d("asdasd", favorites.size.toString())
     val isRefreshing = uiState.favorites is ResourceState.Refreshing
 
     PullToRefreshBox(
@@ -69,21 +70,12 @@ internal fun FavoritesScreen(
                 )
             }
 
-            items(5) { favorite ->  // FIXME
+            items(
+                items = favorites,
+                key = { it.userId }
+            ) { favorite ->
                 FavoriteCard(
-                    favorite = FavoriteRecordUIEntity(
-                        favoriteUserProfile = Profile(
-                            userId = 123,
-                            firstName = "User",
-                            lastName = "User",
-                            position = "Developer",
-                            department = "Frontend",
-                            profileImageUrl = "https://dummyimage.com/512x512/000/fff"
-                        ),
-                        createdAt = "now",
-                        userId = 123,
-                        starred = true
-                    ),
+                    favorite = favorite,
                     onIntent = viewModel::onIntent
                 )
             }
